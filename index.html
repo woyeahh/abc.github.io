@@ -20,7 +20,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
-  font-family: "Noto Serif TC", "Noto Serif JP", serif;
+  font-family:"Noto Serif TC","Noto Serif JP",serif;
   background:
     radial-gradient(ellipse at 15% 10%, rgba(255,255,255,.45) 0%, transparent 55%),
     radial-gradient(ellipse at 85% 85%, rgba(197,178,214,.25) 0%, transparent 55%),
@@ -29,7 +29,7 @@ body{
   min-height:100vh;
 }
 .topbar{
-  position:sticky; top:0; z-index:20;
+  position:sticky; top:0; z-index:40;
   display:flex; flex-wrap:wrap; gap:.75rem;
   align-items:center; justify-content:center;
   padding:.9rem 1rem calc(.9rem + env(safe-area-inset-top));
@@ -38,105 +38,69 @@ body{
   border-bottom:1px solid rgba(180,190,180,.4);
   box-shadow:0 2px 14px rgba(40,70,40,.06);
 }
-.logo{
-  font-size:1.08rem; font-weight:700; letter-spacing:.14em; color:var(--green);
-}
-.keywrap{
-  display:flex; align-items:center; gap:.5rem;
-  flex:1 1 360px; max-width:560px;
-}
-.keywrap label,.small,.status{
-  font-family:"Noto Sans TC","Noto Sans JP",sans-serif;
-}
-.keywrap label{font-size:.78rem; color:var(--muted); white-space:nowrap}
-.keywrap input{
-  flex:1; min-width:0;
-  border:1px solid var(--line);
-  border-radius:12px;
-  background:#fffdf8;
-  padding:.72rem .9rem;
-  font-size:.92rem;
-}
-.btn{
-  border:1px solid var(--green);
-  background:var(--green);
-  color:#fff;
-  border-radius:12px;
-  padding:.72rem 1rem;
-  min-height:44px;
-  font-size:.92rem;
-  cursor:pointer;
-}
+.logo{font-size:1.08rem;font-weight:700;letter-spacing:.14em;color:var(--green)}
+.keywrap{display:flex;align-items:center;gap:.5rem;flex:1 1 360px;max-width:560px}
+.keywrap label,.small,.status,.sub,.dict-title,.fish-badge{font-family:"Noto Sans TC","Noto Sans JP",sans-serif}
+.keywrap label{font-size:.78rem;color:var(--muted);white-space:nowrap}
+.keywrap input{flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;background:#fffdf8;padding:.72rem .9rem;font-size:.92rem}
+.btn{border:1px solid var(--green);background:var(--green);color:#fff;border-radius:12px;padding:.72rem 1rem;min-height:44px;font-size:.92rem;cursor:pointer}
 .btn.alt{background:transparent;color:var(--green)}
-.wrap{max-width:980px; margin:0 auto; padding:1rem 1rem 3rem}
-.panel{
-  background:var(--card);
-  border:1px solid rgba(205,191,216,.9);
-  border-radius:24px;
-  box-shadow:0 8px 28px rgba(60,80,60,.06);
-}
-.input-panel{padding:1.2rem 1.2rem 1rem; margin-top:1rem}
-.input-panel h1{margin:.1rem 0 .45rem; font-size:2rem; color:var(--green)}
-.desc{color:var(--muted); line-height:1.8; font-size:.95rem}
-textarea{
-  width:100%; min-height:180px; resize:vertical;
-  margin-top:1rem; padding:1rem 1.05rem;
-  border-radius:16px; border:1px solid var(--line);
-  background:#fffefb; color:var(--ink);
-  font: 1.06rem/1.95 "Noto Serif JP", "Noto Serif TC", serif;
-}
-.actions{display:flex; gap:.65rem; flex-wrap:wrap; align-items:center; margin-top:.85rem}
-.small{font-size:.8rem; color:var(--muted); line-height:1.7}
-.status{font-size:.84rem; color:var(--green2)}
-.error{display:none; margin-top:.8rem; color:#8a3d2c; background:#fff0ea; border:1px solid #efc6b9; border-radius:12px; padding:.8rem .9rem; font-family:"Noto Sans TC",sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:1rem 1rem 3rem}
+.panel{background:var(--card);border:1px solid rgba(205,191,216,.9);border-radius:24px;box-shadow:0 8px 28px rgba(60,80,60,.06)}
+.input-panel{padding:1.2rem 1.2rem 1rem;margin-top:1rem}
+.input-panel h1{margin:.1rem 0 .45rem;font-size:2rem;color:var(--green)}
+.desc{color:var(--muted);line-height:1.8;font-size:.95rem}
+textarea{width:100%;min-height:180px;resize:vertical;margin-top:1rem;padding:1rem 1.05rem;border-radius:16px;border:1px solid var(--line);background:#fffefb;color:var(--ink);font:1.06rem/1.95 "Noto Serif JP","Noto Serif TC",serif}
+.actions{display:flex;gap:.65rem;flex-wrap:wrap;align-items:center;margin-top:.85rem}
+.small{font-size:.8rem;color:var(--muted);line-height:1.7}
+.status{font-size:.84rem;color:var(--green2)}
+.error{display:none;margin-top:.8rem;color:#8a3d2c;background:#fff0ea;border:1px solid #efc6b9;border-radius:12px;padding:.8rem .9rem;font-family:"Noto Sans TC",sans-serif}
 .error.show{display:block}
-.reader{display:none; margin-top:1.2rem}
+.reader{display:none;margin-top:1.2rem}
 .reader.show{display:block}
-.header{padding:1.4rem 1.2rem 0; text-align:center}
-.header .meta{font-size:.82rem; letter-spacing:.12em; color:var(--muted); font-family:"Noto Sans TC",sans-serif}
-.header .title{font-size:2.1rem; color:var(--green); margin:.4rem 0 .45rem}
-.header .sub{font-size:.94rem; color:var(--muted); line-height:1.8; font-family:"Noto Sans TC",sans-serif}
-.card{margin-top:1rem; padding:1.35rem 1.15rem 1.4rem; position:relative}
-.card::before{content:""; position:absolute; left:0; top:18px; bottom:18px; width:5px; border-radius:0 4px 4px 0; background:linear-gradient(180deg, var(--green), #7db18a)}
-.para{font-size:1.28rem; line-height:2.3}
+.header{padding:1.4rem 1.2rem 0;text-align:center}
+.header .meta{font-size:.82rem;letter-spacing:.12em;color:var(--muted);font-family:"Noto Sans TC",sans-serif}
+.header .title{font-size:2.1rem;color:var(--green);margin:.4rem 0 .45rem}
+.header .sub{font-size:.94rem;color:var(--muted);line-height:1.8}
+.card{margin-top:1rem;padding:1.35rem 1.15rem 1.4rem;position:relative}
+.card::before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:5px;border-radius:0 4px 4px 0;background:linear-gradient(180deg,var(--green),#7db18a)}
+.para{font-size:1.28rem;line-height:2.3}
 .sent-row{margin:0 0 1rem}
-.sent{
-  display:block; padding:.26rem .42rem; border-radius:10px; cursor:pointer;
-  transition:background .15s ease;
-}
+.sent{display:block;padding:.26rem .42rem;border-radius:10px;cursor:pointer;transition:background .15s ease}
 .sent:hover,.sent.active{background:rgba(47,108,69,.07)}
-.sent-note{
-  margin-top:.18rem; min-height:2.35em;
-  padding:.26rem .42rem .32rem;
-  border-bottom:1px dashed rgba(47,108,69,.22);
-  background:linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,0));
-  border-radius:10px 10px 4px 4px;
-  font-size:.88em; line-height:1.9; outline:none;
-  white-space:pre-wrap; word-break:break-word;
-}
-.sent-note:focus{background:rgba(255,255,255,.9); border-bottom-color:rgba(47,108,69,.55)}
-.tip{
-  position:fixed; z-index:50; display:none; max-width:min(560px, calc(100vw - 24px));
-  background:rgba(245,251,245,.96); border:1px solid #9fc6a7; border-radius:16px;
-  box-shadow:0 10px 28px rgba(50,90,50,.12);
-  padding:.9rem 1rem; line-height:2;
-  pointer-events:none;
-}
+.sent-note{margin-top:.18rem;min-height:2.35em;padding:.26rem .42rem .32rem;border-bottom:1px dashed rgba(47,108,69,.22);background:linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,0));border-radius:10px 10px 4px 4px;font-size:.88em;line-height:1.9;outline:none;white-space:pre-wrap;word-break:break-word}
+.sent-note:focus{background:rgba(255,255,255,.9);border-bottom-color:rgba(47,108,69,.55)}
+.tip{position:fixed;z-index:70;display:none;max-width:min(560px,calc(100vw - 24px));background:rgba(245,251,245,.96);border:1px solid #9fc6a7;border-radius:16px;box-shadow:0 10px 28px rgba(50,90,50,.12);padding:.9rem 1rem;line-height:2;pointer-events:none}
 .tip.show{display:block}
-.tip .lab{font:.72rem/1.4 "Noto Sans TC",sans-serif; letter-spacing:.1em; color:#547d59; margin-bottom:.35rem}
+.tip .lab{font:.72rem/1.4 "Noto Sans TC",sans-serif;letter-spacing:.1em;color:#547d59;margin-bottom:.35rem}
 .tip .body{font-size:1rem}
-@media (max-width: 768px){
-  .wrap{padding:.8rem .8rem 2rem}
-  .input-panel{padding:1rem}
-  .input-panel h1{font-size:1.65rem}
-  .header .title{font-size:1.78rem}
-  .card{padding:1.1rem .95rem 1.2rem}
-  .para{font-size:1.08rem; line-height:2.05}
-  textarea{min-height:150px; font-size:1rem}
+.dict-menu{position:fixed;z-index:90;display:none;min-width:220px;max-width:min(340px,calc(100vw - 20px));padding:.7rem;background:rgba(255,255,255,.96);border:1px solid rgba(170,203,170,.9);border-radius:16px;box-shadow:0 10px 28px rgba(46,125,50,.15);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.dict-menu.show{display:block}
+.dict-title{font-size:.72rem;letter-spacing:.08em;color:var(--muted);margin:0 0 .45rem .1rem}
+.dict-link{display:block;text-decoration:none;color:var(--green);background:#f4faf4;border:1px solid #d9ead9;border-radius:10px;padding:.5rem .65rem;margin:.34rem 0;font:600 .84rem/1.45 "Noto Sans TC",sans-serif}
+.dict-link small{display:block;font-weight:400;color:var(--muted);font-size:.72rem}
+.dict-link:hover{background:#fff}
+.kw-c0{color:#D97C7C;font-weight:700}.kw-c1{color:#6F9FD8;font-weight:700}.kw-c2{color:#74B89A;font-weight:700}.kw-c3{color:#A78BD6;font-weight:700}.kw-c4{color:#D9B36C;font-weight:700}.kw-c5{color:#6FB7B0;font-weight:700}.kw-c6{color:#D79A6B;font-weight:700}.kw-c7{color:#7FAED0;font-weight:700}.kw-c8{color:#B497D6;font-weight:700}.kw-c9{color:#7FB07C;font-weight:700}.kw-c10{color:#D58A8A;font-weight:700}.kw-c11{color:#93A4BB;font-weight:700}
+.kw-term{cursor:pointer;user-select:text;-webkit-user-select:text;transition:opacity .15s}
+.kw-term:hover{opacity:.8}
+#ac-fish-layer{position:fixed;inset:0;pointer-events:none;z-index:22;overflow:hidden;clip-path:inset(calc(100% - 126px) 0 0 0)}
+.ac-fish{position:absolute;left:0;top:0;width:86px;height:48px;pointer-events:auto;user-select:none;touch-action:none;cursor:grab;transform-origin:center center;will-change:transform}
+.ac-fish.dragging{cursor:grabbing;filter:drop-shadow(0 10px 20px rgba(0,0,0,.18))}
+.ac-fish svg{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 4px 9px rgba(0,0,0,.12))}
+.ac-fish .fish-name{position:absolute;left:50%;bottom:-1.35rem;transform:translateX(-50%);white-space:nowrap;padding:.12rem .42rem;border-radius:999px;background:rgba(255,255,255,.9);border:1px solid rgba(170,203,170,.8);box-shadow:0 2px 8px rgba(46,125,50,.08);font:600 .68rem 'Noto Sans TC',sans-serif;color:var(--muted);opacity:0;transition:opacity .16s,transform .16s;pointer-events:none}
+.ac-fish:hover .fish-name,.ac-fish.dragging .fish-name{opacity:1;transform:translateX(-50%) translateY(-2px)}
+@keyframes fishBirth{0%{transform:translate(var(--tx),var(--ty)) scale(.35);opacity:0}65%{transform:translate(var(--tx),var(--ty)) scale(1.14);opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(1);opacity:1}}
+.ac-fish.birth{animation:fishBirth .45s ease-out}
+#fish-badge{position:fixed;right:18px;bottom:18px;z-index:23;padding:.5rem .9rem;border-radius:999px;border:1px solid rgba(170,203,170,.82);background:rgba(255,255,255,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 4px 18px rgba(46,125,50,.12);color:var(--muted);font:600 .75rem 'Noto Sans TC',sans-serif;max-width:min(360px,calc(100vw - 24px))}
+@media (max-width:768px){
+  .wrap{padding:.8rem .8rem 2rem}.input-panel{padding:1rem}.input-panel h1{font-size:1.65rem}.header .title{font-size:1.78rem}.card{padding:1.1rem .95rem 1.2rem}.para{font-size:1.08rem;line-height:2.05}textarea{min-height:150px;font-size:1rem}.ac-fish{width:74px;height:42px}#fish-badge{right:12px;bottom:12px;font-size:.7rem;padding:.45rem .75rem}
 }
 </style>
 </head>
 <body>
+<div id="ac-fish-layer" aria-hidden="true"></div>
+<div id="fish-badge">底部 2 條魚 · 拖兩條魚碰在一起會生出新魚</div>
+
 <div class="topbar">
   <div class="logo">深讀</div>
   <div class="keywrap">
@@ -151,10 +115,10 @@ textarea{
 <div class="wrap">
   <section class="panel input-panel" id="inputPanel">
     <h1>日語精讀工具 · iPad 單欄版</h1>
-    <div class="desc">這版已拿掉摘錄板與高亮功能，只保留單欄閱讀、逐句翻譯、以及每句下方的筆記線。</div>
-    <textarea id="jpInput" placeholder="請貼入日文文章。&#10;建議：標題獨立成行、段落之間空一行。&#10;會先本地切句，再逐句翻譯成繁體中文。"></textarea>
+    <div class="desc">保留 iPad 單欄閱讀，同時把彩色關鍵詞、詞典選單和底部小魚加回來了；摘錄板與手動高亮仍維持關閉。</div>
+    <textarea id="jpInput" placeholder="請貼入日文文章。&#10;建議：標題獨立成行、段落之間空一行。&#10;會先本地切句與彩色標詞，再逐句翻譯成繁體中文。"></textarea>
     <div class="actions">
-      <div class="small">金鑰僅存瀏覽器，不外傳 ｜ 先切句，再背景逐句翻譯 ｜ 依 。！？ 切句，括號不切句 ｜ Ctrl / Cmd + Enter 送出</div>
+      <div class="small">金鑰僅存瀏覽器，不外傳 ｜ 先切句＋彩色標詞，再背景逐句翻譯 ｜ 點彩色詞可開詞典 ｜ Ctrl / Cmd + Enter 送出</div>
       <div class="status" id="statusText"></div>
     </div>
     <div class="error" id="errBox"></div>
@@ -164,7 +128,7 @@ textarea{
     <div class="header">
       <div class="meta" id="entryMeta"></div>
       <div class="title" id="entryTitle">日語文章</div>
-      <div class="sub">先切句，再逐句翻譯 ・ 輕觸或停留句子可看中文翻譯 ・ 版面已調整為適合 iPad 的單欄閱讀</div>
+      <div class="sub">先切句＋彩色標詞，再逐句翻譯 ・ 輕觸句子看中文 ・ 點彩色詞開詞典 ・ 仍為適合 iPad 的單欄閱讀</div>
     </div>
     <div class="panel card">
       <div class="para" id="cardsContainer"></div>
@@ -177,10 +141,25 @@ textarea{
   <div class="body" id="jpTipBody"></div>
 </div>
 
+<div class="dict-menu" id="dictMenu">
+  <div class="dict-title">詞典選單</div>
+  <a class="dict-link" id="dictLinkKanjipedia" href="#" target="_blank" rel="noopener noreferrer">漢字ペディア<small>單字或詞語檢索</small></a>
+  <a class="dict-link" id="dictLinkKotobank" href="#" target="_blank" rel="noopener noreferrer">Kotobank<small>日文一般詞條</small></a>
+  <a class="dict-link" id="dictLinkKobun" href="#" target="_blank" rel="noopener noreferrer">古文辭典（Weblio）<small>古典日語詞條</small></a>
+  <a class="dict-link" id="dictLinkAoilang" href="#" target="_blank" rel="noopener noreferrer">蒼語辭典（Aoilang）<small>日中對照查詞</small></a>
+</div>
+
 <script>
-const STORAGE_KEY = 'shindoku_ipad_clean_rebuilt_20260414';
+const WORD_COLORS=[
+  {cls:'kw-c0',hex:'#D97C7C'},{cls:'kw-c1',hex:'#6F9FD8'},{cls:'kw-c2',hex:'#74B89A'},{cls:'kw-c3',hex:'#A78BD6'},
+  {cls:'kw-c4',hex:'#D9B36C'},{cls:'kw-c5',hex:'#6FB7B0'},{cls:'kw-c6',hex:'#D79A6B'},{cls:'kw-c7',hex:'#7FAED0'},
+  {cls:'kw-c8',hex:'#B497D6'},{cls:'kw-c9',hex:'#7FB07C'},{cls:'kw-c10',hex:'#D58A8A'},{cls:'kw-c11',hex:'#93A4BB'}
+];
+const STORAGE_KEY = 'shindoku_ipad_color_dict_fish_20260414';
 let sentences = [];
 let inputTitle = '日語文章';
+let wordColorMap = {};
+let dictMenuTarget = null;
 
 const $ = sel => document.querySelector(sel);
 const apiKeyEl = $('#apiKey');
@@ -191,30 +170,18 @@ const errEl = $('#errBox');
 const cardsEl = $('#cardsContainer');
 const tipEl = $('#jpTip');
 const tipBodyEl = $('#jpTipBody');
+const dictMenuEl = $('#dictMenu');
 
-function escH(s){
-  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-}
-function showError(msg){
-  errEl.textContent = msg || '';
-  errEl.classList.toggle('show', !!msg);
-}
+function escH(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function escR(s){ return String(s).replace(/[.*+?^${}()|[\\]\\]/g,'\\$&'); }
+function showError(msg){ errEl.textContent = msg || ''; errEl.classList.toggle('show', !!msg); }
 function setStatus(msg){ statusEl.textContent = msg || ''; }
-function setButtons(disabled){
-  $('#analyzeBtn').disabled = disabled;
-  $('#clearBtn').disabled = disabled;
-  $('#exportBtn').disabled = disabled;
-}
+function setButtons(disabled){ $('#analyzeBtn').disabled = disabled; $('#clearBtn').disabled = disabled; $('#exportBtn').disabled = disabled; }
+
 function saveState(){
   const notes = {};
   document.querySelectorAll('.sent-note').forEach(el => { notes[el.dataset.idx] = el.innerText || ''; });
-  const state = {
-    input: inputEl.value,
-    title: inputTitle,
-    sentences,
-    notes,
-    apiKey: apiKeyEl.value || ''
-  };
+  const state = { input: inputEl.value, title: inputTitle, sentences, notes, apiKey: apiKeyEl.value || '' };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 function loadState(){
@@ -226,10 +193,7 @@ function loadState(){
     apiKeyEl.value = state.apiKey || '';
     inputTitle = state.title || '日語文章';
     sentences = Array.isArray(state.sentences) ? state.sentences : [];
-    if(sentences.length){
-      renderPage(state.notes || {});
-      return true;
-    }
+    if(sentences.length){ buildColorMap(); renderPage(state.notes || {}); return true; }
   }catch(e){ console.error(e); }
   return false;
 }
@@ -237,10 +201,13 @@ function clearAll(){
   inputEl.value = '';
   sentences = [];
   inputTitle = '日語文章';
+  wordColorMap = {};
   cardsEl.innerHTML = '';
   readerEl.classList.remove('show');
   showError('');
   setStatus('');
+  hideTip();
+  hideDictMenu();
   localStorage.removeItem(STORAGE_KEY);
 }
 function splitJapaneseSentences(text){
@@ -250,17 +217,10 @@ function splitJapaneseSentences(text){
   const END = new Set(['。','！','？','!','?']);
   const out = [];
   let buf = '';
-  const pushBuf = () => {
-    const v = buf.trim();
-    if(v) out.push(v);
-    buf = '';
-  };
+  const pushBuf = () => { const v = buf.trim(); if(v) out.push(v); buf = ''; };
   for(let i=0;i<src.length;i++){
     const ch = src[i];
-    if(ch === '\n'){
-      pushBuf();
-      continue;
-    }
+    if(ch === '\n'){ pushBuf(); continue; }
     buf += ch;
     if(END.has(ch)){
       while(i+1 < src.length && CLOSE.has(src[i+1])){ i++; buf += src[i]; }
@@ -287,19 +247,11 @@ async function callDeepSeek(messages, maxTokens=4000){
   const r = await fetch('https://api.deepseek.com/chat/completions', {
     method:'POST',
     headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${key}` },
-    body: JSON.stringify({
-      model:'deepseek-chat',
-      temperature:0,
-      max_tokens:maxTokens,
-      messages
-    })
+    body: JSON.stringify({ model:'deepseek-chat', temperature:0, max_tokens:maxTokens, messages })
   });
   if(!r.ok){
     let msg = `HTTP ${r.status}`;
-    try{
-      const e = await r.json();
-      msg = e.error?.message || msg;
-    }catch(_){ }
+    try{ const e = await r.json(); msg = e.error?.message || msg; }catch(_){ }
     throw new Error(msg);
   }
   const data = await r.json();
@@ -329,6 +281,56 @@ function groupSentences(items, maxChars=900, maxItems=8){
   if(cur.length) groups.push(cur);
   return groups;
 }
+function normalizeWord(w){
+  if(Array.isArray(w)) return {text:String(w[0]||'').trim(), reading:String(w[1]||'').trim()};
+  if(w && typeof w === 'object') return {text:String(w.text||w.word||'').trim(), reading:String(w.reading||w.ruby||'').trim()};
+  return {text:String(w||'').trim(), reading:''};
+}
+function collectFallbackTerms(){
+  const freq = {};
+  sentences.forEach(s => {
+    const matches = (s.jp || '').match(/[一-龥々ヶァ-ヺーA-Za-z]{2,20}/g) || [];
+    matches.forEach(term => {
+      if(term.length < 2) return;
+      if(/^[A-Za-z]{1,2}$/.test(term)) return;
+      freq[term] = (freq[term] || 0) + 1;
+    });
+  });
+  return Object.entries(freq)
+    .filter(([term,count]) => count >= 2 || term.length >= 4)
+    .sort((a,b) => b[1]-a[1] || b[0].length-a[0].length)
+    .map(([term]) => term)
+    .slice(0, 28);
+}
+function buildColorMap(){
+  const candidates = new Map();
+  const addTerm = (term, score=10) => {
+    const t = String(term || '').trim();
+    if(!t || t.length < 2) return;
+    if(/^[ぁ-ゖァ-ヺー]+$/.test(t)) return;
+    candidates.set(t, (candidates.get(t) || 0) + score);
+  };
+  sentences.forEach(s => (Array.isArray(s.words) ? s.words : []).forEach((w, i) => addTerm(normalizeWord(w).text, 40 - i)));
+  collectFallbackTerms().forEach((t, i) => addTerm(t, 18 - Math.min(i, 10)));
+  const ordered = [...candidates.entries()].sort((a,b) => b[1]-a[1] || b[0].length-a[0].length).map(x => x[0]).slice(0, 120);
+  wordColorMap = {};
+  ordered.forEach((term, idx) => { wordColorMap[term] = WORD_COLORS[idx % WORD_COLORS.length].cls; });
+}
+function renderColoredText(text){
+  const src = String(text || '');
+  const terms = Object.keys(wordColorMap).filter(t => src.includes(t)).sort((a,b) => b.length - a.length);
+  if(!terms.length) return escH(src);
+  const re = new RegExp(terms.map(escR).join('|'),'g');
+  let last = 0, out = '';
+  src.replace(re, (m, offset) => {
+    out += escH(src.slice(last, offset));
+    out += `<span class="${wordColorMap[m]} kw-term" data-term="${escH(m)}">${escH(m)}</span>`;
+    last = offset + m.length;
+    return m;
+  });
+  out += escH(src.slice(last));
+  return out;
+}
 function renderPage(noteMap={}){
   $('#entryTitle').textContent = inputTitle;
   $('#entryMeta').textContent = `共 ${sentences.length} 句`;
@@ -341,7 +343,7 @@ function renderPage(noteMap={}){
     sent.className = 'sent';
     sent.dataset.idx = String(idx);
     sent.dataset.cn = s.zh || '';
-    sent.innerHTML = escH(s.jp || '');
+    sent.innerHTML = renderColoredText(s.jp || '');
     row.appendChild(sent);
 
     const note = document.createElement('div');
@@ -355,10 +357,10 @@ function renderPage(noteMap={}){
       saveState();
     });
     row.appendChild(note);
-
     cardsEl.appendChild(row);
   });
   bindSentenceTips();
+  bindDictionaryTerms();
   readerEl.classList.add('show');
   saveState();
 }
@@ -395,7 +397,48 @@ function bindSentenceTips(){
     el.addEventListener('mouseenter', () => showTipFor(el));
     el.addEventListener('mousemove', () => showTipFor(el));
     el.addEventListener('mouseleave', hideTip);
-    el.addEventListener('click', (e) => { e.preventDefault(); showTipFor(el); });
+    el.addEventListener('click', e => {
+      if(e.target.closest('.kw-term')) return;
+      e.preventDefault();
+      showTipFor(el);
+    });
+  });
+}
+function setDictLinks(term){
+  const q = encodeURIComponent(term);
+  $('#dictLinkKanjipedia').href = `https://www.kanjipedia.jp/search?k=${q}&kt=1&sk=leftHand`;
+  $('#dictLinkKotobank').href = `https://kotobank.jp/word/${q}`;
+  $('#dictLinkKobun').href = `https://kobun.weblio.jp/content/${q}`;
+  $('#dictLinkAoilang').href = `https://aoilang.com/dict?text=${q}`;
+}
+function showDictMenu(term, rect){
+  dictMenuTarget = term;
+  setDictLinks(term);
+  dictMenuEl.querySelector('.dict-title').textContent = `詞典選單：${term}`;
+  dictMenuEl.classList.add('show');
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const mw = Math.min(340, vw - 20);
+  dictMenuEl.style.maxWidth = mw + 'px';
+  let left = rect.left + rect.width/2 - mw/2;
+  let top = rect.bottom + 12;
+  if(left < 10) left = 10;
+  if(left + mw > vw - 10) left = vw - mw - 10;
+  const mh = dictMenuEl.offsetHeight || 180;
+  if(top + mh > vh - 10) top = Math.max(10, rect.top - mh - 12);
+  dictMenuEl.style.left = left + 'px';
+  dictMenuEl.style.top = top + 'px';
+}
+function hideDictMenu(){
+  dictMenuEl.classList.remove('show');
+  dictMenuTarget = null;
+}
+function bindDictionaryTerms(){
+  document.querySelectorAll('.kw-term').forEach(el => {
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      showDictMenu(el.dataset.term || el.textContent || '', el.getBoundingClientRect());
+    });
   });
 }
 async function translateAll(){
@@ -404,21 +447,23 @@ async function translateAll(){
   let done = 0;
   for(const group of groups){
     const payload = group.map((x, i) => ({ i: i+1, jp: x.jp }));
-    const sys = '你是日文句子翻譯器。使用者已經先切好句子。不得合併、不得拆分、不得改順序。只回傳 JSON，格式為 {"s":[{"z":"繁體中文翻譯"}]}，數量必須與輸入完全一致。';
+    const sys = '你是日文句子翻譯與標詞器。使用者已經先切好句子。不得合併、不得拆分、不得改順序。只回傳 JSON，格式為 {"s":[{"z":"繁體中文翻譯","w":[["關鍵詞","讀音"]]}]}。每句最多給 6 個真正出現在原句中的關鍵詞；優先名詞、漢字詞、反覆出現的關鍵表現。';
     const user = JSON.stringify(payload);
-    const raw = await callDeepSeek([
-      {role:'system', content: sys},
-      {role:'user', content: user}
-    ], 3600);
+    const raw = await callDeepSeek([{role:'system', content: sys}, {role:'user', content: user}], 4200);
     const data = extractJSON(raw);
     const arr = Array.isArray(data?.s) ? data.s : [];
     if(arr.length !== group.length) throw new Error('翻譯回傳數量不一致');
     arr.forEach((item, i) => {
       const realIdx = group[i].idx;
       sentences[realIdx].zh = String(item?.z || '').trim() || '（翻譯暫不可用）';
+      sentences[realIdx].words = Array.isArray(item?.w) ? item.w.map(normalizeWord).filter(v => v.text) : [];
       const el = document.querySelector(`.sent[data-idx="${realIdx}"]`);
       if(el) el.dataset.cn = sentences[realIdx].zh;
     });
+    buildColorMap();
+    const notes = {};
+    document.querySelectorAll('.sent-note').forEach(el => { notes[el.dataset.idx] = el.innerText || ''; });
+    renderPage(notes);
     done += 1;
     setStatus(`翻譯中 ${done}/${groups.length} 組…`);
     saveState();
@@ -433,11 +478,12 @@ async function analyze(){
   try{
     inputTitle = '日語文章';
     const text = preprocessInput(raw);
-    const sents = splitJapaneseSentences(text).map(jp => ({ jp, zh:'（翻譯中…）', note:'' }));
+    const sents = splitJapaneseSentences(text).map(jp => ({ jp, zh:'（翻譯中…）', words:[], note:'' }));
     if(!sents.length) throw new Error('未能切出任何句子');
     sentences = sents;
+    buildColorMap();
     renderPage();
-    setStatus(`已切句，共 ${sentences.length} 句；正在翻譯…`);
+    setStatus(`已切句並標詞，共 ${sentences.length} 句；正在翻譯…`);
     await translateAll();
   }catch(e){
     console.error(e);
@@ -461,7 +507,7 @@ function exportCurrentHtml(){
   const blob = new Blob([html], {type:'text/html;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'deepread_ipad_clean.html';
+  a.download = 'deepread_ipad_color_dict_fish.html';
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
@@ -471,32 +517,129 @@ function hydrateExportedState(){
   inputEl.value = state.input || '';
   inputTitle = state.title || '日語文章';
   sentences = Array.isArray(state.sentences) ? state.sentences : [];
+  buildColorMap();
   renderPage(state.notes || {});
   setStatus(`已載入匯出內容，共 ${sentences.length} 句`);
   return true;
 }
-
+function makeFishSvg(body='#f5b15a', fin='#f08a5d', eye='#263238'){
+  return `<svg viewBox="0 0 160 90" aria-hidden="true"><g><ellipse cx="72" cy="45" rx="40" ry="24" fill="${body}"/><path d="M33 45 L7 24 L7 66 Z" fill="${fin}"/><path d="M94 27 C118 10, 142 18, 149 34 C128 31, 112 38, 101 50 Z" fill="${fin}" opacity=".95"/><path d="M92 63 C118 78, 142 72, 149 56 C128 59, 111 54, 101 45 Z" fill="${fin}" opacity=".92"/><circle cx="83" cy="40" r="3.5" fill="${eye}"/><circle cx="84" cy="39" r="1" fill="#fff"/></g></svg>`;
+}
+const FISH_PALETTE = [
+  ['#f5b15a','#f08a5d'], ['#7dc7c7','#5aa8d6'], ['#f7c6d0','#d98aa8'], ['#a6d39a','#6fb07c'], ['#d6b3f0','#a78bd6']
+];
+function randomFishPalette(){ return FISH_PALETTE[Math.floor(Math.random()*FISH_PALETTE.length)]; }
+function initFishLayer(){
+  const layer = $('#ac-fish-layer');
+  if(!layer) return;
+  layer.innerHTML = '';
+  const badge = $('#fish-badge');
+  if(badge) badge.textContent = '底部 2 條魚 · 拖兩條魚碰在一起會生出新魚';
+  createFish(70, Math.max(window.innerHeight - 96, 34), '金魚');
+  createFish(Math.max(window.innerWidth - 180, 110), Math.max(window.innerHeight - 88, 40), '小魚');
+}
+function createFish(x, y, name='小魚'){
+  const layer = $('#ac-fish-layer');
+  if(!layer) return null;
+  const fish = document.createElement('div');
+  fish.className = 'ac-fish';
+  const [body, fin] = randomFishPalette();
+  fish.innerHTML = makeFishSvg(body, fin) + `<div class="fish-name">${name}</div>`;
+  fish.dataset.x = String(x);
+  fish.dataset.y = String(y);
+  fish.dataset.vx = String(Math.random() > .5 ? 0.18 : -0.18);
+  fish.dataset.name = name;
+  layer.appendChild(fish);
+  positionFish(fish);
+  enableFishDrag(fish);
+  return fish;
+}
+function positionFish(fish){
+  const x = Number(fish.dataset.x || 0), y = Number(fish.dataset.y || 0), vx = Number(fish.dataset.vx || 0.18);
+  fish.style.transform = `translate(${x}px, ${y}px) scaleX(${vx >= 0 ? 1 : -1})`;
+}
+function enableFishDrag(fish){
+  let dragging = false, sx = 0, sy = 0, ox = 0, oy = 0;
+  const onMove = e => {
+    if(!dragging) return;
+    const p = {x:e.clientX, y:e.clientY};
+    const nx = ox + (p.x - sx), ny = oy + (p.y - sy);
+    fish.dataset.x = String(Math.max(0, Math.min(window.innerWidth - 90, nx)));
+    fish.dataset.y = String(Math.max(window.innerHeight - 124, Math.min(window.innerHeight - 40, ny)));
+    positionFish(fish);
+    checkFishCollision(fish);
+  };
+  const onUp = () => {
+    dragging = false;
+    fish.classList.remove('dragging');
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+  };
+  fish.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    dragging = true;
+    fish.classList.add('dragging');
+    sx = e.clientX; sy = e.clientY;
+    ox = Number(fish.dataset.x || 0); oy = Number(fish.dataset.y || 0);
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  });
+}
+function checkFishCollision(active){
+  const fishes = [...document.querySelectorAll('.ac-fish')].filter(f => f !== active);
+  const ax = Number(active.dataset.x || 0), ay = Number(active.dataset.y || 0);
+  for(const f of fishes){
+    const bx = Number(f.dataset.x || 0), by = Number(f.dataset.y || 0);
+    const dist = Math.hypot(ax - bx, ay - by);
+    if(dist < 54 && !active.dataset.cooldown && !f.dataset.cooldown){
+      active.dataset.cooldown = '1';
+      f.dataset.cooldown = '1';
+      setTimeout(() => { delete active.dataset.cooldown; delete f.dataset.cooldown; }, 800);
+      const kid = createFish((ax + bx) / 2, Math.max(window.innerHeight - 96, (ay + by) / 2), '新魚');
+      if(kid){ kid.classList.add('birth'); setTimeout(() => kid.classList.remove('birth'), 500); }
+      const badge = $('#fish-badge');
+      if(badge) badge.textContent = `底部 ${document.querySelectorAll('.ac-fish').length} 條魚 · 拖兩條魚碰在一起會生出新魚`;
+      break;
+    }
+  }
+}
+function animateFish(){
+  document.querySelectorAll('.ac-fish').forEach(fish => {
+    if(fish.classList.contains('dragging')) return;
+    let x = Number(fish.dataset.x || 0), y = Number(fish.dataset.y || 0), vx = Number(fish.dataset.vx || 0.18);
+    x += vx;
+    const minY = Math.max(window.innerHeight - 116, 10), maxY = Math.max(window.innerHeight - 52, 16);
+    y += Math.sin(Date.now()/700 + x/35) * .08;
+    if(x <= 0 || x >= window.innerWidth - 90) vx *= -1;
+    if(y < minY) y = minY;
+    if(y > maxY) y = maxY;
+    fish.dataset.x = String(Math.max(0, Math.min(window.innerWidth - 90, x)));
+    fish.dataset.y = String(y);
+    fish.dataset.vx = String(vx);
+    positionFish(fish);
+  });
+  requestAnimationFrame(animateFish);
+}
 $('#analyzeBtn').addEventListener('click', analyze);
 $('#clearBtn').addEventListener('click', clearAll);
 $('#exportBtn').addEventListener('click', exportCurrentHtml);
-inputEl.addEventListener('keydown', (e) => {
-  if((e.ctrlKey || e.metaKey) && e.key === 'Enter') analyze();
-});
+inputEl.addEventListener('keydown', e => { if((e.ctrlKey || e.metaKey) && e.key === 'Enter') analyze(); });
 apiKeyEl.addEventListener('input', saveState);
 inputEl.addEventListener('input', saveState);
-document.addEventListener('click', (e) => {
+document.addEventListener('click', e => {
   if(!e.target.closest('.sent')) hideTip();
+  if(!e.target.closest('.kw-term') && !e.target.closest('#dictMenu')) hideDictMenu();
 });
 window.addEventListener('resize', () => {
   const active = document.querySelector('.sent.active');
   if(active && tipEl.classList.contains('show')) showTipFor(active);
 });
-
 try{
-  const savedKey = localStorage.getItem(STORAGE_KEY);
-  if(savedKey) loadState();
+  loadState();
   if(window.__EXPORTED_STATE__) hydrateExportedState();
 }catch(e){ console.error(e); }
+initFishLayer();
+animateFish();
 </script>
 </body>
 </html>
