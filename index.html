@@ -479,11 +479,127 @@ body{
   max-width:min(360px,calc(100vw - 24px));
 }
 
+
+
+/* ── iPad clean layout override ───────────────────────────────────────── */
+body{
+  background:#e8deee;
+  background-image:radial-gradient(ellipse at 18% 14%,rgba(255,255,255,.42) 0%,transparent 58%),
+    radial-gradient(ellipse at 82% 82%,rgba(196,176,214,.22) 0%,transparent 58%);
+  padding-bottom:3rem;
+}
+#ac-fish-layer,#goldfish-canvas,#fish-badge,
+.side-board-col,
+#selection-menu,
+#manual-dict-menu,
+#term-action-menu,
+#note-tip{
+  display:none !important;
+}
+.hint-dot-kj{display:none}
+.reading-scroll,
+.reading-scroll.visible{
+  display:block;
+  min-height:auto;
+}
+.reading-center-wrap{
+  margin:0 auto !important;
+  padding:0 24px 56px !important;
+  min-height:auto !important;
+  overflow-x:visible;
+}
+.reading-center{
+  max-width:980px;
+  margin:0 auto;
+}
+.page{
+  max-width:1028px;
+  padding:0 24px;
+  margin:1.2rem auto 0;
+}
+.top-bar{
+  justify-content:center;
+  gap:.7rem 1rem;
+  padding:.85rem 1.1rem;
+}
+.api-wrap{
+  flex:0 1 420px;
+}
+.api-wrap input{
+  max-width:none;
+  min-height:40px;
+  font-size:.86rem;
+}
+.btn{
+  min-height:40px;
+  padding:.5rem 1rem;
+  font-size:.88rem;
+}
+.input-card{
+  max-width:980px;
+  margin:1.2rem auto 0;
+  padding:1.25rem 1.3rem;
+}
+.input-card textarea{
+  min-height:160px;
+  font-size:1.04rem;
+  line-height:1.9;
+}
+.entry-title{
+  font-size:2.25rem;
+}
+.entry-desc,
+.hint-bar,
+.hint-small{
+  color:#4e5d4e;
+}
+.card{
+  padding:1.45rem 1.35rem 1.55rem 1.45rem;
+  border-radius:22px;
+}
+.card::before{
+  top:18px;
+  bottom:18px;
+}
+.para{
+  font-size:1.28rem;
+  line-height:2.3;
+}
+.sent{
+  padding:.3rem .42rem;
+  margin-bottom:.18rem;
+}
+.sent:hover,.sent.hi{
+  background:rgba(46,125,50,.06) !important;
+}
+.sent-row{
+  margin-bottom:1rem;
+}
+.sent-note{
+  min-height:2.4em;
+  padding:.28rem .42rem .32rem;
+  border-bottom:1px dashed rgba(46,125,50,.2);
+  background:rgba(255,255,255,.72);
+  border-radius:10px 10px 4px 4px;
+}
+@media (min-width:768px) and (max-width:1180px){
+  .page,.reading-center-wrap{padding-left:28px !important;padding-right:28px !important;}
+  .input-card{max-width:940px;}
+  .entry-title{font-size:2.05rem;}
+  .para{font-size:1.18rem;line-height:2.18;}
+}
+@media (max-width:767px){
+  .page,.reading-center-wrap{padding-left:14px !important;padding-right:14px !important;}
+  .top-bar{justify-content:flex-start;}
+  .api-wrap{flex:1 1 100%;}
+  .input-card{padding:1rem;}
+  .entry-title{font-size:1.72rem;}
+  .para{font-size:1.05rem;line-height:2.02;}
+}
+
 </style>
 </head>
 <body>
-<div id="ac-fish-layer" aria-hidden="true"></div>
-<div id="fish-badge">底部 2 條魚 · 拖兩條魚碰在一起會生出新魚</div>
 <div class="top-bar">
   <div class="logo">深讀</div>
   <div class="api-wrap">
@@ -498,9 +614,9 @@ body{
 </div>
 <div class="input-card" id="inputCard">
   <label>貼入日文文章</label>
-  <textarea id="jpInput" placeholder="請貼入日文文章。&#10;建議：標題獨立成行、段落之間空一行。&#10;會先本地切句與彩色高亮，再逐句翻譯成繁體中文。"></textarea>
+  <textarea id="jpInput" placeholder="請貼入日文文章。&#10;建議：標題獨立成行、段落之間空一行。&#10;會先本地切句，再逐句翻譯成繁體中文。"></textarea>
   <div class="input-actions">
-    <span class="hint-small">金鑰僅存瀏覽器，不外傳 ｜ 先切句＋彩色高亮，立刻顯示，再背景翻譯 ｜ 依。！？切句，括號不切句 ｜ Ctrl / Cmd + Enter 送出</span>
+    <span class="hint-small">金鑰僅存瀏覽器，不外傳 ｜ 先切句，再背景逐句翻譯 ｜ 依。！？切句，括號不切句 ｜ Ctrl / Cmd + Enter 送出</span>
   </div>
   <div class="error-msg" id="errMsg"></div>
 </div>
@@ -508,13 +624,11 @@ body{
   <div class="page-header">
     <div class="entry-meta" id="entryMeta"></div>
     <div class="entry-title" id="entryTitle"></div>
-    <div class="entry-desc">先切句與彩色高亮，再逐句翻譯 ・ 手動高亮 → 詞目網站 ・ 選取文字 → 高亮</div>
+    <div class="entry-desc">先切句，再逐句翻譯 ・ 輕觸句子可看中文翻譯 ・ 版面已調整為適合 iPad 的單欄閱讀</div>
   </div>
   <div class="hint-bar">
-    <div class="hint-item"><div class="hint-swatch"></div>懸停句子 → 中文翻譯</div>
-    <div class="hint-item"><div class="hint-dot-kj"></div>點擊彩色詞或手動高亮 → 單字直跳漢字ペディア；多字查 Kotobank／蒼語辭典（Aoilang）／古文辭典（Weblio）</div>
-    <div class="hint-item"><div class="hint-swatch" style="background:#fde2e4;border-color:#f0a0b0"></div>選取文字 → 高亮</div>
-    <div class="hint-item"><div class="hint-swatch" style="background:#ffffff;border-color:#9ac39a"></div>選取文字後可直接拖到左右兩側摘錄板</div>
+    <div class="hint-item"><div class="hint-swatch"></div>輕觸或停留句子 → 中文翻譯</div>
+    <div class="hint-item"><div class="hint-swatch" style="background:#ffffff;border-color:#9ac39a"></div>每句下方可直接記筆記</div>
   </div>
 </div>
 <!-- reading-scroll: flex row. Side boards are sticky to viewport edges; center scrolls independently -->
@@ -588,7 +702,7 @@ const WORD_COLORS=[
   {cls:'kw-c4',hex:'#D9B36C',name:'蜂蜜金'},{cls:'kw-c5',hex:'#6FB7B0',name:'水青'},{cls:'kw-c6',hex:'#D79A6B',name:'杏茶'},{cls:'kw-c7',hex:'#7FAED0',name:'薄群青'},
   {cls:'kw-c8',hex:'#B497D6',name:'丁香紫'},{cls:'kw-c9',hex:'#7FB07C',name:'苔綠'},{cls:'kw-c10',hex:'#D58A8A',name:'薔薇灰粉'},{cls:'kw-c11',hex:'#93A4BB',name:'霧藍灰'}
 ];
-const STORAGE_KEY='shindoku_v24_splitfirst_highlightfirst_20260410b';
+const STORAGE_KEY='shindoku_ipad_clean_v26_20260414';
 let analyzedDoc={title:'',sections:[]};
 let sentences=[];
 let wordColorMap={},wordColorInfo={},wordReadingMap={};
@@ -1145,19 +1259,7 @@ function tokenizeForColoring(src){
 }
 
 function renderText(text,rx){
-  const src=String(text||'');
-  const tokens=tokenizeForColoring(src);
-  let out='';
-  for(const token of tokens){
-    if(!shouldColorToken(token)){
-      out += escH(token);
-      continue;
-    }
-    const cls=colorClassForTerm(token);
-    const reading = wordReadingMap[token] ? ` data-reading="${escH(wordReadingMap[token])}"` : '';
-    out += `<span class="${cls} kw-term" data-term="${escH(token)}"${reading}>${escH(token)}</span>`;
-  }
-  return out;
+  return escH(String(text||''));
 }
 
 function centerReadingScroll(){
@@ -1204,19 +1306,11 @@ function renderPage(){
   });
   card.appendChild(para);
   container.appendChild(card);
-  // clear boards
-  ['snippetBoardLeft','snippetBoardRight'].forEach(id=>{
-    const b=document.getElementById(id);
-    if(b) b.querySelectorAll('.snippet-item').forEach(el=>el.remove());
-  });
   document.getElementById('entryTitle').textContent='日語文章';
   document.getElementById('entryMeta').textContent=`共 ${sentences.length} 句`;
   showReadingArea();
   bindSentenceTips();
   bindUserNotes();
-  bindSnippetBoards();
-  bindHighlightedTerms();
-  document.querySelectorAll('.manual-hl').forEach(el=>{ if(!el.hasAttribute('draggable')) el.setAttribute('draggable','true'); });
   centerReadingScroll();
 }
 
@@ -1669,7 +1763,7 @@ function showSelMenu(rect){
 }
 function clearSel(){selMenu.classList.remove('show'); storedRange=null; window.getSelection().removeAllRanges();}
 function wrapHL(range,colorClass){const span=document.createElement('span'); span.className=`manual-hl ${colorClass}`; span.appendChild(range.extractContents()); range.insertNode(span); const q=(span.textContent||'').trim(); if(isSingleCharQuery(q) && pickFirstKanji(q)) warmupSingleCharDirect(q); hideManualDictMenu(); saveState();}
-document.addEventListener('mouseup',()=>{setTimeout(()=>{const sel=window.getSelection(); if(!sel||sel.rangeCount===0||sel.isCollapsed){selMenu.classList.remove('show'); return;} const range=normRange(sel.getRangeAt(0).cloneRange()); if(!range||!isInPage(range)||!sel.toString().trim()){selMenu.classList.remove('show'); return;} storedRange=range; showSelMenu(range.getBoundingClientRect());},10);});
+document.addEventListener('mouseup',()=>{storedRange=null; selMenu.classList.remove('show');});
 document.querySelectorAll('.color-btn').forEach(btn=>btn.addEventListener('click',()=>{if(!storedRange) return; wrapHL(storedRange,btn.dataset.color); clearSel();}));
 document.getElementById('excerpt-selection').addEventListener('click',()=>{if(!storedRange) return; createSnippetFromRange(storedRange);});
 document.getElementById('cancel-selection').addEventListener('click',clearSel);
@@ -1803,8 +1897,6 @@ function applyExportedState(state){
     showReadingArea();
     bindSentenceTips();
     bindUserNotes();
-    bindSnippetBoards();
-    bindHighlightedTerms();
     centerReadingScroll();
     return true;
   }catch(e){
@@ -1881,8 +1973,6 @@ function loadState(){
     showReadingArea();
     bindSentenceTips();
     bindUserNotes();
-    bindSnippetBoards();
-    bindHighlightedTerms();
     centerReadingScroll();
     return true;
   }catch(e){console.error(e);return false;}
