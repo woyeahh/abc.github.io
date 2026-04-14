@@ -1,2463 +1,502 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>深讀 · 日語精讀工具</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;600&family=Noto+Serif+TC:wght@400;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>深讀 · iPad 單欄版</title>
 <style>
 :root{
-  --bg:#d8bfd8;--bg-card:#ffffff;--bg-card2:#f2f9f2;--bg-quote:#e8f4e8;
-  --border:#aacbaa;--border-lt:#c8dfc8;
-  --green-dark:#1b5e20;--green-mid:#2e7d32;--green-soft:#388e3c;
-  --teal:#00695c;--amber:#bf6000;
-  --text:#1a2e1a;--text-muted:#3d5c3d;--text-light:#5a7a5a;
-  --tip-bg:#f4fbf4;--tip-border:#7cb87c;--tip-text:#1a2e1a;--tip-label:#3a6a3a;
-  --ruby-bg:#fffde7;--ruby-border:#f9a825;--ruby-text:#5d4000;--ruby-label:#8a6000;
-  --topbar-h:50px;
-  --board-w:clamp(260px,20vw,420px);
+  --bg:#e8deee;
+  --bg2:#f8f4fb;
+  --card:#ffffffee;
+  --line:#cdbfd8;
+  --line2:#d9ead9;
+  --ink:#223022;
+  --muted:#536253;
+  --green:#2f6c45;
+  --green2:#5c8a69;
+  --tip:#f5fbf5;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
 body{
-  background:#d8bfd8;
-  background-image:radial-gradient(ellipse at 20% 15%,rgba(255,240,255,.35) 0%,transparent 55%),
-    radial-gradient(ellipse at 80% 80%,rgba(180,140,200,.18) 0%,transparent 55%);
-  font-family:'Noto Serif JP',serif;color:var(--text);min-height:100vh;padding:0 0 5rem;
+  font-family: "Noto Serif TC", "Noto Serif JP", serif;
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(255,255,255,.45) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 85%, rgba(197,178,214,.25) 0%, transparent 55%),
+    var(--bg);
+  color:var(--ink);
+  min-height:100vh;
 }
-.top-bar{
-  background:var(--bg-card);border-bottom:1px solid var(--border-lt);
-  padding:.7rem 1.4rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;
-  position:sticky;top:0;z-index:200;box-shadow:0 1px 8px rgba(46,125,50,.08);
-}
-.logo{font-family:'Noto Serif TC',serif;font-size:1.08rem;font-weight:600;color:var(--green-dark);letter-spacing:.12em;white-space:nowrap}
-.api-wrap{display:flex;align-items:center;gap:.45rem;flex:1;min-width:0}
-.api-wrap label{font-family:'Noto Sans JP',sans-serif;font-size:.73rem;font-weight:600;color:var(--text-light);white-space:nowrap;letter-spacing:.06em}
-.api-wrap input{flex:1;min-width:0;max-width:320px;border:1px solid var(--border-lt);border-radius:5px;padding:.3rem .65rem;font-family:'DM Mono',monospace;font-size:.77rem;background:#fffef5;color:var(--text);outline:none;transition:border-color .2s}
-.api-wrap input:focus{border-color:var(--green-soft)}
-.btn{padding:.35rem .9rem;border-radius:5px;border:1px solid var(--green-dark);background:var(--green-dark);color:#fff;font-family:'Noto Sans JP',sans-serif;font-size:.8rem;letter-spacing:.06em;cursor:pointer;transition:background .15s,opacity .15s;white-space:nowrap}
-.btn:hover{background:var(--green-soft);border-color:var(--green-soft)}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-.btn-ghost{background:transparent;color:var(--text-muted);border-color:var(--border-lt)}
-.btn-ghost:hover{background:var(--bg-card2);border-color:var(--border)}
-.spinner{display:none;width:15px;height:15px;border:2px solid var(--border-lt);border-top-color:var(--green-dark);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
-@keyframes spin{to{transform:rotate(360deg)}}
-.spinner.active{display:inline-block}
-.status-txt{font-family:'Noto Sans JP',sans-serif;font-size:.73rem;color:var(--text-light)}
-.input-card{max-width:1880px;margin:1.8rem auto 0;padding:1.45rem 1.7rem;background:var(--bg-card);border:1px solid var(--border-lt);border-radius:16px;box-shadow:0 2px 12px rgba(46,125,50,.06)}
-.input-card label{font-family:'Noto Sans JP',sans-serif;font-size:.72rem;font-weight:600;color:var(--text-light);letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.45rem}
-.input-card textarea{width:100%;border:1px solid var(--border-lt);border-radius:7px;padding:.85rem .95rem;font-family:'Noto Serif JP',serif;font-size:1rem;line-height:1.9;background:#fffef5;color:var(--text);resize:vertical;min-height:120px;outline:none;transition:border-color .2s}
-.input-card textarea:focus{border-color:var(--green-soft)}
-.input-actions{display:flex;gap:.55rem;align-items:center;margin-top:.7rem;flex-wrap:wrap}
-.hint-small{font-size:.72rem;color:#ffffff;font-family:'Noto Sans JP',sans-serif;line-height:1.7}
-.error-msg{margin-top:.55rem;background:#fde8cc;border:1px solid #f0b060;color:#7a4020;border-radius:5px;padding:.45rem .85rem;font-family:'Noto Sans JP',sans-serif;font-size:.8rem;display:none}
-.error-msg.show{display:block}
-.page{max-width:100%;margin:1.4rem auto 0;padding:0 .35rem}
-.page-header{text-align:center;margin-bottom:2.1rem;padding-bottom:1.7rem;border-bottom:2px solid var(--border)}
-.page-header::after{content:'';display:block;width:48px;height:3px;background:linear-gradient(90deg,var(--green-mid),var(--teal));border-radius:2px;margin:1.1rem auto 0}
-.entry-meta{font-family:'Noto Sans JP',sans-serif;font-size:.8rem;color:var(--text-light);letter-spacing:.13em;margin-bottom:.45rem}
-.entry-title{font-size:2.8rem;font-weight:700;color:var(--green-dark);letter-spacing:.06em;line-height:1.28}
-.entry-desc{font-size:.95rem;color:#ffffff;margin-top:.7rem;font-family:'Noto Sans JP',sans-serif;line-height:1.8}
-.hint-bar{display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.8rem;font-family:'Noto Sans JP',sans-serif;font-size:.86rem;color:#ffffff}
-.hint-item{display:flex;align-items:center;gap:.35rem}
-.hint-swatch{width:20px;height:11px;border-radius:3px;background:rgba(46,125,50,.11);border:1px solid rgba(46,125,50,.26)}
-.hint-dot-kj{width:9px;height:9px;border-radius:3px;background:rgba(249,168,37,.32);border:1px solid rgba(249,168,37,.5)}
-.legend{display:flex;flex-wrap:wrap;gap:.38rem 1.1rem;margin-bottom:1.6rem;padding:.75rem 1.1rem;background:var(--bg-card2);border:1px solid var(--border-lt);border-radius:10px;font-size:.77rem;font-family:'Noto Sans JP',sans-serif;color:var(--text-muted)}
-.legend-title{width:100%;font-weight:600;color:var(--text);font-size:.8rem;margin-bottom:.12rem}
-.legend-item{display:flex;align-items:center;gap:.32rem}
-.ld{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-.card{background:var(--bg-card);border:1px solid var(--border-lt);border-radius:18px;padding:1.85rem 2rem 2rem 2.1rem;margin-bottom:1.9rem;box-shadow:0 4px 16px rgba(46,125,50,.06),0 1px 3px rgba(46,125,50,.04);position:relative}
-.card::before{content:'';position:absolute;left:0;top:22px;bottom:22px;width:5px;background:linear-gradient(180deg,var(--green-mid),var(--teal));border-radius:0 3px 3px 0}
-.card-heading{font-size:1.18rem;font-weight:600;color:var(--teal);margin-bottom:1.3rem;padding-left:.55rem;font-family:'Noto Sans JP',sans-serif;letter-spacing:.04em;display:flex;align-items:center;gap:.5rem}
-.card-heading::before{content:'';display:inline-block;width:9px;height:9px;background:var(--green-soft);border-radius:50%;flex-shrink:0}
-.para{font-size:1.42rem;line-height:2.58;color:var(--text);margin-bottom:1.3rem;white-space:normal;letter-spacing:.01em}
-.para:last-child{margin-bottom:0}
-.sent{display:block;cursor:pointer;border-radius:8px;padding:.25rem .38rem;transition:background .18s,box-shadow .18s;line-height:2.48;margin:0 0 1.18rem 0}
-.sent:hover,.sent.hi{background:rgba(46,125,50,.1);box-shadow:0 0 0 1px rgba(46,125,50,.2)}
-.kw-c0{color:#D97C7C;font-weight:700;text-shadow:0 0 .01px currentColor}.kw-c1{color:#6F9FD8;font-weight:700;text-shadow:0 0 .01px currentColor}.kw-c2{color:#74B89A;font-weight:700;text-shadow:0 0 .01px currentColor}.kw-c3{color:#A78BD6;font-weight:700;text-shadow:0 0 .01px currentColor}.kw-c4{color:#D9B36C;font-weight:700;text-shadow:0 0 .01px currentColor}.kw-c5{color:#6FB7B0;font-weight:700;text-shadow:0 0 .01px currentColor}.kw-c6{color:#D79A6B;font-weight:700;text-shadow:0 0 .01px currentColor}.kw-c7{color:#7FAED0;font-weight:700;text-shadow:0 0 .01px currentColor}.kw-c8{color:#B497D6;font-weight:700;text-shadow:0 0 .01px currentColor}.kw-c9{color:#7FB07C;font-weight:700;text-shadow:0 0 .01px currentColor}.kw-c10{color:#D58A8A;font-weight:700;text-shadow:0 0 .01px currentColor}.kw-c11{color:#93A4BB;font-weight:700;text-shadow:0 0 .01px currentColor}
-.kw-term{border-radius:0;padding:0 .02em;box-decoration-break:clone;-webkit-box-decoration-break:clone;cursor:pointer;user-select:text;-webkit-user-select:text;transition:opacity .16s,color .16s;background:transparent!important;box-shadow:none!important}
-.kw-term:hover{opacity:.8;box-shadow:none!important}
-.kw-term.no-bg{background:transparent!important;padding:0 .02em;border-radius:0;box-shadow:none!important}
-.kw-bg-0,.kw-bg-1,.kw-bg-2,.kw-bg-3,.kw-bg-4,.kw-bg-5,.kw-bg-6,.kw-bg-7,.kw-bg-8,.kw-bg-9,.kw-bg-10,.kw-bg-11{background:transparent!important}
-.manual-hl,.kw-term{touch-action:manipulation}
-#term-action-menu{display:none!important}
-#term-action-menu.show{display:none!important}
-.term-action-btn{display:block;width:100%;border:none;background:#f2f9f2;color:var(--green-dark);border-radius:9px;padding:.42rem .62rem;margin:.18rem 0;font:600 .8rem 'Noto Sans JP',sans-serif;text-align:left;cursor:pointer}
-.term-action-btn:hover{background:#e8f4e8}
-
-.kj{cursor:pointer;border-radius:4px;padding:0 .05em;transition:background .12s}
-.kj:hover{background:rgba(249,168,37,.14);box-shadow:none}
-/* 助詞不上色 */
-.ptcl,.ptcl-wa,.ptcl-ga,.ptcl-de{background:transparent!important;color:inherit!important;padding:0!important;border-radius:0!important;font-size:inherit!important;font-weight:inherit!important}
-.manual-hl{border-radius:5px;padding:.03em .11em;box-decoration-break:clone;-webkit-box-decoration-break:clone;cursor:grab;transition:box-shadow .17s,transform .17s}
-.manual-hl:hover{box-shadow:0 0 0 1px rgba(80,80,80,.16)}
-.manual-c1{background:#fde2e4}.manual-c2{background:#fff1c7}.manual-c3{background:#dff7e2}.manual-c4{background:#dff1ff}.manual-c5{background:#ece3ff}.manual-c6{background:#ffd9c8}.manual-c7{background:#fbe7c6}.manual-c8{background:#e6f5d0}
-#selection-menu{position:fixed;z-index:10020;background:#fff;border:1px solid #d8e6d8;border-radius:12px;padding:.52rem .6rem;box-shadow:0 8px 22px rgba(46,125,50,.13);display:none;gap:.42rem;align-items:center;flex-wrap:wrap;min-width:240px}
-#selection-menu.show{display:flex}
-.selection-label{font:600 .69rem 'Noto Sans JP',sans-serif;color:var(--text-light);letter-spacing:.06em;margin-right:.06rem}
-.color-btn,.menu-btn{width:21px;height:21px;border-radius:999px;border:1px solid rgba(0,0,0,.1);cursor:pointer;transition:transform .14s,box-shadow .14s;background:#fff}
-.color-btn:hover,.menu-btn:hover{box-shadow:0 3px 8px rgba(0,0,0,.11)}
-.color-btn[data-color='manual-c1']{background:#fde2e4}.color-btn[data-color='manual-c2']{background:#fff1c7}.color-btn[data-color='manual-c3']{background:#dff7e2}.color-btn[data-color='manual-c4']{background:#dff1ff}.color-btn[data-color='manual-c5']{background:#ece3ff}.color-btn[data-color='manual-c6']{background:#ffd9c8}.color-btn[data-color='manual-c7']{background:#fbe7c6}.color-btn[data-color='manual-c8']{background:#e6f5d0}
-.menu-btn{width:auto;min-width:44px;padding:0 .55rem;border-radius:999px;background:#f2f9f2;font:600 .7rem 'Noto Sans JP',sans-serif;color:var(--green-mid)}
-#note-tip{--note-bg:#fff8fc;--note-border:#e7b8cf;--note-text:#4a2340;--note-label:#9b4f78;--note-dot:#c86aa0;--note-target-bg:#fffdfd;--note-target-border:#efc9da;--note-target-text:#7a5a6b;--note-item-bg:#fffafc;--note-item-border:#f1d6e3;--note-item-title:#b05b86;--note-item-text:#5a4451;--note-btn-bg:#f6dbe8;--note-btn-text:#7a355d;--note-btn-bg-hover:#efc8dd; position:fixed;background:var(--note-bg);border:1.5px solid var(--note-border);border-radius:12px;padding:.75rem .9rem;font-size:.88rem;font-family:'Noto Sans JP',sans-serif;color:var(--note-text);max-width:min(390px,92vw);min-width:210px;max-height:70vh;line-height:1.8;z-index:10030;display:none;flex-direction:column;overflow:hidden;box-shadow:0 4px 18px rgba(60,80,60,.12)}
-#note-tip.show{display:flex}
-.note-label{font-size:.69rem;color:var(--note-label);letter-spacing:.1em;margin-bottom:.38rem;font-weight:600;display:flex;align-items:center;gap:.28rem}.note-label::before{content:'';display:inline-block;width:6px;height:6px;background:var(--note-dot);border-radius:50%}
-.note-target{font-size:.86rem;color:var(--note-target-text);background:var(--note-target-bg);border:1px solid var(--note-target-border);border-radius:7px;padding:.26rem .48rem;margin-bottom:.45rem;word-break:break-word;flex:0 0 auto}
-.note-body{flex:1 1 auto;min-height:0;overflow-y:auto;font-size:.88rem;line-height:1.7;color:var(--note-text);word-break:break-word;padding-right:.12rem}
-.note-item{background:var(--note-item-bg);border:1px solid var(--note-item-border);border-radius:8px;padding:.42rem .58rem;margin-bottom:.38rem}.note-item:last-child{margin-bottom:0}
-.note-item-title{font-size:.68rem;font-weight:700;color:var(--note-item-title);margin-bottom:.18rem}.note-item-text{font-size:.88rem;line-height:1.7;color:var(--note-item-text);word-break:break-word}
-.note-actions{display:flex;gap:.28rem;margin-top:.45rem;flex-wrap:wrap;flex:0 0 auto}
-.note-btn{border:none;background:var(--note-btn-bg);color:var(--note-btn-text);border-radius:7px;padding:.26rem .54rem;font-family:'Noto Sans JP',sans-serif;font-size:.8rem;cursor:pointer;transition:background .15s}.note-btn:hover{background:var(--note-btn-bg-hover)}
-#jp-tip{position:fixed;background:var(--tip-bg);border:1.5px solid var(--tip-border);border-radius:12px;padding:.95rem 1.35rem;font-size:1.06rem;font-family:'Noto Serif TC',serif;color:var(--tip-text);max-width:620px;min-width:260px;line-height:2.15;z-index:9999;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 4px 20px rgba(46,125,50,.12)}
-#jp-tip.show{opacity:1}
-.tip-label{font-size:.68rem;color:var(--tip-label);letter-spacing:.1em;margin-bottom:.35rem;font-weight:600;font-family:'Noto Sans JP',sans-serif;display:flex;align-items:center;gap:.26rem}.tip-label::before{content:'';display:inline-block;width:6px;height:6px;background:var(--green-soft);border-radius:50%}
-#kj-tip{position:fixed;background:var(--ruby-bg);border:1.5px solid var(--ruby-border);border-radius:8px;padding:.42rem .85rem;font-family:'Noto Sans JP',sans-serif;font-size:.88rem;color:var(--ruby-text);z-index:10000;pointer-events:none;opacity:0;transition:opacity .15s;white-space:nowrap;box-shadow:0 2px 9px rgba(249,168,37,.2)}
-#kj-tip.show{opacity:1}
-.kj-label{font-size:.64rem;color:var(--ruby-label);font-weight:600;letter-spacing:.07em;margin-bottom:.1rem}
-
-#manual-dict-menu{position:fixed;z-index:10040;display:none;min-width:220px;max-width:min(320px,92vw);padding:.68rem .72rem;background:rgba(255,255,255,.97);border:1px solid var(--border);border-radius:14px;box-shadow:0 10px 28px rgba(46,125,50,.16),0 2px 6px rgba(46,125,50,.08);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-#manual-dict-menu.show{display:block}
-.manual-dict-title{font:.68rem 'Noto Sans JP',sans-serif;color:var(--text-light);letter-spacing:.08em;margin:0 0 .45rem .05rem}
-.manual-dict-link{display:block;text-decoration:none;color:var(--green-dark);background:rgba(242,249,242,.95);border:1px solid var(--border-lt);border-radius:10px;padding:.48rem .65rem;margin:.34rem 0;font:600 .84rem 'Noto Sans JP',sans-serif;line-height:1.45;transition:background .15s,border-color .15s}
-.manual-dict-link:hover{background:#fff;border-color:var(--green-soft)}
-.manual-dict-link small{display:block;font-weight:400;color:var(--text-light);font-size:.72rem;margin-top:.08rem}
-
-
-/* ── Reading layout ── */
-:root{--board-w:clamp(260px,20vw,420px)}
-.reading-scroll{display:none;position:relative;min-height:calc(100vh - var(--topbar-h))}
-.reading-scroll.visible{display:block}
-
-/* Side boards: fixed to viewport, always visible */
-.side-board-col{
-  position:fixed;
-  top:var(--topbar-h);
-  bottom:0;
-  width:var(--board-w);
-  overflow-y:auto;
-  overflow-x:hidden;
-  padding:14px 10px 24px;
-  z-index:50;
-  background:#d8bfd8;
-  scrollbar-width:thin;
-  scrollbar-color:var(--border-lt) transparent;
-}
-#leftBoardCol{left:0;border-right:1px solid var(--border-lt);box-shadow:2px 0 12px rgba(46,125,50,.05)}
-#rightBoardCol{right:0;border-left:1px solid var(--border-lt);box-shadow:-2px 0 12px rgba(46,125,50,.05)}
-
-/* Center: padded to make room for fixed side boards */
-.reading-center-wrap{
-  margin-left:var(--board-w);
-  margin-right:var(--board-w);
-  overflow-x:auto;
-  padding:8px 32px 80px;
-  min-height:calc(100vh - var(--topbar-h));
-}
-.reading-center{min-width:0;max-width:1400px;margin:0 auto}
-.reading-zoom-wrap{display:block}
-
-.board-head{margin-bottom:.75rem;padding:0 .2rem}
-.board-title{font:600 1rem 'Noto Sans JP',sans-serif;color:#ffffff;letter-spacing:.04em;margin-bottom:.25rem}
-.board-note{font:.74rem 'Noto Sans JP',sans-serif;color:#f0e8ff;line-height:1.65}
-.snippet-board{
-  position:relative;
-  min-height:calc(100vh - var(--topbar-h) - 100px);
-  border:1px dashed var(--border);
-  border-radius:14px;
-  background:linear-gradient(180deg,rgba(255,255,255,.82),rgba(242,249,242,.92));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.55);
-  overflow:hidden;
-}
-.snippet-board::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(150,100,180,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(150,100,180,.08) 1px,transparent 1px);background-size:24px 24px;pointer-events:none}
-.snippet-board.dragover{border-color:var(--green-soft);box-shadow:0 0 0 2px rgba(56,142,60,.14) inset}
-.board-empty{position:absolute;left:12px;top:14px;right:12px;font:.82rem 'Noto Sans JP',sans-serif;color:var(--text-light);background:rgba(255,253,230,.92);padding:.45rem .65rem;border-radius:10px;border:1px solid var(--border-lt);z-index:1;pointer-events:none;line-height:1.6}
-.snippet-item{position:absolute;min-width:150px;max-width:min(460px,calc(100% - 20px));padding:1rem 1.05rem .85rem;background:rgba(255,255,255,.97);border:1px solid rgba(170,203,170,.95);border-radius:16px;box-shadow:0 8px 22px rgba(46,125,50,.1),0 1px 3px rgba(46,125,50,.06);cursor:grab;touch-action:none;user-select:none}
-.snippet-item:active{cursor:grabbing}
-.snippet-item:hover{box-shadow:0 10px 26px rgba(46,125,50,.14),0 1px 3px rgba(46,125,50,.08)}
-.snippet-del{position:absolute;top:8px;right:8px;width:22px;height:22px;border:none;border-radius:999px;background:rgba(27,94,32,.1);color:var(--green-dark);font:600 .9rem/1 'Noto Sans JP',sans-serif;cursor:pointer}
-.snippet-del:hover{background:rgba(27,94,32,.18)}
-.snippet-content{padding-right:1rem;font-family:'Noto Serif JP',serif;font-size:1.2rem;line-height:2.12;color:var(--text);letter-spacing:.01em;word-break:break-word}
-.snippet-content .kw-c0{color:#D97C7C !important;font-weight:700}.snippet-content .kw-c1{color:#6F9FD8 !important;font-weight:700}.snippet-content .kw-c2{color:#74B89A !important;font-weight:700}.snippet-content .kw-c3{color:#A78BD6 !important;font-weight:700}.snippet-content .kw-c4{color:#D9B36C !important;font-weight:700}.snippet-content .kw-c5{color:#6FB7B0 !important;font-weight:700}.snippet-content .kw-c6{color:#D79A6B !important;font-weight:700}.snippet-content .kw-c7{color:#7FAED0 !important;font-weight:700}.snippet-content .kw-c8{color:#B497D6 !important;font-weight:700}.snippet-content .kw-c9{color:#7FB07C !important;font-weight:700}.snippet-content .kw-c10{color:#D58A8A !important;font-weight:700}.snippet-content .kw-c11{color:#93A4BB !important;font-weight:700}
-.snippet-content .kj{cursor:inherit}
-.snippet-content .manual-hl{cursor:inherit}
-
-@media(max-width:1400px){:root{--board-w:clamp(220px,18vw,340px)}.card{padding:1.75rem 1.85rem 1.9rem 1.95rem}.para{font-size:1.34rem;line-height:2.5}.snippet-item{max-width:calc(100% - 12px)}.snippet-content{font-size:1.1rem;line-height:2}}
-@media(max-width:1000px){:root{--board-w:clamp(180px,20vw,260px)}.card{padding:1.4rem 1.5rem 1.5rem 1.6rem}.entry-title{font-size:2.2rem}.para{font-size:1.18rem;line-height:2.3}.sent{margin-bottom:.9rem}.snippet-item{max-width:calc(100% - 10px)}.snippet-content{font-size:1rem;line-height:1.9}.reading-center-wrap{padding:8px 18px 60px}}
-@media(max-width:700px){:root{--board-w:clamp(120px,24vw,180px)}.entry-title{font-size:1.8rem}.para{font-size:1.06rem;line-height:2.1}.reading-center-wrap{padding:6px 10px 48px}.board-title{font-size:.86rem}.board-note{display:none}.zoom-wrap{display:none}}
-
-/* ── Goldfish canvas ── */
-#goldfish-canvas{
-  position:fixed;top:0;left:0;width:100%;height:100%;
-  pointer-events:none;z-index:1;opacity:.72;
-}
-
-/* ── Enhanced top bar ── */
-.top-bar{
-  background:rgba(255,255,255,.92)!important;
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
-  border-bottom:1px solid rgba(170,203,170,.55)!important;
-  box-shadow:0 2px 20px rgba(46,125,50,.1)!important;
+.topbar{
+  position:sticky; top:0; z-index:20;
+  display:flex; flex-wrap:wrap; gap:.75rem;
+  align-items:center; justify-content:center;
+  padding:.9rem 1rem calc(.9rem + env(safe-area-inset-top));
+  background:rgba(255,255,255,.84);
+  backdrop-filter: blur(12px);
+  border-bottom:1px solid rgba(180,190,180,.4);
+  box-shadow:0 2px 14px rgba(40,70,40,.06);
 }
 .logo{
-  font-size:1.22rem!important;
-  background:linear-gradient(135deg,var(--green-dark),var(--teal));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-  letter-spacing:.18em!important;
-  position:relative;
+  font-size:1.08rem; font-weight:700; letter-spacing:.14em; color:var(--green);
 }
-.logo::after{
-  content:'深讀';
-  position:absolute;left:0;top:0;
-  font-size:1.22rem;letter-spacing:.18em;
-  background:linear-gradient(135deg,var(--green-dark),var(--teal));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-  filter:blur(8px);
-  opacity:.4;
-  z-index:-1;
+.keywrap{
+  display:flex; align-items:center; gap:.5rem;
+  flex:1 1 360px; max-width:560px;
+}
+.keywrap label,.small,.status{
+  font-family:"Noto Sans TC","Noto Sans JP",sans-serif;
+}
+.keywrap label{font-size:.78rem; color:var(--muted); white-space:nowrap}
+.keywrap input{
+  flex:1; min-width:0;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fffdf8;
+  padding:.72rem .9rem;
+  font-size:.92rem;
 }
 .btn{
-  border-radius:8px!important;
-  font-weight:600!important;
-  letter-spacing:.08em!important;
-  box-shadow:0 2px 8px rgba(46,125,50,.18)!important;
-  transition:background .2s, box-shadow .2s!important;
-  position:relative;
-  overflow:hidden;
-}
-.btn::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(255,255,255,.18),transparent);
-  pointer-events:none;
-}
-.btn:hover{
-  box-shadow:0 4px 14px rgba(46,125,50,.28)!important;
-}
-.btn:active{}
-.btn-ghost{box-shadow:0 1px 4px rgba(46,125,50,.08)!important}
-
-/* ── Enhanced input card ── */
-.input-card{
-  border-radius:20px!important;
-  box-shadow:0 4px 24px rgba(46,125,50,.09),0 1px 4px rgba(46,125,50,.05)!important;
-  position:relative;
-  overflow:hidden;
-  z-index:10;
-}
-.input-card::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(242,249,242,.8));
-  pointer-events:none;z-index:-1;
-}
-.input-card textarea{
-  border-radius:12px!important;
-  box-shadow:inset 0 2px 8px rgba(46,125,50,.06)!important;
-  transition:all .25s!important;
-  background:rgba(255,253,240,.9)!important;
-}
-.input-card textarea:focus{
-  border-color:var(--green-soft)!important;
-  box-shadow:inset 0 2px 8px rgba(46,125,50,.06), 0 0 0 3px rgba(46,125,50,.08)!important;
-  background:rgba(255,255,255,.9)!important;
-}
-
-/* ── Enhanced cards ── */
-.card{
-  border-radius:22px!important;
-  box-shadow:0 6px 24px rgba(46,125,50,.08),0 1px 4px rgba(46,125,50,.04)!important;
-  transition:box-shadow .18s;
-  position:relative;
-  overflow:hidden;
-  z-index:10;
-}
-.card:hover{
-  box-shadow:0 8px 26px rgba(46,125,50,.1),0 1px 4px rgba(46,125,50,.05)!important;
-}
-.card::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,.04),transparent 60%,rgba(46,125,50,.02));
-  pointer-events:none;
-}
-
-/* ── Enhanced sentences ── */
-.sent{
-  border-radius:10px!important;
-  transition:background .12s!important;
-}
-.sent:hover,.sent.hi{
-  background:rgba(46,125,50,.075)!important;
-  box-shadow:none!important;
-}
-
-/* ── Snippet boards ── */
-.snippet-board{
-  border-radius:18px!important;
-  background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(242,249,242,.9))!important;
-  backdrop-filter:blur(6px);
-  -webkit-backdrop-filter:blur(6px);
-}
-.snippet-item{
-  border-radius:18px!important;
-  box-shadow:0 6px 20px rgba(46,125,50,.1),0 1px 3px rgba(46,125,50,.06)!important;
-  transition:box-shadow .2s!important;
-  background:rgba(255,255,255,.97)!important;
-}
-.snippet-item:hover{
-  box-shadow:0 10px 28px rgba(46,125,50,.15),0 2px 5px rgba(46,125,50,.08)!important;
-}
-
-/* ── Tooltip polish ── */
-#jp-tip{
-  border-radius:16px!important;
-  box-shadow:0 8px 28px rgba(46,125,50,.16),0 2px 6px rgba(46,125,50,.08)!important;
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-  background:rgba(244,251,244,.96)!important;
-}
-#kj-tip{
-  border-radius:10px!important;
-  box-shadow:0 4px 16px rgba(249,168,37,.22)!important;
-}
-#selection-menu{
-  border-radius:16px!important;
-  box-shadow:0 8px 28px rgba(46,125,50,.15)!important;
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-  background:rgba(255,255,255,.97)!important;
-}
-
-/* ── Page header glow ── */
-.entry-title{
-  text-shadow:0 2px 20px rgba(46,125,50,.12);
-}
-
-/* ── Side boards polish ── */
-.side-board-col{
-  background:rgba(200,175,210,.96)!important;
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-}
-
-/* ── Zoom controls ── */
-.zoom-wrap input[type=range]{
-  accent-color:var(--green-dark);
-}
-
-/* ── Ripple on btn ── */
-@keyframes ripple{0%{transform:scale(0);opacity:.4}100%{transform:scale(4);opacity:0}}
-.btn-ripple{
-  position:absolute;border-radius:50%;
-  background:rgba(255,255,255,.5);
-  width:60px;height:60px;
-  margin-top:-30px;margin-left:-30px;
-  animation:ripple .5s linear;
-  pointer-events:none;
-}
-
-/* ── Fish counter badge ── */
-#fish-badge{
-  position:fixed;bottom:18px;right:18px;
-  background:rgba(255,248,255,.92);
-  border:1px solid rgba(180,140,200,.4);
-  border-radius:99px;padding:.28rem .75rem;
-  font:.72rem 'Noto Sans JP',sans-serif;
-  color:var(--text-light);
-  box-shadow:0 2px 10px rgba(160,100,180,.18);
+  border:1px solid var(--green);
+  background:var(--green);
+  color:#fff;
+  border-radius:12px;
+  padding:.72rem 1rem;
+  min-height:44px;
+  font-size:.92rem;
   cursor:pointer;
-  transition:all .2s;
-  z-index:100;
-  user-select:none;
 }
-#fish-badge:hover{
-  background:rgba(255,255,255,1);
-  box-shadow:0 4px 16px rgba(46,125,50,.16);
+.btn.alt{background:transparent;color:var(--green)}
+.wrap{max-width:980px; margin:0 auto; padding:1rem 1rem 3rem}
+.panel{
+  background:var(--card);
+  border:1px solid rgba(205,191,216,.9);
+  border-radius:24px;
+  box-shadow:0 8px 28px rgba(60,80,60,.06);
 }
-
-/* ── Loading pulse on spinner ── */
-.spinner.active{
-  border-top-color:var(--green-dark)!important;
-  filter:drop-shadow(0 0 3px rgba(46,125,50,.35));
+.input-panel{padding:1.2rem 1.2rem 1rem; margin-top:1rem}
+.input-panel h1{margin:.1rem 0 .45rem; font-size:2rem; color:var(--green)}
+.desc{color:var(--muted); line-height:1.8; font-size:.95rem}
+textarea{
+  width:100%; min-height:180px; resize:vertical;
+  margin-top:1rem; padding:1rem 1.05rem;
+  border-radius:16px; border:1px solid var(--line);
+  background:#fffefb; color:var(--ink);
+  font: 1.06rem/1.95 "Noto Serif JP", "Noto Serif TC", serif;
 }
-
-
-/* ── Sentence writing line ───────────────────────────────────────────────── */
-.sent-row{display:block;margin:0 0 1.28rem 0}
-.sent-row:last-child{margin-bottom:0}
-.sent-row .sent{margin-bottom:.3rem}
-.sent-note{
-  display:block;
-  min-height:2.35em;
-  padding:.22rem .38rem .28rem;
-  border-bottom:1.5px dashed rgba(46,125,50,.22);
-  font-family:inherit;
-  font-size:.88em;
-  line-height:1.92;
-  color:var(--text);
-  background:linear-gradient(180deg,rgba(255,255,255,.52),rgba(255,255,255,0));
-  border-radius:8px 8px 2px 2px;
-  outline:none;
-  white-space:pre-wrap;
-  word-break:break-word;
-  caret-color:var(--green-dark);
-  transition:border-color .16s, box-shadow .16s, background .16s;
-}
-.sent-note:empty::before{
-  content:"";
-}
-.sent-note:focus{
-  border-bottom-color:rgba(46,125,50,.58);
-  background:rgba(255,255,255,.86);
-  box-shadow:0 2px 12px rgba(46,125,50,.08);
-}
-.sent-note .manual-hl{cursor:text}
-
-/* ── Animal Crossing fish layer ──────────────────────────────────────────── */
-#ac-fish-layer{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:22;
-  overflow:hidden;
-  clip-path:inset(calc(100% - 124px) 0 0 0);
-}
-.ac-fish{
-  position:absolute;
-  left:0;top:0;
-  width:78px;
-  height:44px;
-  pointer-events:auto;
-  user-select:none;
-  touch-action:none;
-  cursor:grab;
-  transform-origin:center center;
-  will-change:transform;
-}
-.ac-fish.dragging{cursor:grabbing;filter:drop-shadow(0 10px 20px rgba(0,0,0,.18))}
-.ac-fish svg{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 4px 9px rgba(0,0,0,.12))}
-.ac-fish .fish-name{
-  position:absolute;
-  left:50%; bottom:-1.35rem;
-  transform:translateX(-50%);
-  white-space:nowrap;
-  padding:.12rem .42rem;
-  border-radius:999px;
-  background:rgba(255,255,255,.9);
-  border:1px solid rgba(170,203,170,.8);
-  box-shadow:0 2px 8px rgba(46,125,50,.08);
-  font:600 .68rem 'Noto Sans JP',sans-serif;
-  color:var(--text-muted);
-  opacity:0;
-  transition:opacity .16s, transform .16s;
-  pointer-events:none;
-}
-.ac-fish:hover .fish-name,
-.ac-fish.dragging .fish-name{opacity:1;transform:translateX(-50%) translateY(-2px)}
-.ac-fish.birth{animation:fishBirth .45s ease-out}
-@keyframes fishBirth{
-  0%{transform:translate(var(--tx),var(--ty)) scale(.35);opacity:0}
-  65%{transform:translate(var(--tx),var(--ty)) scale(1.14);opacity:1}
-  100%{transform:translate(var(--tx),var(--ty)) scale(1);opacity:1}
-}
-#fish-badge{
-  position:fixed;
-  right:18px;
-  bottom:18px;
-  z-index:23;
-  padding:.5rem .9rem;
-  border-radius:999px;
-  border:1px solid rgba(170,203,170,.82);
-  background:rgba(255,255,255,.92);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-  box-shadow:0 4px 18px rgba(46,125,50,.12);
-  color:var(--text-muted);
-  font:600 .75rem 'Noto Sans JP',sans-serif;
-  cursor:default;
-  max-width:min(360px,calc(100vw - 24px));
-}
-
-
-
-/* ── iPad clean layout override ───────────────────────────────────────── */
-body{
-  background:#e8deee;
-  background-image:radial-gradient(ellipse at 18% 14%,rgba(255,255,255,.42) 0%,transparent 58%),
-    radial-gradient(ellipse at 82% 82%,rgba(196,176,214,.22) 0%,transparent 58%);
-  padding-bottom:3rem;
-}
-#ac-fish-layer,#goldfish-canvas,#fish-badge,
-.side-board-col,
-#selection-menu,
-#manual-dict-menu,
-#term-action-menu,
-#note-tip{
-  display:none !important;
-}
-.hint-dot-kj{display:none}
-.reading-scroll,
-.reading-scroll.visible{
-  display:block;
-  min-height:auto;
-}
-.reading-center-wrap{
-  margin:0 auto !important;
-  padding:0 24px 56px !important;
-  min-height:auto !important;
-  overflow-x:visible;
-}
-.reading-center{
-  max-width:980px;
-  margin:0 auto;
-}
-.page{
-  max-width:1028px;
-  padding:0 24px;
-  margin:1.2rem auto 0;
-}
-.top-bar{
-  justify-content:center;
-  gap:.7rem 1rem;
-  padding:.85rem 1.1rem;
-}
-.api-wrap{
-  flex:0 1 420px;
-}
-.api-wrap input{
-  max-width:none;
-  min-height:40px;
-  font-size:.86rem;
-}
-.btn{
-  min-height:40px;
-  padding:.5rem 1rem;
-  font-size:.88rem;
-}
-.input-card{
-  max-width:980px;
-  margin:1.2rem auto 0;
-  padding:1.25rem 1.3rem;
-}
-.input-card textarea{
-  min-height:160px;
-  font-size:1.04rem;
-  line-height:1.9;
-}
-.entry-title{
-  font-size:2.25rem;
-}
-.entry-desc,
-.hint-bar,
-.hint-small{
-  color:#4e5d4e;
-}
-.card{
-  padding:1.45rem 1.35rem 1.55rem 1.45rem;
-  border-radius:22px;
-}
-.card::before{
-  top:18px;
-  bottom:18px;
-}
-.para{
-  font-size:1.28rem;
-  line-height:2.3;
-}
+.actions{display:flex; gap:.65rem; flex-wrap:wrap; align-items:center; margin-top:.85rem}
+.small{font-size:.8rem; color:var(--muted); line-height:1.7}
+.status{font-size:.84rem; color:var(--green2)}
+.error{display:none; margin-top:.8rem; color:#8a3d2c; background:#fff0ea; border:1px solid #efc6b9; border-radius:12px; padding:.8rem .9rem; font-family:"Noto Sans TC",sans-serif}
+.error.show{display:block}
+.reader{display:none; margin-top:1.2rem}
+.reader.show{display:block}
+.header{padding:1.4rem 1.2rem 0; text-align:center}
+.header .meta{font-size:.82rem; letter-spacing:.12em; color:var(--muted); font-family:"Noto Sans TC",sans-serif}
+.header .title{font-size:2.1rem; color:var(--green); margin:.4rem 0 .45rem}
+.header .sub{font-size:.94rem; color:var(--muted); line-height:1.8; font-family:"Noto Sans TC",sans-serif}
+.card{margin-top:1rem; padding:1.35rem 1.15rem 1.4rem; position:relative}
+.card::before{content:""; position:absolute; left:0; top:18px; bottom:18px; width:5px; border-radius:0 4px 4px 0; background:linear-gradient(180deg, var(--green), #7db18a)}
+.para{font-size:1.28rem; line-height:2.3}
+.sent-row{margin:0 0 1rem}
 .sent{
-  padding:.3rem .42rem;
-  margin-bottom:.18rem;
+  display:block; padding:.26rem .42rem; border-radius:10px; cursor:pointer;
+  transition:background .15s ease;
 }
-.sent:hover,.sent.hi{
-  background:rgba(46,125,50,.06) !important;
-}
-.sent-row{
-  margin-bottom:1rem;
-}
+.sent:hover,.sent.active{background:rgba(47,108,69,.07)}
 .sent-note{
-  min-height:2.4em;
-  padding:.28rem .42rem .32rem;
-  border-bottom:1px dashed rgba(46,125,50,.2);
-  background:rgba(255,255,255,.72);
+  margin-top:.18rem; min-height:2.35em;
+  padding:.26rem .42rem .32rem;
+  border-bottom:1px dashed rgba(47,108,69,.22);
+  background:linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,0));
   border-radius:10px 10px 4px 4px;
+  font-size:.88em; line-height:1.9; outline:none;
+  white-space:pre-wrap; word-break:break-word;
 }
-@media (min-width:768px) and (max-width:1180px){
-  .page,.reading-center-wrap{padding-left:28px !important;padding-right:28px !important;}
-  .input-card{max-width:940px;}
-  .entry-title{font-size:2.05rem;}
-  .para{font-size:1.18rem;line-height:2.18;}
+.sent-note:focus{background:rgba(255,255,255,.9); border-bottom-color:rgba(47,108,69,.55)}
+.tip{
+  position:fixed; z-index:50; display:none; max-width:min(560px, calc(100vw - 24px));
+  background:rgba(245,251,245,.96); border:1px solid #9fc6a7; border-radius:16px;
+  box-shadow:0 10px 28px rgba(50,90,50,.12);
+  padding:.9rem 1rem; line-height:2;
+  pointer-events:none;
 }
-@media (max-width:767px){
-  .page,.reading-center-wrap{padding-left:14px !important;padding-right:14px !important;}
-  .top-bar{justify-content:flex-start;}
-  .api-wrap{flex:1 1 100%;}
-  .input-card{padding:1rem;}
-  .entry-title{font-size:1.72rem;}
-  .para{font-size:1.05rem;line-height:2.02;}
+.tip.show{display:block}
+.tip .lab{font:.72rem/1.4 "Noto Sans TC",sans-serif; letter-spacing:.1em; color:#547d59; margin-bottom:.35rem}
+.tip .body{font-size:1rem}
+@media (max-width: 768px){
+  .wrap{padding:.8rem .8rem 2rem}
+  .input-panel{padding:1rem}
+  .input-panel h1{font-size:1.65rem}
+  .header .title{font-size:1.78rem}
+  .card{padding:1.1rem .95rem 1.2rem}
+  .para{font-size:1.08rem; line-height:2.05}
+  textarea{min-height:150px; font-size:1rem}
 }
-
 </style>
 </head>
 <body>
-<div class="top-bar">
+<div class="topbar">
   <div class="logo">深讀</div>
-  <div class="api-wrap">
-    <label>DeepSeek Key</label>
-    <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
+  <div class="keywrap">
+    <label for="apiKey">DeepSeek Key</label>
+    <input id="apiKey" type="password" placeholder="sk-..." autocomplete="off">
   </div>
-  <button class="btn" id="analyzeBtn" onclick="analyze()">切句 &amp; 分析</button>
-  <button class="btn btn-ghost" onclick="clearAll()">清除</button>
-  <button class="btn btn-ghost" id="exportBtn" onclick="exportCurrentHtml()">匯出 HTML</button>
-  <div class="spinner" id="spinner"></div>
-  <span class="status-txt" id="statusText"></span>
+  <button class="btn" id="analyzeBtn">切句＆分析</button>
+  <button class="btn alt" id="clearBtn">清除</button>
+  <button class="btn alt" id="exportBtn">匯出 HTML</button>
 </div>
-<div class="input-card" id="inputCard">
-  <label>貼入日文文章</label>
-  <textarea id="jpInput" placeholder="請貼入日文文章。&#10;建議：標題獨立成行、段落之間空一行。&#10;會先本地切句，再逐句翻譯成繁體中文。"></textarea>
-  <div class="input-actions">
-    <span class="hint-small">金鑰僅存瀏覽器，不外傳 ｜ 先切句，再背景逐句翻譯 ｜ 依。！？切句，括號不切句 ｜ Ctrl / Cmd + Enter 送出</span>
-  </div>
-  <div class="error-msg" id="errMsg"></div>
-</div>
-<div class="page" id="mainPage" style="display:none">
-  <div class="page-header">
-    <div class="entry-meta" id="entryMeta"></div>
-    <div class="entry-title" id="entryTitle"></div>
-    <div class="entry-desc">先切句，再逐句翻譯 ・ 輕觸句子可看中文翻譯 ・ 版面已調整為適合 iPad 的單欄閱讀</div>
-  </div>
-  <div class="hint-bar">
-    <div class="hint-item"><div class="hint-swatch"></div>輕觸或停留句子 → 中文翻譯</div>
-    <div class="hint-item"><div class="hint-swatch" style="background:#ffffff;border-color:#9ac39a"></div>每句下方可直接記筆記</div>
-  </div>
-</div>
-<!-- reading-scroll: flex row. Side boards are sticky to viewport edges; center scrolls independently -->
-<div class="reading-scroll" id="readingScroll">
-  <aside class="side-board-col" id="leftBoardCol">
-    <div class="board-head">
-      <div class="board-title">左側摘錄板</div>
-      <div class="board-note">把選中的文字拖到左邊，或用「摘錄」按鈕加入。</div>
+
+<div class="wrap">
+  <section class="panel input-panel" id="inputPanel">
+    <h1>日語精讀工具 · iPad 單欄版</h1>
+    <div class="desc">這版已拿掉摘錄板與高亮功能，只保留單欄閱讀、逐句翻譯、以及每句下方的筆記線。</div>
+    <textarea id="jpInput" placeholder="請貼入日文文章。&#10;建議：標題獨立成行、段落之間空一行。&#10;會先本地切句，再逐句翻譯成繁體中文。"></textarea>
+    <div class="actions">
+      <div class="small">金鑰僅存瀏覽器，不外傳 ｜ 先切句，再背景逐句翻譯 ｜ 依 。！？ 切句，括號不切句 ｜ Ctrl / Cmd + Enter 送出</div>
+      <div class="status" id="statusText"></div>
     </div>
-    <div class="snippet-board" id="snippetBoardLeft">
-      <div class="board-empty" id="boardEmptyLeft">把選中的文字拖到左側。會保留原本的彩色、高亮與字體。</div>
+    <div class="error" id="errBox"></div>
+  </section>
+
+  <section class="reader" id="reader">
+    <div class="header">
+      <div class="meta" id="entryMeta"></div>
+      <div class="title" id="entryTitle">日語文章</div>
+      <div class="sub">先切句，再逐句翻譯 ・ 輕觸或停留句子可看中文翻譯 ・ 版面已調整為適合 iPad 的單欄閱讀</div>
     </div>
-  </aside>
-  <div class="reading-center-wrap" id="readingCenterWrap">
-    <div class="reading-zoom-wrap" id="readingZoomWrap">
-      <div class="reading-center">
-        <div id="cardsContainer"></div>
-      </div>
+    <div class="panel card">
+      <div class="para" id="cardsContainer"></div>
     </div>
-  </div>
-  <aside class="side-board-col" id="rightBoardCol">
-    <div class="board-head">
-      <div class="board-title">右側摘錄板</div>
-      <div class="board-note">中間正文可橫向捲動，兩側板固定於螢幕兩側。</div>
-    </div>
-    <div class="snippet-board" id="snippetBoardRight">
-      <div class="board-empty" id="boardEmptyRight">把選中的文字拖到右側。會保留原本的彩色、高亮與字體。</div>
-    </div>
-  </aside>
+  </section>
 </div>
-<div id="jp-tip"><div class="tip-label">中文翻譯</div><div id="jp-tip-body"></div></div>
-<div id="kj-tip"><div id="kj-tip-body"></div></div>
-<div id="manual-dict-menu">
-  <div class="manual-dict-title">詞目網站</div>
-  <a class="manual-dict-link" id="dict-link-kotobank" href="#" target="_blank" rel="noopener noreferrer">Kotobank</a>
-  <a class="manual-dict-link" id="dict-link-kobun" href="#" target="_blank" rel="noopener">古文辭典（Weblio）</a>
-  <a class="manual-dict-link" id="dict-link-aoilang" href="#" target="_blank" rel="noopener noreferrer">蒼語辭典（Aoilang）</a>
-  <a class="manual-dict-link" id="dict-link-kanjipedia" href="#" target="_blank" rel="noopener noreferrer">漢字ペディア</a>
+
+<div class="tip" id="jpTip">
+  <div class="lab">中文翻譯</div>
+  <div class="body" id="jpTipBody"></div>
 </div>
-<div id="term-action-menu">
-  <button class="term-action-btn" id="term-add-excerpt" type="button">摘錄到右側</button>
-  <button class="term-action-btn" id="term-remove-bg" type="button">移除這個底色</button>
-  <button class="term-action-btn" id="term-restore-bg" type="button">恢復這個底色</button>
-</div>
-<div id="selection-menu">
-  <span class="selection-label">高亮</span>
-  <button class="color-btn" data-color="manual-c1"></button>
-  <button class="color-btn" data-color="manual-c2"></button>
-  <button class="color-btn" data-color="manual-c3"></button>
-  <button class="color-btn" data-color="manual-c4"></button>
-  <button class="color-btn" data-color="manual-c5"></button>
-  <button class="color-btn" data-color="manual-c6"></button>
-  <button class="color-btn" data-color="manual-c7"></button>
-  <button class="color-btn" data-color="manual-c8"></button>
-  <button class="menu-btn" id="excerpt-selection">摘錄</button>
-  <button class="menu-btn" id="cancel-selection">取消</button>
-</div>
-<div id="note-tip">
-  <div class="note-label">我的注釋</div>
-  <div class="note-target" id="note-target"></div>
-  <div class="note-body" id="note-body"></div>
-  <div class="note-actions">
-    <button class="note-btn" id="note-edit">新增注釋</button>
-    <button class="note-btn" id="note-remove">移除高亮</button>
-    <button class="note-btn" id="note-close">關閉</button>
-  </div>
-</div>
+
 <script>
-const WORD_COLORS=[
-  {cls:'kw-c0',hex:'#D97C7C',name:'櫻霧紅'},{cls:'kw-c1',hex:'#6F9FD8',name:'晴空藍'},{cls:'kw-c2',hex:'#74B89A',name:'若葉綠'},{cls:'kw-c3',hex:'#A78BD6',name:'藤霧紫'},
-  {cls:'kw-c4',hex:'#D9B36C',name:'蜂蜜金'},{cls:'kw-c5',hex:'#6FB7B0',name:'水青'},{cls:'kw-c6',hex:'#D79A6B',name:'杏茶'},{cls:'kw-c7',hex:'#7FAED0',name:'薄群青'},
-  {cls:'kw-c8',hex:'#B497D6',name:'丁香紫'},{cls:'kw-c9',hex:'#7FB07C',name:'苔綠'},{cls:'kw-c10',hex:'#D58A8A',name:'薔薇灰粉'},{cls:'kw-c11',hex:'#93A4BB',name:'霧藍灰'}
-];
-const STORAGE_KEY='shindoku_ipad_clean_v26_20260414';
-let analyzedDoc={title:'',sections:[]};
-let sentences=[];
-let wordColorMap={},wordColorInfo={},wordReadingMap={};
+const STORAGE_KEY = 'shindoku_ipad_clean_rebuilt_20260414';
+let sentences = [];
+let inputTitle = '日語文章';
 
-async function callDeepSeek(sys,user,maxTok=8192){
-  const key=document.getElementById('apiKey').value.trim();
-  if(!key) throw new Error('請先輸入 DeepSeek API Key');
-  const r=await fetch('https://api.deepseek.com/chat/completions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
-    body:JSON.stringify({model:'deepseek-chat',max_tokens:maxTok,temperature:0,messages:[{role:'system',content:sys},{role:'user',content:user}]})
-  });
-  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||`HTTP ${r.status}`)}
-  const d=await r.json();
-  return {text:d.choices?.[0]?.message?.content||'', finishReason:d.choices?.[0]?.finish_reason||''};
+const $ = sel => document.querySelector(sel);
+const apiKeyEl = $('#apiKey');
+const inputEl = $('#jpInput');
+const readerEl = $('#reader');
+const statusEl = $('#statusText');
+const errEl = $('#errBox');
+const cardsEl = $('#cardsContainer');
+const tipEl = $('#jpTip');
+const tipBodyEl = $('#jpTipBody');
+
+function escH(s){
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
-function extractJSON(raw){
-  let s=String(raw||'').replace(/```json\s*/gi,'').replace(/```\s*/g,'').trim();
-  try{return JSON.parse(s)}catch(_){ }
-  const st=s.indexOf('{');
-  if(st===-1) throw new Error('找不到 JSON');
-  let dep=0,en=-1;
-  for(let i=st;i<s.length;i++){
-    if(s[i]==='{') dep++;
-    else if(s[i]==='}'){dep--;if(dep===0){en=i;break;}}
-  }
-  let c=en!==-1?s.slice(st,en+1):s.slice(st);
-  try{return JSON.parse(c)}catch(_){ }
-  let ins=false,esc=false,r='';
-  for(const ch of c){
-    if(esc){r+=ch;esc=false;continue;}
-    if(ch==='\\'&&ins){r+=ch;esc=true;continue;}
-    if(ch==='"') ins=!ins;
-    r+=ch;
-  }
-  if(ins) r+='"';
-  r=r.replace(/,\s*([}\]])/g,'$1');
-  let br=0,bk=0,inS=false;
-  for(const ch of r){
-    if(ch==='"') inS=!inS;
-    if(!inS){if(ch==='{') br++; else if(ch==='}') br--; else if(ch==='[') bk++; else if(ch===']') bk--;}
-  }
-  while(bk>0){r+=']';bk--;}
-  while(br>0){r+='}';br--;}
-  return JSON.parse(r);
+function showError(msg){
+  errEl.textContent = msg || '';
+  errEl.classList.toggle('show', !!msg);
 }
-function escH(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-function escR(s){return String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
-function cleanLine(s){return String(s||'').replace(/\u3000/g,' ').replace(/\u00A0/g,' ').trim();}
-function stripInlineRubyKana(raw){
-  const particleChars=new Set(['の','は','が','を','に','へ','と','や','も','で','か']);
-  const keepAsOkurigana=/^(?:い|う|く|ぐ|す|つ|ぬ|ぶ|む|る|た|て|だ|で|な|ぬ|ず|ない|なく|なかっ|ます|ました|ません|ましょ|れる|られる|せる|させる|たい|よう|そう|っ[たて]?|ん[だで]?|[べえけげせてでねめれ]る|[きし]さ|しみ|げ)$/;
-  const src=String(raw||'');
-  let out='';
-  let i=0;
-  const isKanji=ch=>/[一-龥々ヶ]/.test(ch);
-  const isKana=ch=>/[ぁ-ゖー]/.test(ch);
-  while(i<src.length){
-    const ch=src[i];
-    if(!isKanji(ch)){
-      out+=ch;
-      i+=1;
-      continue;
-    }
-    let j=i;
-    while(j<src.length && isKanji(src[j])) j+=1;
-    let k=j;
-    while(k<src.length && isKana(src[k])) k+=1;
-    const kanji=src.slice(i,j);
-    const kana=src.slice(j,k);
-    let splitAt=-1;
-    if(kana.length>=3){
-      for(let p=2;p<=Math.min(3,kana.length-1);p++){
-        if(!particleChars.has(kana[p])) continue;
-        const ruby=kana.slice(0,p);
-        if(particleChars.has(ruby[0])) continue;
-        const keep=kana.slice(p);
-        if(keep.length>=2 && particleChars.has(keep[1])) continue;
-        if(keepAsOkurigana.test(ruby)) continue;
-        splitAt=p;
-        break;
-      }
-    }
-    if(splitAt!==-1){
-      out += kanji + kana.slice(splitAt);
-      i = k;
-      continue;
-    }
-    const nextCh=src[k]||'';
-    if(kana.length>=2 && kana.length<=3 && !particleChars.has(kana[0]) && !keepAsOkurigana.test(kana) && /^(?:$|\s|[、。！？!?」』）】〉》])$/.test(nextCh)) {
-      out += kanji;
-      i = k;
-      continue;
-    }
-    out += src.slice(i,k||j);
-    i = k || j;
-  }
-  return out;
+function setStatus(msg){ statusEl.textContent = msg || ''; }
+function setButtons(disabled){
+  $('#analyzeBtn').disabled = disabled;
+  $('#clearBtn').disabled = disabled;
+  $('#exportBtn').disabled = disabled;
 }
-function normalizeInputText(raw){
-  const lines=String(raw||'').replace(/\r\n?/g,'\n').split('\n').map(cleanLine).filter(Boolean);
-  let text='';
-  lines.forEach(line=>{
-    if(!text){text=line; return;}
-    const prev=text.slice(-1);
-    const next=line.charAt(0);
-    if(/[A-Za-z0-9]$/.test(prev) && /^[A-Za-z0-9]/.test(line)) text+=' '+line;
-    else text+=line;
-  });
-  return text
-    .replace(/\s+/g,' ')
-    .replace(/([\u3040-\u30ff\u3400-\u9fff])\s+([\u3040-\u30ff\u3400-\u9fff])/g,'$1$2')
-    .replace(/([\u3040-\u30ff\u3400-\u9fff])\s+([、。！？「」『』（）【】〈〉])/g,'$1$2')
-    .replace(/([、。！？「」『』（）【】〈〉])\s+([\u3040-\u30ff\u3400-\u9fff])/g,'$1$2')
-    .replace(/\s+([,.;:!?])/g,'$1')
-    .trim();
-}
-function preprocessInput(raw){
-  const cleaned=normalizeInputText(raw);
-  return {
-    title:'日語文章',
-    sections:[{heading:'',paragraphs:[{raw:cleaned,sentences:[]}]}]
+function saveState(){
+  const notes = {};
+  document.querySelectorAll('.sent-note').forEach(el => { notes[el.dataset.idx] = el.innerText || ''; });
+  const state = {
+    input: inputEl.value,
+    title: inputTitle,
+    sentences,
+    notes,
+    apiKey: apiKeyEl.value || ''
   };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
-
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return false;
+    const state = JSON.parse(raw);
+    inputEl.value = state.input || '';
+    apiKeyEl.value = state.apiKey || '';
+    inputTitle = state.title || '日語文章';
+    sentences = Array.isArray(state.sentences) ? state.sentences : [];
+    if(sentences.length){
+      renderPage(state.notes || {});
+      return true;
+    }
+  }catch(e){ console.error(e); }
+  return false;
+}
+function clearAll(){
+  inputEl.value = '';
+  sentences = [];
+  inputTitle = '日語文章';
+  cardsEl.innerHTML = '';
+  readerEl.classList.remove('show');
+  showError('');
+  setStatus('');
+  localStorage.removeItem(STORAGE_KEY);
+}
 function splitJapaneseSentences(text){
-  // Split ONLY on sentence-ending punctuation: 。！？!?
-  // 「」『』 brackets are NEVER split points; they belong to the sentence.
-  // When punctuation is followed by closing bracket(s), absorb them first,
-  // then cut — so 「…です。」 stays whole.
-  // Newlines act as hard boundaries (e.g. separate title lines).
-  const src=String(text||'').replace(/\r\n?/g,'\n').trim();
+  const src = String(text || '').replace(/\r\n?/g, '\n').trim();
   if(!src) return [];
-  const CLOSE_ABSORB=new Set(['」','』','）',')','〉','》','】','〕']);
-  const END_PUNCT=new Set(['。','！','？','!','?']);
-  const out=[];
-  let buf='';
-  function pushBuf(){const v=buf.trim();if(v) out.push(v);buf='';}
+  const CLOSE = new Set(['」','』','）',')','〉','》','】','〕']);
+  const END = new Set(['。','！','？','!','?']);
+  const out = [];
+  let buf = '';
+  const pushBuf = () => {
+    const v = buf.trim();
+    if(v) out.push(v);
+    buf = '';
+  };
   for(let i=0;i<src.length;i++){
-    const ch=src[i];
-    if(ch==='\n'){if(buf.trim()) pushBuf();continue;}
-    buf+=ch;
-    if(END_PUNCT.has(ch)){
-      while(i+1<src.length && CLOSE_ABSORB.has(src[i+1])){i++;buf+=src[i];}
+    const ch = src[i];
+    if(ch === '\n'){
+      pushBuf();
+      continue;
+    }
+    buf += ch;
+    if(END.has(ch)){
+      while(i+1 < src.length && CLOSE.has(src[i+1])){ i++; buf += src[i]; }
       pushBuf();
     }
   }
   pushBuf();
-  return out.length ? out : [src];
-}
-function splitTextBySentences(text,maxChars=360){
-  const parts=splitJapaneseSentences(text);
-  if(!parts.length) return [];
-  const chunks=[]; let buf='';
-  for(const part of parts){
-    if((buf+part).length>maxChars && buf){chunks.push(buf.trim());buf=part;}
-    else if(part.length>maxChars){
-      if(buf){chunks.push(buf.trim());buf='';}
-      for(let i=0;i<part.length;i+=maxChars){chunks.push(part.slice(i,i+maxChars).trim());}
-    }else{
-      buf+=part;
-    }
-  }
-  if(buf.trim()) chunks.push(buf.trim());
-  return chunks.length?chunks:parts;
-}
-function localSplit(text){
-  return splitJapaneseSentences(text).map(jp=>({jp,zh:'',words:[]}));
-}
-function hashText(str){
-  let h=2166136261>>>0;
-  for(let i=0;i<str.length;i++){
-    h ^= str.charCodeAt(i);
-    h = Math.imul(h, 16777619)>>>0;
-  }
-  return h.toString(36);
-}
-function pickMaxTokensByLength(text){
-  const len=String(text||'').length;
-  if(len<=350) return 1200;
-  if(len<=700) return 1800;
-  if(len<=1100) return 2400;
-  return 3000;
-}
-async function runChunkQueue(chunks, worker, concurrency=3){
-  const results=new Array(chunks.length);
-  let nextIndex=0;
-  async function runner(){
-    while(true){
-      const idx=nextIndex++;
-      if(idx>=chunks.length) return;
-      results[idx]=await worker(chunks[idx], idx);
-    }
-  }
-  const jobs=[];
-  for(let i=0;i<Math.min(concurrency, chunks.length);i++) jobs.push(runner());
-  await Promise.all(jobs);
-  return results;
-}
-function scheduleSaveState(delay=200){
-  clearTimeout(window.__saveStateTimer);
-  window.__saveStateTimer=setTimeout(()=>{ try{ saveState(); }catch(e){} }, delay);
-}
-function getAnalysisCache(key){
-  window.__analysisCache = window.__analysisCache || new Map();
-  if(window.__analysisCache.has(key)) return window.__analysisCache.get(key);
-  try{
-    const raw=localStorage.getItem(STORAGE_KEY+'_ac_'+key);
-    if(raw){
-      const parsed=JSON.parse(raw);
-      window.__analysisCache.set(key, parsed);
-      return parsed;
-    }
-  }catch(e){}
-  return null;
-}
-function setAnalysisCache(key, value){
-  window.__analysisCache = window.__analysisCache || new Map();
-  window.__analysisCache.set(key, value);
-  try{
-    localStorage.setItem(STORAGE_KEY+'_ac_'+key, JSON.stringify(value));
-  }catch(e){}
-}
-function splitForAnalysis(text,maxChars=1000){
-  const parts=splitJapaneseSentences(text);
-  if(!parts.length) return [];
-  const groups=[]; let current=[], currentLen=0;
-  for(const part of parts){
-    const extra=current.length?1:0;
-    if(current.length && (currentLen + part.length + extra > maxChars || current.length >= 14)){
-      groups.push(current.slice());
-      current=[part];
-      currentLen=part.length;
-    }else{
-      current.push(part);
-      currentLen += part.length + extra;
-    }
-  }
-  if(current.length) groups.push(current.slice());
-  return groups;
-}
-function normalizeWordEntry(v){
-  if(Array.isArray(v)) return {text:String(v[0]||'').trim(), reading:String(v[1]||'').trim()};
-  if(v && typeof v==='object') return {text:String(v.text||v.word||'').trim(), reading:String(v.reading||v.ruby||'').trim()};
-  return {text:'',reading:''};
-}
-function cleanHighlightWords(arr){
-  const out=[];
-  const seen=new Set();
-  for(const raw of Array.isArray(arr)?arr:[]){
-    const item=normalizeWordEntry(raw);
-    const key=item.text;
-    if(!key) continue;
-    if(key.length<2) continue;
-    if(/^[ぁ-ゖァ-ヺー]+$/.test(key)) continue;
-    if(seen.has(key)) continue;
-    seen.add(key);
-    out.push(item);
-    if(out.length>=8) break;
-  }
   return out;
 }
-async function translateSentenceBatch(batch){
-  const payload=batch.map((s,i)=>({i:i+1,j:String(s.jp||'')}));
-  const joined=batch.map(v=>v.jp).join('\n');
-  const sys=`你是日語句子處理器。使用者已經先完成切句，你不得重新切句、不得合併句子、不得遺漏句子。請依輸入順序逐句回傳繁體中文翻譯，並為每一句挑出適合彩色高亮的日文關鍵詞。只回傳純 JSON。
-格式：{"s":[{"z":"繁體中文翻譯","w":[["關鍵詞","讀音"],["關鍵詞","讀音"]]}]}
-規則：
-1. s 的數量必須和輸入句子數完全一致，順序完全一致。
-2. w 只列日文原句中實際出現、適合高亮的詞，最多 8 個。
-3. 優先保留漢字詞、專有名詞、反覆出現的關鍵表現；沒有讀音可留空字串。
-4. 不要附加說明，不要輸出 markdown。`;
-  const res=await callDeepSeek(sys, JSON.stringify(payload), Math.min(5200, Math.max(1600, pickMaxTokensByLength(joined)+1400)));
-  const data=extractJSON(res.text);
-  const arr=Array.isArray(data)?data:(data?.s||data?.sentences||[]);
-  if(!Array.isArray(arr) || arr.length!==batch.length) throw new Error('batch-mismatch');
-  return arr.map((item,idx)=>({
-    jp:batch[idx].jp,
-    zh:String(item?.z||item?.zh||'').trim(),
-    words:cleanHighlightWords(item?.w||item?.words||[])
-  }));
-}
-async function analyzeTextUnit(batch,depth=0){
-  const items=(Array.isArray(batch)?batch:localSplit(batch)).map(v=>({jp:String(v.jp||'').trim(),zh:String(v.zh||''),words:Array.isArray(v.words)?v.words:[]}))
-    .filter(v=>v.jp);
-  if(!items.length) return [];
-  try{
-    return await translateSentenceBatch(items);
-  }catch(e){
-    if(items.length>1){
-      const results = await runChunkQueue(items, (item)=>analyzeTextUnit([item], depth+1), 3);
-      return results.flat();
-    }
-    return [{jp:items[0].jp, zh:'（翻譯暫不可用）', words:[]}];
+function preprocessInput(raw){
+  const lines = String(raw || '').replace(/\r\n?/g, '\n').split('\n').map(v => v.trim()).filter(Boolean);
+  const merged = [];
+  for(const line of lines){
+    if(!merged.length){ merged.push(line); continue; }
+    const prev = merged[merged.length-1];
+    if(/[。！？!?」』）)]$/.test(prev) || /^[「『（(]/.test(line)) merged.push(line);
+    else merged[merged.length-1] += line;
   }
+  return merged.join('\n');
 }
-
-function collectFallbackTerms(){
-  const freq={};
-  sentences.forEach(s=>{
-    const matches=(s.jp||'').match(/[一-龥々ヶヵァ-ヶーA-Za-z]{2,20}/g)||[];
-    matches.forEach(term=>{
-      if(/^[A-Za-z]{1,2}$/.test(term)) return;
-      if(/^[ァ-ヶー]{1,2}$/.test(term)) return;
-      if(term.length<2) return;
-      freq[term]=(freq[term]||0)+1;
-    });
+async function callDeepSeek(messages, maxTokens=4000){
+  const key = apiKeyEl.value.trim();
+  if(!key) throw new Error('請先輸入 DeepSeek API Key');
+  const r = await fetch('https://api.deepseek.com/chat/completions', {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${key}` },
+    body: JSON.stringify({
+      model:'deepseek-chat',
+      temperature:0,
+      max_tokens:maxTokens,
+      messages
+    })
   });
-  return Object.entries(freq)
-    .filter(([term,count])=>count>=2 || term.length>=4)
-    .sort((a,b)=>b[1]-a[1] || b[0].length-a[0].length)
-    .map(([term])=>term)
-    .slice(0,36);
-}
-
-
-function buildMaps(){
-  wordColorMap={};
-  wordColorInfo={};
-  wordReadingMap={};
-  const candidates=new Map();
-  const addTerm=(term, reading='', source='model', score=0)=>{
-    const key=String(term||'').trim();
-    if(!key) return;
-    if(key.length<2) return;
-    if(/^[ぁ-ゖァ-ヺー]+$/.test(key)) return;
-    const prev=candidates.get(key);
-    const next={text:key, reading:String(reading||'').trim(), source, score:(prev?.score||0)+score+1};
-    if(prev?.reading && !next.reading) next.reading=prev.reading;
-    candidates.set(key,next);
-  };
-  sentences.forEach((s,idx)=>{
-    (Array.isArray(s.words)?s.words:[]).forEach((w,widx)=>addTerm(w.text, w.reading, 'model', 100 - widx));
-  });
-  collectFallbackTerms().forEach((term,idx)=>addTerm(term, '', 'fallback', 30 - Math.min(idx,20)));
-  const ordered=[...candidates.values()]
-    .sort((a,b)=>b.score-a.score || b.text.length-a.text.length || a.text.localeCompare(b.text,'ja'))
-    .slice(0,120);
-  ordered.forEach((item,idx)=>{
-    const cls=WORD_COLORS[idx % WORD_COLORS.length].cls;
-    wordColorMap[item.text]=cls;
-    wordColorInfo[item.text]=item;
-    if(item.reading) wordReadingMap[item.text]=item.reading;
-  });
-}
-async function analyze(){
-  const jp=document.getElementById('jpInput').value.trim();
-  if(!jp) return;
-  setLoading(true);showError('');
-  try{
-    const doc=preprocessInput(jp);
-    const rawText=doc.sections?.[0]?.paragraphs?.[0]?.raw || '';
-    const cacheKey=hashText(rawText+'::splitfirst-v25-stage');
-    const cached=getAnalysisCache(cacheKey);
-    if(cached?.sentences?.length){
-      analyzedDoc={title:'日語文章',sections:[{heading:'',paragraphs:[{raw:rawText,sentences:cached.sentences}]}]};
-      sentences=cached.sentences;
-      wordColorMap=cached.wordColorMap||{};
-      wordColorInfo=cached.wordColorInfo||{};
-      wordReadingMap=cached.wordReadingMap||{};
-      renderPage();
-      scheduleSaveState(80);
-      setStatus(`已載入快取，共 ${sentences.length} 句`);
-      return;
-    }
-
-    const baseSentences=localSplit(rawText).map(item=>({jp:item.jp, zh:'（翻譯中…）', words:Array.isArray(item.words)?item.words:[]}));
-    if(!baseSentences.length) throw new Error('未能切出任何句子');
-
-    doc.sections[0].paragraphs[0].sentences = baseSentences;
-    analyzedDoc=doc;
-    sentences=baseSentences;
-
-    buildMaps();
-    renderPage();
-    scheduleSaveState(80);
-    setStatus(`已切句並標色，共 ${sentences.length} 句；正在翻譯…`);
-
-    const groupsRaw=splitForAnalysis(rawText, rawText.length>2400?900:1200);
-    const groupEntries=[];
-    let offset=0;
-    for(const group of groupsRaw){
-      groupEntries.push({start:offset, items:group.map(jp=>({jp,zh:'',words:[]}))});
-      offset += group.length;
-    }
-
-    let finished=0;
-    const concurrency = groupEntries.length>=4 ? 3 : groupEntries.length>=2 ? 2 : 1;
-    const translatedGroups = await runChunkQueue(groupEntries, async (entry)=>{
-      const part = await analyzeTextUnit(entry.items);
-      for(let i=0;i<part.length;i++){
-        const idx=entry.start+i;
-        if(!sentences[idx]) continue;
-        sentences[idx].zh = part[i].zh || '（翻譯暫不可用）';
-        if(Array.isArray(part[i].words) && part[i].words.length) sentences[idx].words = part[i].words;
-        updateSentenceTranslation(idx, sentences[idx].zh);
-      }
-      finished += 1;
-      setStatus(groupEntries.length>1 ? `已切句並標色，共 ${sentences.length} 句；翻譯中 ${finished}/${groupEntries.length} 組…` : `已切句並標色，共 ${sentences.length} 句；翻譯中…`);
-      scheduleSaveState(80);
-      return part;
-    }, concurrency);
-
-    sentences = translatedGroups.flat();
-    analyzedDoc.sections[0].paragraphs[0].sentences = sentences;
-    buildMaps();
-    setAnalysisCache(cacheKey, {sentences, wordColorMap, wordColorInfo, wordReadingMap});
-    scheduleSaveState(120);
-    setStatus(`完成，共 ${sentences.length} 句`);
-  }catch(e){showError('分析失敗：'+e.message);console.error(e);}finally{setLoading(false);}
-}
-function buildTextRegex(){
-  return null;
-}
-function updateSentenceTranslation(idx, zh){
-  if(!sentences[idx]) return;
-  sentences[idx].zh = zh || '（翻譯失敗）';
-  const el=document.querySelector(`#cardsContainer .sent[data-idx="${idx}"]`);
-  if(el) el.dataset.cn = sentences[idx].zh;
-}
-
-// ── Particle (助詞) highlighter ────────────────────────────────────────────
-// Ordered longest-first so compound particles match before single-char ones.
-// ── Particle (助詞) highlighter ──────────────────────────────────────────
-// Rules:
-//  - Ordered longest-first so compound particles match before single chars
-//  - A particle is only tagged when preceded by a "word boundary" character:
-//    kanji, katakana, a hiragana verb/adj ending (る,た,い,う,く,す,ぬ,ん,
-//    っ,ず,ぐ, and common okurigana endings), or a closing bracket/punct.
-//  - Particles that are part of conjugations (e.g. て in して, に in まに)
-//    are suppressed by checking that the previous hiragana is an allowed stem-end.
-// Allowed "stem-end" hiragana that can precede a particle:
-const _STEM_END=new Set('るたいうくすぬんっずぐめれけせてでねべえおしきりみひに'.split(''));
-// Chars that immediately precede a particle and are "word boundaries":
-function _isWordEnd(ch){
-  if(!ch) return false; // start of segment — allow
-  // kanji
-  if(/[一-龥々ヶ]/.test(ch)) return true;
-  // katakana
-  if(/[ァ-ヺ]/.test(ch)) return true;
-  // closing brackets / punct
-  if(/[」』）\)〉》】〕。、！？!?]/.test(ch)) return true;
-  // hiragana: only allowed stem-endings
-  if(/[ぁ-ゖ]/.test(ch)) return _STEM_END.has(ch);
-  // latin / numbers
-  if(/[A-Za-z0-9]/.test(ch)) return true;
-  return false;
-}
-// Particles that should NOT be highlighted when what follows is a
-// "continuation hiragana" that indicates a verb/adj conjugation:
-// e.g. に + な → になる (ok, に is particle), but て + い → ている (て is te-form, not a particle after a noun)
-// We simplify: single-char particles that are also te-form / conjunctive forms
-// are only highlighted after a word-end boundary.
-const PARTICLES=[
-  ['では','ptcl-de'],['でも','ptcl-de'],
-  ['は','ptcl-wa'],['が','ptcl-ga'],['で','ptcl-de'],
-];
-
-function highlightParticlesInHtml(html){
-  const tmp=document.createElement('div');
-  tmp.innerHTML=html;
-  _walkNodes(tmp, '');
-  return tmp.innerHTML;
-}
-// prevChar: the last character of the preceding sibling text (carries across element boundaries)
-function _walkNodes(node, prevChar){
-  if(node.nodeType===Node.TEXT_NODE){
-    const res=_applyParticles(node.textContent, prevChar);
-    if(res.changed){
-      const frag=document.createRange().createContextualFragment(res.html);
-      node.parentNode.replaceChild(frag, node);
-      return res.lastChar;
-    }
-    return node.textContent ? node.textContent[node.textContent.length-1] : prevChar;
+  if(!r.ok){
+    let msg = `HTTP ${r.status}`;
+    try{
+      const e = await r.json();
+      msg = e.error?.message || msg;
+    }catch(_){ }
+    throw new Error(msg);
   }
-  if(node.nodeType===Node.ELEMENT_NODE){
-    // Don't re-enter particle spans
-    if(node.classList && node.classList.contains('ptcl')) return prevChar;
-    let pc=prevChar;
-    [...node.childNodes].forEach(child=>{ pc=_walkNodes(child, pc)||pc; });
-    return pc;
-  }
-  return prevChar;
+  const data = await r.json();
+  return data.choices?.[0]?.message?.content || '';
 }
-function _applyParticles(text, prevChar){
-  if(!text || !/[ぁ-ゖ]/.test(text)) return {changed:false, html:escH(text), lastChar:text?text[text.length-1]:prevChar};
-  let out='';
-  let i=0;
-  let changed=false;
-  let pc=prevChar; // last written/seen char
-  while(i<text.length){
-    let matched=false;
-    // Only try to match a particle if the previous char is a word-end boundary
-    if(_isWordEnd(pc)){
-      for(const [ptcl,cls] of PARTICLES){
-        if(!text.startsWith(ptcl,i)) continue;
-        // Extra: for single-char ambiguous particles (て,に,で,と,の,が,は)
-        // make sure the char after the particle is NOT a hiragana that would
-        // make this part of a word interior (e.g. での → の is fine after で particle,
-        // but てい → て is te-form auxiliary here only if prev is a verb stem-end,
-        // which _isWordEnd already checks)
-        const after=text[i+ptcl.length]||'';
-        // Suppress: particle immediately followed by hiragana that is a common
-        // verb-conjugation suffix making it look like a single word
-        // Exception: compound particles already consumed those
-        if(ptcl.length===1 && /^[ぁ-ゖ]$/.test(after)){
-          // て + いる/おる/あげる etc → suppress て
-          if(ptcl==='て' && /[いおあし]/.test(after)){i++;out+=escH(text[i-1]);pc=text[i-1];break;}
-          // に + なる/する etc — keep に (it IS a particle + verb)
-          // の + で / のに — handled as compound above
-        }
-        out += `<span class="ptcl ${cls}">${escH(ptcl)}</span>`;
-        pc=ptcl[ptcl.length-1];
-        i+=ptcl.length;
-        matched=true;
-        changed=true;
-        break;
-      }
-    }
-    if(!matched){
-      out+=escH(text[i]);
-      pc=text[i];
-      i++;
+function extractJSON(raw){
+  let s = String(raw || '').replace(/```json\s*/gi,'').replace(/```/g,'').trim();
+  try{return JSON.parse(s);}catch(_){ }
+  const m = s.match(/\{[\s\S]*\}/);
+  if(!m) throw new Error('找不到 JSON');
+  return JSON.parse(m[0]);
+}
+function groupSentences(items, maxChars=900, maxItems=8){
+  const groups = [];
+  let cur = [], chars = 0;
+  for(const item of items){
+    const extra = cur.length ? 1 : 0;
+    if(cur.length && (chars + item.jp.length + extra > maxChars || cur.length >= maxItems)){
+      groups.push(cur);
+      cur = [item];
+      chars = item.jp.length;
+    }else{
+      cur.push(item);
+      chars += item.jp.length + extra;
     }
   }
-  return {changed, html:changed?out:escH(text), lastChar:pc};
+  if(cur.length) groups.push(cur);
+  return groups;
 }
+function renderPage(noteMap={}){
+  $('#entryTitle').textContent = inputTitle;
+  $('#entryMeta').textContent = `共 ${sentences.length} 句`;
+  cardsEl.innerHTML = '';
+  sentences.forEach((s, idx) => {
+    const row = document.createElement('div');
+    row.className = 'sent-row';
 
+    const sent = document.createElement('span');
+    sent.className = 'sent';
+    sent.dataset.idx = String(idx);
+    sent.dataset.cn = s.zh || '';
+    sent.innerHTML = escH(s.jp || '');
+    row.appendChild(sent);
 
-const JP_PARTICLES = new Set(['は','が','を','に','へ','と','で','や','も','の','ね','よ','ぞ','さ','か','な','わ','て','で','し','ぜ','やら','とか','のみ','まで','から','より','ほど','だけ','くらい','ぐらい','など','なり','たり','だの']);
-const JP_COMMON_UNCOLORED = new Set(['です','ます','でした','ました','ません','ませんでした','だ','だった','である','ある','いる','なる','する','した','して','したら','している','していた','できる','できた','れる','られる','せる','させる','ない','なく','なかった','たい','たく','たかった','そう','よう','もの','こと','ため','ところ','そして','しかし','また','まだ','もう']);
-function colorClassForTerm(term){
-  const key=String(term||'').trim();
-  if(!key) return '';
-  if(wordColorMap[key]) return wordColorMap[key];
-  const n=Math.abs(parseInt(hashText(key),36)||0);
-  return WORD_COLORS[n % WORD_COLORS.length].cls;
-}
-function shouldColorToken(token){
-  const t=String(token||'').trim();
-  if(!t) return false;
-  if(JP_PARTICLES.has(t) || JP_COMMON_UNCOLORED.has(t)) return false;
-  if(/^[、。！？「」『』（）【】〈〉《》〔〕…ー\-—,.;:!?\s]+$/.test(t)) return false;
-  if(/^[ぁ-ゖ]$/.test(t)) return false;
-  if(/^[ァ-ヶー]$/.test(t)) return false;
-  if(/^[ぁ-ゖー]{1,2}$/.test(t)) return false;
-  if(/^(こと|もの|ため|よう|そう|あと|なか|うち|とき|ところ|これ|それ|あれ|この|その|あの)$/.test(t)) return false;
-  return /[一-龥々ヶァ-ヶぁ-ゖA-Za-z0-9]/.test(t);
-}
-function tokenizeForColoring(src){
-  const text=String(src||'');
-  const rx=/[一-龥々ヶ]{1,6}|[ァ-ヶー]{2,}|[ぁ-ゖー]{2,}|[A-Za-z]+(?:'[A-Za-z]+)?|\d+|[、。！？「」『』（）【】〈〉《》〔〕…ー—,.;:!?]|./gu;
-  return Array.from(text.matchAll(rx), m=>m[0]);
-}
-
-function renderText(text,rx){
-  return escH(String(text||''));
-}
-
-function centerReadingScroll(){
-  // With fixed side boards + centered content, no horizontal scroll needed
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function showReadingArea(){
-  document.getElementById('mainPage').style.display='';
-  document.getElementById('readingScroll').classList.add('visible');
-  document.getElementById('inputCard').style.display='none';
-}
-function hideReadingArea(){
-  document.getElementById('mainPage').style.display='none';
-  document.getElementById('readingScroll').classList.remove('visible');
-  document.getElementById('inputCard').style.display='';
-}
-
-function renderPage(){
-  const rx=buildTextRegex();
-  const container=document.getElementById('cardsContainer');
-  container.innerHTML='';
-  const card=document.createElement('div');
-  card.className='card';
-  const para=document.createElement('div');
-  para.className='para';
-  sentences.forEach((s,idx)=>{
-    const row=document.createElement('div');
-    row.className='sent-row';
-    const span=document.createElement('span');
-    span.className='sent';
-    span.dataset.idx=String(idx);
-    span.innerHTML=renderText(s.jp,rx);
-    span.dataset.cn=s.zh||'';
-    row.appendChild(span);
-    const note=document.createElement('div');
-    note.className='sent-note';
-    note.dataset.noteFor=String(idx);
-    // note.dataset.placeholder intentionally left empty
+    const note = document.createElement('div');
+    note.className = 'sent-note';
+    note.dataset.idx = String(idx);
     note.setAttribute('contenteditable','plaintext-only');
     note.setAttribute('spellcheck','false');
-    row.appendChild(note);
-    para.appendChild(row);
-  });
-  card.appendChild(para);
-  container.appendChild(card);
-  document.getElementById('entryTitle').textContent='日語文章';
-  document.getElementById('entryMeta').textContent=`共 ${sentences.length} 句`;
-  showReadingArea();
-  bindSentenceTips();
-  bindUserNotes();
-  centerReadingScroll();
-}
-
-const jpTip=document.getElementById('jp-tip');
-const jpBody=document.getElementById('jp-tip-body');
-let activeS=null;
-function placeJp(e){
-  const vw=window.innerWidth,vh=window.innerHeight,W=Math.min(480,vw-24);
-  jpTip.style.maxWidth=W+'px';
-  let x=e.clientX+18,y=e.clientY+20;
-  if(x+W>vw-8) x=e.clientX-W-14;
-  if(x<8) x=8;
-  const H=jpTip.offsetHeight||90;
-  if(y+H>vh-8) y=e.clientY-H-16;
-  if(y<8) y=8;
-  jpTip.style.left=x+'px'; jpTip.style.top=y+'px';
-}
-function bindSentenceTips(){
-  document.querySelectorAll('.sent').forEach(el=>{
-    if(el.dataset.tipBound==='1' && el.__tipBoundInternal===true) return;
-    delete el.dataset.tipBound;
-    el.dataset.tipBound='1';
-    el.__tipBoundInternal=true;
-    el.addEventListener('mouseenter',e=>{if(activeS) activeS.classList.remove('hi'); activeS=el; el.classList.add('hi'); jpBody.textContent=el.dataset.cn||''; jpTip.classList.add('show'); placeJp(e);});
-    el.addEventListener('mouseleave',()=>{el.classList.remove('hi'); activeS=null; jpTip.classList.remove('show');});
-  });
-}
-function bindUserNotes(){
-  document.querySelectorAll('.sent-note').forEach(el=>{
-    if(el.dataset.noteBound==='1') return;
-    el.dataset.noteBound='1';
-    el.setAttribute('contenteditable','plaintext-only');
-    el.setAttribute('spellcheck','false');
-    // placeholder suppressed
-    const sync=()=>{
-      if((el.textContent||'').trim()) el.classList.add('has-text');
-      else el.classList.remove('has-text');
-      scheduleSaveState(120);
-    };
-    el.addEventListener('input',sync);
-    el.addEventListener('blur',()=>scheduleSaveState(80));
-    el.addEventListener('paste',e=>{
-      e.preventDefault();
-      const txt=(e.clipboardData||window.clipboardData)?.getData('text/plain')||'';
-      document.execCommand('insertText', false, txt);
-    });
-    sync();
-  });
-}
-const termActionMenu=document.getElementById('term-action-menu');
-const termAddExcerptBtn=document.getElementById('term-add-excerpt');
-const termRemoveBgBtn=document.getElementById('term-remove-bg');
-const termRestoreBgBtn=document.getElementById('term-restore-bg');
-let activeTermEl=null;
-function hideTermActionMenu(){termActionMenu?.classList.remove('show'); activeTermEl=null;}
-function placeTermActionMenu(x,y){
-  if(!termActionMenu) return;
-  termActionMenu.classList.add('show');
-  const vw=window.innerWidth,vh=window.innerHeight,w=termActionMenu.offsetWidth||160,h=termActionMenu.offsetHeight||120;
-  let left=x+12,top=y+12;
-  if(left+w>vw-8) left=x-w-10;
-  if(left<8) left=8;
-  if(top+h>vh-8) top=y-h-10;
-  if(top<8) top=8;
-  termActionMenu.style.left=left+'px';
-  termActionMenu.style.top=top+'px';
-}
-function showTermActionMenu(el,x,y){
-  if(!el || !termActionMenu) return;
-  activeTermEl=el;
-  termRemoveBgBtn.style.display=el.classList.contains('no-bg')?'none':'block';
-  termRestoreBgBtn.style.display=el.classList.contains('no-bg')?'block':'none';
-  placeTermActionMenu(x,y);
-}
-function makeSnippetHTMLFromElement(el){
-  const wrap=document.createElement('div');
-  wrap.innerHTML=el.outerHTML;
-  wrap.querySelectorAll('.hi').forEach(n=>n.classList.remove('hi'));
-  return wrap.innerHTML;
-}
-function bindHighlightedTerms(){
-  document.querySelectorAll('.manual-hl').forEach(el=>{
-    if(el.dataset.termBound==='1') return;
-    el.dataset.termBound='1';
-    el.setAttribute('draggable','true');
-    el.addEventListener('dragstart',e=>{
-      const html=makeSnippetHTMLFromElement(el);
-      const text=(el.textContent||'').trim();
-      lastDraggedSnippetHTML=html;
-      e.dataTransfer?.setData('text/plain', text);
-      e.dataTransfer?.setData('text/html', html);
-      e.dataTransfer?.setData('text/x-shindoku-snippet-html', html);
-      if(e.dataTransfer) e.dataTransfer.effectAllowed='copy';
-      el.classList.add('dragging-term');
-    });
-    el.addEventListener('dragend',()=>el.classList.remove('dragging-term'));
-  });
-}
-termAddExcerptBtn?.addEventListener('click',()=>{
-  if(!activeTermEl) return;
-  createSnippetItem(makeSnippetHTMLFromElement(activeTermEl), 26, 26, 'snippetBoardRight');
-  hideTermActionMenu();
-});
-termRemoveBgBtn?.addEventListener('click',()=>{
-  if(!activeTermEl) return;
-  activeTermEl.classList.add('no-bg');
-  saveState();
-  hideTermActionMenu();
-});
-termRestoreBgBtn?.addEventListener('click',()=>{
-  if(!activeTermEl) return;
-  activeTermEl.classList.remove('no-bg');
-  saveState();
-  hideTermActionMenu();
-});
-
-const kjTip=document.getElementById('kj-tip');
-const kjBody=document.getElementById('kj-tip-body');
-const dictMenu=document.getElementById('manual-dict-menu');
-const dictLinkKotobank=document.getElementById('dict-link-kotobank');
-const dictLinkKobun=document.getElementById('dict-link-kobun');
-const dictLinkAoilang=document.getElementById('dict-link-aoilang');
-const dictLinkKanjipedia=document.getElementById('dict-link-kanjipedia');
-function unicodeHexJoin(str){
-  return Array.from(String(str||'')).map(ch=>ch.codePointAt(0).toString(16)).join('_');
-}
-function pickFirstKanji(str){
-  const m=String(str||'').match(/[\u3400-\u9FFF々]/u);
-  return m?m[0]:String(str||'').trim().charAt(0);
-}
-function charLength(str){
-  return Array.from(String(str||'').trim()).length;
-}
-function isSingleCharQuery(q){
-  return charLength(q)===1;
-}
-function makeKotobankUrl(q){
-  return 'https://kotobank.jp/word/'+encodeURIComponent(String(q||'').trim());
-}
-function makeKobunWeblioUrl(q){
-  return 'https://kobun.weblio.jp/content/'+encodeURIComponent(String(q||'').trim());
-}
-function makeAoilangUrl(q){
-  return 'https://aoilang.com/dict/'+encodeURIComponent(String(q||'').trim());
-}
-function makeKanjipediaSearchUrl(q){
-  const core=pickFirstKanji(String(q||'').trim());
-  return 'https://www.kanjipedia.jp/search?k='+encodeURIComponent(core)+'&kt=1&sk=leftHand';
-}
-function isKanjipediaDirectUrl(url){
-  return /^https:\/\/www\.kanjipedia\.jp\/kanji\/\d+\/?$/i.test(String(url||''));
-}
-const directUrlCache = (()=>{
-  try{return JSON.parse(localStorage.getItem(STORAGE_KEY+'_direct_dict_cache')||'{}')||{}}catch(e){return {}}
-})();
-function saveDirectUrlCache(){
-  try{localStorage.setItem(STORAGE_KEY+'_direct_dict_cache', JSON.stringify(directUrlCache));}catch(e){}
-}
-async function fetchTextWithFallback(urls){
-  for(const url of urls){
-    try{
-      const res = await fetch(url, {credentials:'omit'});
-      if(!res.ok) continue;
-      const txt = await res.text();
-      if(txt) return txt;
-    }catch(e){}
-  }
-  return '';
-}
-function parseDirectUrl(html, patterns, prefix=''){
-  const src=String(html||'');
-  for(const rx of patterns){
-    const m=src.match(rx);
-    if(m && m[1]) return m[1].startsWith('http') ? m[1] : prefix + m[1];
-    if(m && m[0]) return m[0].startsWith('http') ? m[0] : prefix + m[0];
-  }
-  return '';
-}
-async function resolveKanjipediaUrl(q){
-  const kanji = pickFirstKanji(q);
-  if(!kanji) return makeKanjipediaSearchUrl(q);
-  const cacheKey = 'kanjipedia:'+kanji;
-  if(directUrlCache[cacheKey]) return directUrlCache[cacheKey];
-  const searchUrl = makeKanjipediaSearchUrl(kanji);
-  const html = await fetchTextWithFallback([
-    'https://api.allorigins.win/raw?url='+encodeURIComponent(searchUrl),
-    'https://r.jina.ai/http://'+searchUrl.replace(/^https?:\/\//,'')
-  ]);
-  const direct = parseDirectUrl(html, [/https?:\/\/www\.kanjipedia\.jp\/kanji\/\d+\/?/i, /href=["'](\/kanji\/\d+\/?)["']/i], 'https://www.kanjipedia.jp');
-  if(direct){
-    directUrlCache[cacheKey]=direct;
-    saveDirectUrlCache();
-    return direct;
-  }
-  return '';
-}
-function openAsyncDict(urlPromise, label){
-  Promise.resolve(urlPromise).then(url=>{
-    if(url) window.open(url,'_blank','noopener,noreferrer');
-  }).catch(()=>{});
-}
-function placeManualDictMenu(x,y){
-  dictMenu.classList.add('show');
-  const vw=window.innerWidth,vh=window.innerHeight;
-  const w=dictMenu.offsetWidth||240,h=dictMenu.offsetHeight||170;
-  let left=x+14,top=y+14;
-  if(left+w>vw-8) left=x-w-12;
-  if(left<8) left=8;
-  if(top+h>vh-8) top=y-h-12;
-  if(top<8) top=8;
-  dictMenu.style.left=left+'px';
-  dictMenu.style.top=top+'px';
-}
-function hideManualDictMenu(){
-  dictMenu.classList.remove('show');
-}
-function toggleDictLink(linkEl, show){
-  linkEl.style.display = show ? 'block' : 'none';
-}
-function warmupSingleCharDirect(q){
-  const lookup=(pickFirstKanji(q)||String(q||'').trim());
-  if(!lookup || !isSingleCharQuery(lookup)) return Promise.resolve('');
-  const cacheKey='kanjipedia:'+lookup;
-  if(isKanjipediaDirectUrl(directUrlCache[cacheKey])) return Promise.resolve(directUrlCache[cacheKey]);
-  return resolveKanjipediaUrl(lookup).catch(()=> '');
-}
-function openSingleCharDirect(q){
-  const lookup=(pickFirstKanji(q)||String(q||'').trim());
-  if(!lookup) return;
-  const cacheKey='kanjipedia:'+lookup;
-  const cached=directUrlCache[cacheKey];
-  if(isKanjipediaDirectUrl(cached)){
-    window.open(cached,'_blank','noopener');
-    return;
-  }
-  const searchTab=window.open(makeKanjipediaSearchUrl(lookup),'_blank','noopener');
-  warmupSingleCharDirect(lookup).then(url=>{
-    if(isKanjipediaDirectUrl(url) && searchTab && !searchTab.closed){
-      try{ searchTab.location.replace(url); }catch(e){}
-    }
-  }).catch(()=>{});
-}
-function showManualDictMenu(hl,x,y){
-  const q=(hl.textContent||'').trim();
-  if(!q) return;
-  const single=isSingleCharQuery(q);
-  const kanji=pickFirstKanji(q);
-  const lookup=(kanji||q);
-
-  dictLinkKanjipedia.href=makeKanjipediaSearchUrl(lookup);
-  dictLinkKanjipedia.dataset.lookup=lookup;
-  dictLinkKanjipedia.innerHTML='漢字ペディア<small>'+escH(lookup)+'</small>';
-
-  if(single){
-    toggleDictLink(dictLinkKanjipedia, true);
-    toggleDictLink(dictLinkKotobank, false);
-    toggleDictLink(dictLinkKobun, false);
-    toggleDictLink(dictLinkAoilang, false);
-    placeManualDictMenu(x,y);
-    return;
-  }
-
-  dictLinkKotobank.href=makeKotobankUrl(q);
-  dictLinkKotobank.innerHTML='Kotobank<small>'+escH(q)+'</small>';
-  dictLinkKobun.href=makeKobunWeblioUrl(q);
-  dictLinkKobun.innerHTML='古文辭典（Weblio）<small>'+escH(q)+'</small>';
-  dictLinkAoilang.href=makeAoilangUrl(q);
-  dictLinkAoilang.innerHTML='蒼語辭典（Aoilang）<small>'+escH(q)+'</small>';
-
-  toggleDictLink(dictLinkKanjipedia, false);
-  toggleDictLink(dictLinkKotobank, true);
-  toggleDictLink(dictLinkKobun, true);
-  toggleDictLink(dictLinkAoilang, true);
-  placeManualDictMenu(x,y);
-}
-
-dictLinkKotobank.addEventListener('click', ()=>{ hideManualDictMenu(); });
-dictLinkKobun.addEventListener('click', ()=>{ hideManualDictMenu(); });
-dictLinkAoilang.addEventListener('click', ()=>{ hideManualDictMenu(); });
-dictLinkKanjipedia.addEventListener('click', (e)=>{
-  e.preventDefault();
-  const lookup=dictLinkKanjipedia.dataset.lookup || dictLinkKanjipedia.textContent || '';
-  hideManualDictMenu();
-  if(lookup) openSingleCharDirect(lookup);
-});
-
-function rangeToHTML(range){
-  const wrapper=document.createElement('div');
-  wrapper.appendChild(range.cloneContents());
-  wrapper.querySelectorAll('.sent').forEach(el=>{el.removeAttribute('data-tip-bound');el.classList.remove('hi');});
-  wrapper.querySelectorAll('.snippet-del').forEach(el=>el.remove());
-  return wrapper.innerHTML.trim();
-}
-function getSnippetBoards(){return [...document.querySelectorAll('.snippet-board')];}
-function getSnippetBoardById(id){return id?document.getElementById(id):null;}
-function getBoardEmpty(board){return board?board.querySelector('.board-empty'):null;}
-let snippetZ=20;
-let activeDragSnippet=null, activeDragBoard=null, dragOffsetX=0, dragOffsetY=0;
-let lastDraggedSnippetHTML='';
-function updateBoardEmpty(board){
-  const targets=board?[board]:getSnippetBoards();
-  targets.forEach(b=>{
-    const empty=getBoardEmpty(b);
-    if(!b||!empty) return;
-    const hasItems=b.querySelector('.snippet-item');
-    empty.style.display=hasItems?'none':'block';
-  });
-}
-function normalizeBoardHeight(board,targetBottom){
-  if(!board) return;
-  const minH=window.innerHeight - 50 - 100; // viewport minus topbar minus board-head
-  const current=Math.max(board.offsetHeight, parseFloat(board.style.minHeight)||0, minH);
-  if(targetBottom>current-40){ board.style.minHeight=Math.ceil(targetBottom+80)+'px'; }
-}
-function clampSnippetPosition(board,item,left,top){
-  if(!board) return {left,top};
-  const maxLeft=Math.max(8, board.clientWidth-item.offsetWidth-8);
-  return {left:Math.max(8, Math.min(left, maxLeft)), top:Math.max(8, top)};
-}
-function bindSnippetItem(item){
-  if(!item || item.dataset.snippetBound==='1') return;
-  item.dataset.snippetBound='1';
-  item.addEventListener('pointerdown',e=>{
-    if(e.target.closest('.snippet-del')) return;
-    const board=item.closest('.snippet-board');
-    if(!board) return;
-    activeDragSnippet=item;
-    activeDragBoard=board;
-    snippetZ+=1; item.style.zIndex=snippetZ;
-    const rect=item.getBoundingClientRect();
-    dragOffsetX=e.clientX-rect.left; dragOffsetY=e.clientY-rect.top;
-    item.setPointerCapture?.(e.pointerId);
-    e.preventDefault();
-  });
-  const del=item.querySelector('.snippet-del');
-  if(del){
-    del.addEventListener('click',e=>{
-      e.stopPropagation();
-      const board=item.closest('.snippet-board');
-      item.remove();
-      updateBoardEmpty(board);
+    note.innerText = noteMap[idx] || s.note || '';
+    note.addEventListener('input', () => {
+      sentences[idx].note = note.innerText || '';
       saveState();
     });
-  }
-}
-function bindSnippetBoards(){
-  getSnippetBoards().forEach(board=>{
-    if(board.dataset.boardBound==='1'){
-      board.querySelectorAll('.snippet-item').forEach(bindSnippetItem);
-      updateBoardEmpty(board);
-      return;
-    }
-    board.dataset.boardBound='1';
-    board.addEventListener('dragover',e=>{
-      const types=[...(e.dataTransfer?.types||[])];
-      if(types.includes('text/x-shindoku-snippet-html') || types.includes('text/html') || types.includes('text/plain')){
-        e.preventDefault();
-        board.classList.add('dragover');
-        e.dataTransfer.dropEffect='copy';
-      }
-    });
-    board.addEventListener('dragleave',()=>board.classList.remove('dragover'));
-    board.addEventListener('drop',e=>{
-      const types=[...(e.dataTransfer?.types||[])];
-      if(!(types.includes('text/x-shindoku-snippet-html') || types.includes('text/plain'))) return;
-      e.preventDefault();
-      board.classList.remove('dragover');
-      const html=e.dataTransfer.getData('text/x-shindoku-snippet-html') || e.dataTransfer.getData('text/html') || lastDraggedSnippetHTML;
-      const text=e.dataTransfer.getData('text/plain');
-      if(!html && !text.trim()) return;
-      const rect=board.getBoundingClientRect();
-      const x=e.clientX-rect.left+board.scrollLeft;
-      const y=e.clientY-rect.top+board.scrollTop;
-      createSnippetItem(html||escH(text), x, y, board.id);
-      clearSel();
-    });
-    board.querySelectorAll('.snippet-item').forEach(bindSnippetItem);
-    updateBoardEmpty(board);
+    row.appendChild(note);
+
+    cardsEl.appendChild(row);
   });
-}
-function createSnippetItem(innerHTML,x=26,y=26,boardId='snippetBoardRight'){
-  const board=getSnippetBoardById(boardId) || getSnippetBoardById('snippetBoardRight') || getSnippetBoards()[0];
-  if(!board) return null;
-  const item=document.createElement('div');
-  item.className='snippet-item';
-  item.style.left='0px'; item.style.top='0px';
-  item.innerHTML=`<button class="snippet-del" type="button" title="刪除摘錄">×</button><div class="snippet-content">${innerHTML}</div>`;
-  board.appendChild(item);
-  bindSnippetItem(item);
-  snippetZ+=1; item.style.zIndex=snippetZ;
-  const pos=clampSnippetPosition(board,item, x, y);
-  item.style.left=pos.left+'px'; item.style.top=pos.top+'px';
-  normalizeBoardHeight(board,pos.top+item.offsetHeight);
-  updateBoardEmpty(board);
+  bindSentenceTips();
+  readerEl.classList.add('show');
   saveState();
-  return item;
 }
-function createSnippetFromRange(range,boardId='snippetBoardRight'){
-  if(!range) return;
-  const html=rangeToHTML(range);
-  if(!html) return;
-  const board=getSnippetBoardById(boardId) || getSnippetBoardById('snippetBoardRight') || getSnippetBoards()[0];
-  const count=board ? board.querySelectorAll('.snippet-item').length : 0;
-  createSnippetItem(html, 24 + (count%3)*32, 24 + Math.floor(count/3)*42, board?.id||'snippetBoardRight');
-  clearSel();
+function placeTipByRect(rect){
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const w = Math.min(560, vw - 24);
+  tipEl.style.maxWidth = w + 'px';
+  tipEl.style.display = 'block';
+  const th = tipEl.offsetHeight || 120;
+  let left = rect.left + rect.width / 2 - w / 2;
+  let top = rect.top - th - 12;
+  if(left < 12) left = 12;
+  if(left + w > vw - 12) left = vw - w - 12;
+  if(top < 12) top = rect.bottom + 12;
+  if(top + th > vh - 12) top = vh - th - 12;
+  tipEl.style.left = left + 'px';
+  tipEl.style.top = top + 'px';
 }
-document.addEventListener('dragstart',e=>{
-  if(e.target.closest('.kw-term,.manual-hl')) return;
-  const sel=window.getSelection();
-  if(!sel || sel.rangeCount===0 || sel.isCollapsed) return;
-  const range=normRange(sel.getRangeAt(0).cloneRange());
-  if(!range || !isInPage(range)) return;
-  const html=rangeToHTML(range);
-  const text=sel.toString();
-  if(!html && !text.trim()) return;
-  selMenu.classList.remove('show');
-  lastDraggedSnippetHTML = html || escH(text);
-  e.dataTransfer?.setData('text/plain', text);
-  e.dataTransfer?.setData('text/html', lastDraggedSnippetHTML);
-  e.dataTransfer?.setData('text/x-shindoku-snippet-html', lastDraggedSnippetHTML);
-  if(e.dataTransfer) e.dataTransfer.effectAllowed='copy';
-});
-document.addEventListener('pointermove',e=>{
-  if(!activeDragSnippet || !activeDragBoard) return;
-  const board=activeDragBoard;
-  const rect=board.getBoundingClientRect();
-  let left=e.clientX-rect.left+board.scrollLeft-dragOffsetX;
-  let top=e.clientY-rect.top+board.scrollTop-dragOffsetY;
-  const pos=clampSnippetPosition(board,activeDragSnippet,left,top);
-  activeDragSnippet.style.left=pos.left+'px';
-  activeDragSnippet.style.top=pos.top+'px';
-  normalizeBoardHeight(board,pos.top+activeDragSnippet.offsetHeight);
-});
-document.addEventListener('pointerup',()=>{
-  if(!activeDragSnippet) return;
-  saveState();
-  activeDragSnippet=null;
-  activeDragBoard=null;
-});
-
-const selMenu=document.getElementById('selection-menu'); let storedRange=null;
-function isInPage(range){const main=document.getElementById('mainPage'); const cards=document.getElementById('cardsContainer'); return !!((main&&main.contains(range.commonAncestorContainer)) || (cards&&cards.contains(range.commonAncestorContainer)));}
-function normRange(range){const a=range.commonAncestorContainer; const blocker=a.nodeType===1?a.closest('.manual-hl'):a.parentElement?.closest('.manual-hl'); return blocker?null:range;}
-function showSelMenu(rect){
-  selMenu.classList.add('show');
-  const vw=window.innerWidth,vh=window.innerHeight,mw=selMenu.offsetWidth||240,mh=selMenu.offsetHeight||52;
-  let left=rect.left+(rect.width/2)-(mw/2),top=rect.top-mh-10;
-  if(left<8) left=8; if(left+mw>vw-8) left=vw-mw-8; if(top<8) top=rect.bottom+10; if(top+mh>vh-8) top=vh-mh-8;
-  selMenu.style.left=left+'px'; selMenu.style.top=top+'px';
+function showTipFor(el){
+  const text = el.dataset.cn || '（翻譯中…）';
+  tipBodyEl.textContent = text;
+  document.querySelectorAll('.sent.active').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  placeTipByRect(el.getBoundingClientRect());
+  tipEl.classList.add('show');
 }
-function clearSel(){selMenu.classList.remove('show'); storedRange=null; window.getSelection().removeAllRanges();}
-function wrapHL(range,colorClass){const span=document.createElement('span'); span.className=`manual-hl ${colorClass}`; span.appendChild(range.extractContents()); range.insertNode(span); const q=(span.textContent||'').trim(); if(isSingleCharQuery(q) && pickFirstKanji(q)) warmupSingleCharDirect(q); hideManualDictMenu(); saveState();}
-document.addEventListener('mouseup',()=>{storedRange=null; selMenu.classList.remove('show');});
-document.querySelectorAll('.color-btn').forEach(btn=>btn.addEventListener('click',()=>{if(!storedRange) return; wrapHL(storedRange,btn.dataset.color); clearSel();}));
-document.getElementById('excerpt-selection').addEventListener('click',()=>{if(!storedRange) return; createSnippetFromRange(storedRange);});
-document.getElementById('cancel-selection').addEventListener('click',clearSel);
-const noteTip=document.getElementById('note-tip'); const noteTarget=document.getElementById('note-target'); const noteBody=document.getElementById('note-body'); let activeHL=null;
-const NOTE_THEMES={
-  'manual-c1':{'--note-bg':'#fff6f8','--note-border':'#f3b8c6','--note-text':'#5a3240','--note-label':'#b35d7b','--note-dot':'#d97c9a','--note-target-bg':'#fffafb','--note-target-border':'#f4c8d6','--note-target-text':'#7a5a6b','--note-item-bg':'#fff9fb','--note-item-border':'#f6d7e1','--note-item-title':'#b05b86','--note-item-text':'#5a4451','--note-btn-bg':'#f8dfe7','--note-btn-text':'#7a355d','--note-btn-bg-hover':'#f1cedb'},
-  'manual-c2':{'--note-bg':'#fffdf4','--note-border':'#ead58a','--note-text':'#5b481a','--note-label':'#a47b18','--note-dot':'#c9a234','--note-target-bg':'#fffef8','--note-target-border':'#f0e1a7','--note-target-text':'#756238','--note-item-bg':'#fffef9','--note-item-border':'#f2e7bf','--note-item-title':'#a87b12','--note-item-text':'#5d5030','--note-btn-bg':'#fbf1c9','--note-btn-text':'#6f5a11','--note-btn-bg-hover':'#f6e7a8'},
-  'manual-c3':{'--note-bg':'#f7fff8','--note-border':'#b8e2c0','--note-text':'#254830','--note-label':'#3f8b54','--note-dot':'#62b176','--note-target-bg':'#fbfffc','--note-target-border':'#cdebd3','--note-target-text':'#4d6a54','--note-item-bg':'#fbfffc','--note-item-border':'#d8f0dd','--note-item-title':'#46885a','--note-item-text':'#415749','--note-btn-bg':'#dff7e2','--note-btn-text':'#2f6d42','--note-btn-bg-hover':'#caedd0'},
-  'manual-c4':{'--note-bg':'#f7fbff','--note-border':'#b8d8f2','--note-text':'#27425b','--note-label':'#4e80b0','--note-dot':'#72a7d7','--note-target-bg':'#fbfdff','--note-target-border':'#d0e4f8','--note-target-text':'#536b80','--note-item-bg':'#fbfdff','--note-item-border':'#d9e9f9','--note-item-title':'#4c7aa6','--note-item-text':'#44576a','--note-btn-bg':'#dff1ff','--note-btn-text':'#315b82','--note-btn-bg-hover':'#c9e5fb'},
-  'manual-c5':{'--note-bg':'#faf8ff','--note-border':'#d4c4f3','--note-text':'#45365e','--note-label':'#8361bb','--note-dot':'#a17fd7','--note-target-bg':'#fcfbff','--note-target-border':'#e1d5f8','--note-target-text':'#675a82','--note-item-bg':'#fcfbff','--note-item-border':'#e6def9','--note-item-title':'#7f62b1','--note-item-text':'#514865','--note-btn-bg':'#ece3ff','--note-btn-text':'#5d4596','--note-btn-bg-hover':'#ddd0fb'},
-  'manual-c6':{'--note-bg':'#fff9f5','--note-border':'#efc9ae','--note-text':'#5a3c2e','--note-label':'#bc7751','--note-dot':'#d18e68','--note-target-bg':'#fffdfb','--note-target-border':'#f3d8c6','--note-target-text':'#7a614f','--note-item-bg':'#fffdfb','--note-item-border':'#f5e0d1','--note-item-title':'#b77754','--note-item-text':'#5a4b42','--note-btn-bg':'#ffd9c8','--note-btn-text':'#8a4f31','--note-btn-bg-hover':'#f7c6ae'}
-};
-function applyNoteTheme(el){
-  const cls=[...el.classList].find(c=>NOTE_THEMES[c]);
-  const theme=NOTE_THEMES[cls]||NOTE_THEMES['manual-c1'];
-  Object.entries(theme).forEach(([k,v])=>noteTip.style.setProperty(k,v));
+function hideTip(){
+  tipEl.classList.remove('show');
+  tipEl.style.display = 'none';
+  document.querySelectorAll('.sent.active').forEach(n => n.classList.remove('active'));
 }
-
-function getNotes(el){if(!el) return []; if(el.dataset.notes){try{const a=JSON.parse(el.dataset.notes); if(Array.isArray(a)) return a.map(String).filter(Boolean);}catch(e){}} return el.dataset.note?.trim()?[el.dataset.note.trim()]:[];}
-function setNotes(el,arr){const clean=arr.map(String).map(s=>s.trim()).filter(Boolean); if(clean.length){el.dataset.notes=JSON.stringify(clean); el.dataset.note=clean.join('\n\n—\n\n');} else {delete el.dataset.notes; delete el.dataset.note;}}
-function renderNotes(el){const notes=getNotes(el); if(!notes.length){noteBody.textContent='尚未加入注釋'; return;} noteBody.innerHTML=notes.map((n,i)=>`<div class="note-item"><div class="note-item-title">注釋 ${i+1}</div><div class="note-item-text">${escH(n).replace(/\n/g,'<br>')}</div></div>`).join(''); noteBody.scrollTop=0;}
-function placeNoteTip(rect){noteTip.classList.add('show'); const vw=window.innerWidth,vh=window.innerHeight,mw=noteTip.offsetWidth||350,mh=noteTip.offsetHeight||140; let left=rect.left,top=rect.bottom+12; if(left+mw>vw-8) left=vw-mw-8; if(left<8) left=8; if(top+mh>vh-8) top=rect.top-mh-12; if(top<8) top=8; noteTip.style.left=left+'px'; noteTip.style.top=top+'px';}
-function showNoteTip(el){activeHL=el; applyNoteTheme(el); noteTarget.textContent=el.textContent.trim(); renderNotes(el); placeNoteTip(el.getBoundingClientRect());}
-function hideNoteTip(){noteTip.classList.remove('show'); activeHL=null;}
-function unwrap(node){const p=node.parentNode; while(node.firstChild) p.insertBefore(node.firstChild,node); p.removeChild(node);}
-document.getElementById('note-edit').addEventListener('click',()=>{if(!activeHL) return; const txt=window.prompt('輸入注釋（會追加，不覆蓋舊注釋）：',''); if(txt===null||!txt.trim()) return; const notes=getNotes(activeHL); notes.push(txt.trim()); setNotes(activeHL,notes); renderNotes(activeHL); saveState();});
-document.getElementById('note-remove').addEventListener('click',()=>{if(!activeHL) return; const t=activeHL; hideNoteTip(); unwrap(t); saveState(); bindSentenceTips();});
-document.getElementById('note-close').addEventListener('click',hideNoteTip);
-noteTip.addEventListener('wheel',e=>e.stopPropagation(),{passive:true}); noteTip.addEventListener('touchmove',e=>e.stopPropagation(),{passive:true});
-document.addEventListener('click',e=>{
-  const hl=e.target.closest('.manual-hl');
-  if(hl){
-    e.stopPropagation();
-    hideTermActionMenu();
-    hideNoteTip();
-    const q=(hl.textContent||'').trim();
-    if(isSingleCharQuery(q) && pickFirstKanji(q)){ hideManualDictMenu(); openSingleCharDirect(q); return; }
-    showManualDictMenu(hl,e.clientX,e.clientY);
-    return;
+function bindSentenceTips(){
+  document.querySelectorAll('.sent').forEach(el => {
+    el.addEventListener('mouseenter', () => showTipFor(el));
+    el.addEventListener('mousemove', () => showTipFor(el));
+    el.addEventListener('mouseleave', hideTip);
+    el.addEventListener('click', (e) => { e.preventDefault(); showTipFor(el); });
+  });
+}
+async function translateAll(){
+  const pending = sentences.map((s, idx) => ({ idx, jp: s.jp, zh: s.zh || '' }));
+  const groups = groupSentences(pending);
+  let done = 0;
+  for(const group of groups){
+    const payload = group.map((x, i) => ({ i: i+1, jp: x.jp }));
+    const sys = '你是日文句子翻譯器。使用者已經先切好句子。不得合併、不得拆分、不得改順序。只回傳 JSON，格式為 {"s":[{"z":"繁體中文翻譯"}]}，數量必須與輸入完全一致。';
+    const user = JSON.stringify(payload);
+    const raw = await callDeepSeek([
+      {role:'system', content: sys},
+      {role:'user', content: user}
+    ], 3600);
+    const data = extractJSON(raw);
+    const arr = Array.isArray(data?.s) ? data.s : [];
+    if(arr.length !== group.length) throw new Error('翻譯回傳數量不一致');
+    arr.forEach((item, i) => {
+      const realIdx = group[i].idx;
+      sentences[realIdx].zh = String(item?.z || '').trim() || '（翻譯暫不可用）';
+      const el = document.querySelector(`.sent[data-idx="${realIdx}"]`);
+      if(el) el.dataset.cn = sentences[realIdx].zh;
+    });
+    done += 1;
+    setStatus(`翻譯中 ${done}/${groups.length} 組…`);
+    saveState();
   }
-  const kw=e.target.closest('.kw-term');
-  if(kw){
-    e.stopPropagation();
-    hideNoteTip();
-    hideTermActionMenu();
-    const q=(kw.textContent||'').trim();
-    if(isSingleCharQuery(q) && pickFirstKanji(q)){
-      hideManualDictMenu();
-      openSingleCharDirect(q);
-      return;
-    }
-    showManualDictMenu(kw,e.clientX,e.clientY);
-    return;
-  }
-  if(!e.target.closest('#selection-menu')) selMenu.classList.remove('show');
-  if(!e.target.closest('#note-tip')) hideNoteTip();
-  if(!e.target.closest('#manual-dict-menu')) hideManualDictMenu();
-  if(!e.target.closest('#term-action-menu')) hideTermActionMenu();
-});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){hideManualDictMenu(); hideNoteTip(); hideTermActionMenu(); clearSel(); jpTip.classList.remove('show');}});
-
-function sanitizeHydrationHTML(html){
-  const tpl=document.createElement('template');
-  tpl.innerHTML=String(html||'');
-  tpl.content.querySelectorAll('.sent').forEach(el=>{
-    el.removeAttribute('data-tip-bound');
-    el.classList.remove('hi');
-  });
-  tpl.content.querySelectorAll('.snippet-board').forEach(el=>el.removeAttribute('data-board-bound'));
-  tpl.content.querySelectorAll('.snippet-item').forEach(el=>el.removeAttribute('data-snippet-bound'));
-  return tpl.innerHTML;
+  setStatus(`完成，共 ${sentences.length} 句`);
 }
-function getBoardsHTML(){
-  const result={};
-  ['snippetBoardLeft','snippetBoardRight'].forEach(id=>{
-    const b=document.getElementById(id);
-    if(b) result[id]=sanitizeHydrationHTML(b.innerHTML);
-  });
-  return result;
-}
-function restoreBoardsHTML(boards){
-  if(!boards) return;
-  ['snippetBoardLeft','snippetBoardRight'].forEach(id=>{
-    const b=document.getElementById(id);
-    if(b && boards[id]!==undefined) b.innerHTML=sanitizeHydrationHTML(boards[id]);
-  });
-}
-function saveState(){
+async function analyze(){
+  const raw = inputEl.value.trim();
+  if(!raw) return;
+  setButtons(true);
+  showError('');
   try{
-    if(document.getElementById('inputCard').style.display!=='none') return;
-    const cardsHTML=sanitizeHydrationHTML(document.getElementById('cardsContainer').innerHTML);
-    const pageHeader=sanitizeHydrationHTML(document.getElementById('mainPage').innerHTML);
-    localStorage.setItem(STORAGE_KEY+'_html', cardsHTML);
-    localStorage.setItem(STORAGE_KEY+'_hdr', pageHeader);
-    localStorage.setItem(STORAGE_KEY+'_boards', JSON.stringify(getBoardsHTML()));
-    localStorage.setItem(STORAGE_KEY+'_doc',JSON.stringify(analyzedDoc));
-    localStorage.setItem(STORAGE_KEY+'_wc',JSON.stringify(wordColorMap));
-    localStorage.setItem(STORAGE_KEY+'_wi',JSON.stringify(wordColorInfo));
-    localStorage.setItem(STORAGE_KEY+'_wr',JSON.stringify(wordReadingMap));
-  }catch(e){}
-}
-function applyExportedState(state){
-  try{
-    if(!state || !state.doc) return false;
-    analyzedDoc=state.doc;
-    sentences=analyzedDoc.sections.flatMap(sec=>sec.paragraphs.flatMap(p=>p.sentences||[]));
-    wordColorMap=state.wc||{};
-    wordColorInfo=state.wi||{};
-    wordReadingMap=state.wr||{};
-    // Restore cards
-    if(state.mainPageHTML){
-      // legacy export: mainPageHTML may contain the whole old mainPage inner HTML
-      // Try to extract cardsContainer from it
-      const tpl=document.createElement('template');
-      tpl.innerHTML=sanitizeHydrationHTML(state.mainPageHTML);
-      const cards=tpl.content.getElementById('cardsContainer');
-      const cardsSnap=tpl.content.getElementById('_cards_snapshot');
-      if(cards) document.getElementById('cardsContainer').innerHTML=cards.innerHTML;
-      else if(cardsSnap) document.getElementById('cardsContainer').innerHTML=sanitizeHydrationHTML(cardsSnap.innerHTML);
-      // Restore header info
-      const title=tpl.content.getElementById('entryTitle');
-      const meta=tpl.content.getElementById('entryMeta');
-      if(title) document.getElementById('entryTitle').textContent=title.textContent;
-      if(meta) document.getElementById('entryMeta').textContent=meta.textContent;
-      // boards
-      const bL=tpl.content.getElementById('snippetBoardLeft') || tpl.content.getElementById('_boardL_snapshot');
-      const bR=tpl.content.getElementById('snippetBoardRight') || tpl.content.getElementById('_boardR_snapshot');
-      if(bL) document.getElementById('snippetBoardLeft').innerHTML=sanitizeHydrationHTML(bL.innerHTML);
-      if(bR) document.getElementById('snippetBoardRight').innerHTML=sanitizeHydrationHTML(bR.innerHTML);
-    }
-    showReadingArea();
-    bindSentenceTips();
-    bindUserNotes();
-    centerReadingScroll();
-    return true;
+    inputTitle = '日語文章';
+    const text = preprocessInput(raw);
+    const sents = splitJapaneseSentences(text).map(jp => ({ jp, zh:'（翻譯中…）', note:'' }));
+    if(!sents.length) throw new Error('未能切出任何句子');
+    sentences = sents;
+    renderPage();
+    setStatus(`已切句，共 ${sentences.length} 句；正在翻譯…`);
+    await translateAll();
   }catch(e){
-    console.error('applyExportedState failed', e);
-    return false;
+    console.error(e);
+    showError('分析失敗：' + e.message);
+  }finally{
+    setButtons(false);
   }
 }
 function exportCurrentHtml(){
-  if(!analyzedDoc.sections || !analyzedDoc.sections.length){
-    showError('還沒有可匯出的內容。請先生成頁面。');
-    return;
-  }
-  try{
-    // Build a legacy-compatible mainPageHTML that embeds cardsContainer + boards + header
-    const mainPage=document.getElementById('mainPage');
-    const cards=document.getElementById('cardsContainer');
-    const bL=document.getElementById('snippetBoardLeft');
-    const bR=document.getElementById('snippetBoardRight');
-    const combinedHTML=mainPage.innerHTML
-      + `<div style="display:none" id="_cards_snapshot">${sanitizeHydrationHTML(cards.innerHTML)}</div>`
-      + `<div style="display:none" id="_boardL_snapshot">${sanitizeHydrationHTML(bL?bL.innerHTML:'')}</div>`
-      + `<div style="display:none" id="_boardR_snapshot">${sanitizeHydrationHTML(bR?bR.innerHTML:'')}</div>`;
-    const state={
-      doc: analyzedDoc,
-      wc: wordColorMap,
-      wi: wordColorInfo,
-      wr: wordReadingMap,
-      mainPageHTML: combinedHTML
-    };
-    const exportStateTag = `<script id="exported-state-script">window.__EXPORTED_STATE__=${JSON.stringify(state).replace(/<\/script/gi,'<\\/script')};<\/script>`;
-    let html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
-    html=html.replace(/<input([^>]*id="apiKey"[^>]*)value="[^"]*"([^>]*)>/i, '<input$1value=""$2>');
-    if(html.includes('<script>')){
-      html=html.replace('<script>', `${exportStateTag}\n<script>`);
-    }else{
-      html=html.replace('</body>', `${exportStateTag}\n</body>`);
-    }
-    const blob=new Blob([html],{type:'text/html;charset=utf-8'});
-    const a=document.createElement('a');
-    const url=URL.createObjectURL(blob);
-    const base=(analyzedDoc.title||document.getElementById('entryTitle').textContent||'japanese_reader').trim().replace(/[\\/:*?"<>|]+/g,'_').slice(0,50)||'japanese_reader';
-    const ts=new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
-    a.href=url;
-    a.download=`${base}_${ts}.html`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),1500);
-    setStatus('已匯出新的獨立 HTML');
-    showError('');
-  }catch(e){
-    console.error(e);
-    showError('匯出失敗：'+e.message);
-  }
+  const notes = {};
+  document.querySelectorAll('.sent-note').forEach(el => { notes[el.dataset.idx] = el.innerText || ''; });
+  const state = { input: inputEl.value, title: inputTitle, sentences, notes, apiKey: '' };
+  const doc = document.documentElement.cloneNode(true);
+  const keyInput = doc.querySelector('#apiKey');
+  if(keyInput) keyInput.setAttribute('value','');
+  const stateScript = doc.createElement('script');
+  stateScript.id = 'exported-state-script';
+  stateScript.textContent = `window.__EXPORTED_STATE__ = ${JSON.stringify(state).replace(/<\//g, '<\\/')};`;
+  doc.body.appendChild(stateScript);
+  const html = '<!DOCTYPE html>\n' + doc.outerHTML;
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'deepread_ipad_clean.html';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
-function loadState(){
-  try{
-    const cardsHTML=localStorage.getItem(STORAGE_KEY+'_html');
-    const doc=localStorage.getItem(STORAGE_KEY+'_doc');
-    if(!cardsHTML||!doc) return false;
-    analyzedDoc=JSON.parse(doc);
-    sentences=analyzedDoc.sections.flatMap(sec=>sec.paragraphs.flatMap(p=>p.sentences||[]));
-    wordColorMap=JSON.parse(localStorage.getItem(STORAGE_KEY+'_wc')||'{}');
-    wordColorInfo=JSON.parse(localStorage.getItem(STORAGE_KEY+'_wi')||'{}');
-    wordReadingMap=JSON.parse(localStorage.getItem(STORAGE_KEY+'_wr')||'{}');
-    // Restore header from _hdr if available
-    const hdr=localStorage.getItem(STORAGE_KEY+'_hdr');
-    if(hdr) document.getElementById('mainPage').innerHTML=sanitizeHydrationHTML(hdr);
-    // Restore cards into permanent cardsContainer
-    document.getElementById('cardsContainer').innerHTML=sanitizeHydrationHTML(cardsHTML);
-    // Restore boards
-    const boardsRaw=localStorage.getItem(STORAGE_KEY+'_boards');
-    if(boardsRaw) restoreBoardsHTML(JSON.parse(boardsRaw));
-    showReadingArea();
-    bindSentenceTips();
-    bindUserNotes();
-    centerReadingScroll();
-    return true;
-  }catch(e){console.error(e);return false;}
+function hydrateExportedState(){
+  if(!window.__EXPORTED_STATE__) return false;
+  const state = window.__EXPORTED_STATE__;
+  inputEl.value = state.input || '';
+  inputTitle = state.title || '日語文章';
+  sentences = Array.isArray(state.sentences) ? state.sentences : [];
+  renderPage(state.notes || {});
+  setStatus(`已載入匯出內容，共 ${sentences.length} 句`);
+  return true;
 }
-function setLoading(on){document.getElementById('analyzeBtn').disabled=on; document.getElementById('spinner').classList.toggle('active',on); if(!on) setStatus('');}
-function setStatus(msg){document.getElementById('statusText').textContent=msg;}
-function showError(msg){const el=document.getElementById('errMsg'); el.textContent=msg; el.classList.toggle('show',!!msg);}
-function clearAll(){
-  analyzedDoc={title:'',sections:[]}; sentences=[]; wordColorMap={}; wordColorInfo={}; wordReadingMap={};
-  document.getElementById('jpInput').value='';
-  document.getElementById('cardsContainer').innerHTML='';
-  ['snippetBoardLeft','snippetBoardRight'].forEach(id=>{
-    const b=document.getElementById(id);
-    if(b) b.querySelectorAll('.snippet-item').forEach(el=>el.remove());
-  });
-  updateBoardEmpty(null);
-  hideReadingArea();
-  showError('');
-  try{['_html','_hdr','_boards','_doc','_wc','_wi','_wr'].forEach(k=>localStorage.removeItem(STORAGE_KEY+k)); Object.keys(localStorage).forEach(k=>{ if(k.startsWith(STORAGE_KEY+'_ac_')) localStorage.removeItem(k); }); window.__analysisCache=new Map();}catch(e){}
-}
-document.getElementById('jpInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)) analyze();});
 
-// ── Text size control ──────────────────────────────────────────────────────
-(function(){
-  const MIN=80,MAX=160,STEP=5;
-  let Z=100;
-  const BASE_PARA=1.42, BASE_LINE=2.58; // matches .para defaults
-
-  function slider(){return document.getElementById('zoomSlider');}
-  function pctEl(){return document.getElementById('zoomPct');}
-  function centerEl(){return document.getElementById('cardsContainer');}
-
-  function applyZoom(z){
-    z=Math.round(Math.max(MIN,Math.min(MAX,z))/STEP)*STEP;
-    Z=z;
-    const s=slider(); const p=pctEl();
-    if(s){s.value=z; const fill=((z-MIN)/(MAX-MIN)*100).toFixed(1)+'%'; s.style.setProperty('--zp',fill);}
-    if(p) p.textContent=z+'%';
-    const el=centerEl();
-    if(el){
-      const scale=z/100;
-      el.style.fontSize=(BASE_PARA*scale).toFixed(3)+'rem';
-    }
-  }
-
-  function init(){
-    const s=slider();
-    if(!s) return;
-    s.addEventListener('input',()=>applyZoom(+s.value));
-    document.getElementById('zoomIn')?.addEventListener('click',()=>applyZoom(Z+STEP));
-    document.getElementById('zoomOut')?.addEventListener('click',()=>applyZoom(Z-STEP));
-    document.addEventListener('wheel',e=>{
-      if(!e.ctrlKey&&!e.metaKey) return;
-      e.preventDefault();
-      applyZoom(Z+(e.deltaY<0?STEP:-STEP));
-    },{passive:false});
-    applyZoom(Z);
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
-  else init();
-  window._applyZoom=applyZoom;
-  window._getZoom=()=>Z;
-})();
-// ── end text size ──────────────────────────────────────────────────────────
-
-if(window.__EXPORTED_STATE__){
-  applyExportedState(window.__EXPORTED_STATE__);
-}else if(!loadState()){
-  hideReadingArea();
-}
-</script>
-
-<script>
-// ── Animal Crossing Fish Overlay ──────────────────────────────────────────
-(function(){
-  const layer = document.getElementById('ac-fish-layer');
-  const badge = document.getElementById('fish-badge');
-  if(!layer || !badge) return;
-
-  const SPECIES = [
-    {name:'紅目鯽', key:'bitterling', shape:'round', tail:'fork', size:62, colors:['#6fc2d0','#9de2ec','#f59db6'], accent:'#ef6f98', pattern:'cheek'},
-    {name:'溪哥', key:'palechub', shape:'slender', tail:'fork', size:72, colors:['#9db8c7','#dfeef5','#f4cb5f'], accent:'#6f9bbd', pattern:'stripe'},
-    {name:'鯽魚', key:'crucian', shape:'deep', tail:'fork', size:76, colors:['#7d8fa6','#b0c2d6','#dde6ef'], accent:'#51667a', pattern:'shadow'},
-    {name:'珠星三塊魚', key:'popEyeGoldie', shape:'round', tail:'double', size:72, colors:['#f6b04d','#ffd070','#fff2b0'], accent:'#e98e2e', pattern:'speckles'},
-    {name:'鯉魚', key:'carp', shape:'carp', tail:'fork', size:88, colors:['#c38b5a','#e5bf8a','#f7ead1'], accent:'#8f5b31', pattern:'scale'},
-    {name:'錦鯉', key:'koi', shape:'carp', tail:'fork', size:92, colors:['#f7f3ee','#ffffff','#f39b5f'], accent:'#d94f3d', pattern:'koi'},
-    {name:'金魚', key:'goldfish', shape:'round', tail:'double', size:72, colors:['#ff9a46','#ffcf7f','#fff0bb'], accent:'#ea6a2b', pattern:'gold'},
-    {name:'龍睛金魚', key:'popeye', shape:'round', tail:'double', size:74, colors:['#272a35','#4b5161','#7f889c'], accent:'#f3f5ff', pattern:'popeye'},
-    {name:'蘭壽金魚', key:'ranchu', shape:'ranchu', tail:'fan', size:80, colors:['#ff9d52','#ffd685','#fff5ca'], accent:'#e96d2d', pattern:'gold'},
-    {name:'稻田魚', key:'killifish', shape:'tiny', tail:'fan', size:58, colors:['#bdd1c3','#e7f0d1','#f3e7b0'], accent:'#6a8f72', pattern:'tiny'},
-    {name:'塘鱧魚', key:'dorado', shape:'deep', tail:'fan', size:74, colors:['#8d9a5f','#c8d28c','#ece8b8'], accent:'#596138', pattern:'shadow'},
-    {name:'泥鰍', key:'loach', shape:'eel', tail:'stub', size:78, colors:['#7d664f','#b4946f','#dec49c'], accent:'#4d3a27', pattern:'whisker'},
-    {name:'鬥魚', key:'betta', shape:'betta', tail:'veil', size:84, colors:['#2ba49b','#6fd0c9','#f15b7a'], accent:'#8a2be2', pattern:'betta'},
-    {name:'鬼頭刀', key:'mahimahi', shape:'mahi', tail:'fork', size:96, colors:['#3bb38f','#a8eb5c','#ffe177'], accent:'#0b6a6e', pattern:'mahi'},
-    {name:'金鱒', key:'goldenTrout', shape:'slender', tail:'fork', size:84, colors:['#f0a93c','#ffd266','#fff2aa'], accent:'#7a5d20', pattern:'stripe'},
-    {name:'彩虹魚', key:'rainbowfish', shape:'slender', tail:'fan', size:74, colors:['#4aa0e8','#66d0ff','#f5d14b'], accent:'#ef6cab', pattern:'rainbow'},
-    {name:'吳郭魚', key:'tilapia', shape:'deep', tail:'fork', size:80, colors:['#717c8f','#a0b2c9','#c7d9ee'], accent:'#4f5c72', pattern:'bars'},
-    {name:'鳳尾魚', key:'anchovy', shape:'needle', tail:'fork', size:76, colors:['#7a9cc1','#b8d1e7','#eaf4fb'], accent:'#4d688b', pattern:'shine'},
-    {name:'吸盤魚', key:'suckerfish', shape:'sucker', tail:'fork', size:90, colors:['#6f8b88','#a7c3bf','#d7ecea'], accent:'#445c59', pattern:'disc'},
-    {name:'太平洋桶眼魚', key:'barreleye', shape:'barreleye', tail:'fan', size:88, colors:['#22323d','#516976','#88a8b7'], accent:'#87ff88', pattern:'dome'},
-    {name:'鱘魚', key:'sturgeon', shape:'sturgeon', tail:'fork', size:106, colors:['#6f7a7d','#a4b0b4','#dbe2e5'], accent:'#445055', pattern:'scutes'}
-  ];
-  const SPECIES_BY_NAME = Object.fromEntries(SPECIES.map(s=>[s.name,s]));
-  const COMBOS = {
-    '金魚|蘭壽金魚':'龍睛金魚',
-    '鯉魚|錦鯉':'錦鯉',
-    '彩虹魚|金鱒':'彩虹魚',
-    '紅目鯽|鯽魚':'溪哥',
-    '泥鰍|塘鱧魚':'泥鰍',
-    '鳳尾魚|溪哥':'鳳尾魚',
-    '鬥魚|彩虹魚':'鬥魚',
-    '吸盤魚|太平洋桶眼魚':'太平洋桶眼魚',
-    '鬼頭刀|鱘魚':'鬼頭刀'
-  };
-
-  const state = {
-    fishes: [],
-    dragFish: null,
-    dragOffsetX: 0,
-    dragOffsetY: 0,
-    lastTs: 0,
-    nextId: 1,
-    hoverX: -9999,
-    hoverY: -9999,
-    hoverActive: false,
-    lastMergeMsg: ''
-  };
-  const EDGE = 44;
-  const BOTTOM_STRIP_HEIGHT = 124;
-  const INITIAL_COUNT = 2;
-  const MAX_FISH = 5;
-
-  function clamp(n,min,max){ return Math.max(min,Math.min(max,n)); }
-  function choice(arr){ return arr[Math.floor(Math.random()*arr.length)] }
-  function rand(min,max){ return min + Math.random()*(max-min); }
-  function viewport(){ return {w:window.innerWidth,h:window.innerHeight}; }
-  function swimBounds(v){
-    return {
-      left: EDGE,
-      right: v.w - EDGE,
-      top: Math.max(EDGE + 10, v.h - BOTTOM_STRIP_HEIGHT + 26),
-      bottom: v.h - EDGE + 6
-    };
-  }
-
-  function bodyGradient(id, a, b, c){
-    return `<defs><linearGradient id="${id}" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="${a}"/><stop offset="60%" stop-color="${b}"/><stop offset="100%" stop-color="${c}"/></linearGradient></defs>`;
-  }
-
-  function makeFishSVG(spec){
-    const id = `g${spec.key}`;
-    const [c1,c2,c3] = spec.colors;
-    const stroke = 'rgba(34,62,88,.26)';
-    let body='';
-    let tail='';
-    let fins='';
-    let details='';
-    const eye = `<circle cx="126" cy="44" r="4.9" fill="#18222c"/><circle cx="127.8" cy="42.3" r="1.45" fill="rgba(255,255,255,.82)"/>`;
-
-    switch(spec.shape){
-      case 'round':
-        body = `<ellipse cx="90" cy="50" rx="40" ry="24" fill="url(#${id})" stroke="${stroke}" stroke-width="2"/>`;
-        fins += `<path d="M82 27 Q95 6 108 27" fill="${c2}" opacity=".72"/><path d="M97 71 Q81 85 66 70" fill="${c3}" opacity=".58"/>`;
-        break;
-      case 'ranchu':
-        body = `<path d="M46 52 C49 29, 78 18, 104 22 C132 26, 147 40, 145 54 C143 70, 118 81, 90 80 C63 79, 44 68, 46 52Z" fill="url(#${id})" stroke="${stroke}" stroke-width="2"/>`;
-        details += `<path d="M70 28 C79 18, 101 18, 110 28 C101 33, 78 35, 70 28Z" fill="rgba(255,180,120,.45)"/>`;
-        fins += `<path d="M92 72 Q75 88 64 70" fill="${c3}" opacity=".58"/>`;
-        break;
-      case 'deep':
-        body = `<path d="M38 50 C48 25, 82 20, 112 24 C134 27, 150 38, 152 50 C150 63, 132 74, 104 77 C76 80, 47 73, 38 50Z" fill="url(#${id})" stroke="${stroke}" stroke-width="2"/>`;
-        fins += `<path d="M91 25 Q104 7 120 28" fill="${c2}" opacity=".72"/><path d="M89 73 Q73 87 61 70" fill="${c3}" opacity=".58"/>`;
-        break;
-      case 'carp':
-        body = `<path d="M28 51 C40 31, 72 20, 109 24 C136 27, 156 38, 159 50 C156 63, 134 73, 102 76 C66 79, 36 69, 28 51Z" fill="url(#${id})" stroke="${stroke}" stroke-width="2"/>`;
-        fins += `<path d="M83 26 Q96 8 112 28" fill="${c2}" opacity=".78"/><path d="M92 72 Q77 86 65 69" fill="${c3}" opacity=".56"/>`;
-        details += `<path d="M124 54 q8 6 11 0" stroke="${c3}" stroke-width="2.1" fill="none" stroke-linecap="round"/><path d="M124 56 q8 10 12 3" stroke="${c3}" stroke-width="2.1" fill="none" stroke-linecap="round" opacity=".9"/>`;
-        break;
-      case 'tiny':
-        body = `<ellipse cx="93" cy="50" rx="34" ry="16" fill="url(#${id})" stroke="${stroke}" stroke-width="1.8"/>`;
-        fins += `<path d="M88 35 Q95 24 101 35" fill="${c2}" opacity=".72"/><path d="M94 64 Q84 72 74 64" fill="${c3}" opacity=".55"/>`;
-        break;
-      case 'eel':
-        body = `<path d="M23 56 C44 31, 76 30, 102 39 C123 46, 142 43, 157 31 C150 49, 151 60, 160 71 C140 58, 123 60, 101 66 C70 74, 39 74, 23 56Z" fill="url(#${id})" stroke="${stroke}" stroke-width="2"/>`;
-        details += `<path d="M128 51 q8 5 12 0" stroke="${c3}" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M126 47 q8 -5 12 -1" stroke="${c3}" stroke-width="1.5" fill="none" stroke-linecap="round" opacity=".85"/>`;
-        break;
-      case 'betta':
-        body = `<ellipse cx="93" cy="50" rx="33" ry="19" fill="url(#${id})" stroke="${stroke}" stroke-width="2"/>`;
-        fins += `<path d="M61 48 C40 20, 20 14, 16 25 C25 35, 34 46, 59 53 Z" fill="${c3}" opacity=".88"/><path d="M64 50 C36 70, 25 82, 24 91 C42 84, 52 72, 67 58 Z" fill="${spec.accent}" opacity=".7"/><path d="M87 26 C95 12, 109 8, 121 18 C109 19, 100 25, 92 33 Z" fill="${c2}" opacity=".8"/>`;
-        break;
-      case 'mahi':
-        body = `<path d="M25 51 C38 26, 76 14, 112 22 C138 28, 154 38, 159 49 C155 61, 135 70, 104 74 C67 78, 35 68, 25 51Z" fill="url(#${id})" stroke="${stroke}" stroke-width="2"/>`;
-        details += `<path d="M72 23 C77 9, 96 5, 112 12 C100 20, 86 22, 72 23Z" fill="rgba(255,255,255,.18)"/><path d="M54 61 L115 61" stroke="rgba(22,72,70,.4)" stroke-width="3" stroke-linecap="round"/>`;
-        fins += `<path d="M84 25 Q105 7 126 25" fill="${c2}" opacity=".75"/>`;
-        break;
-      case 'needle':
-        body = `<path d="M20 50 C44 40, 84 34, 118 37 C140 39, 154 44, 161 50 C154 56, 140 61, 118 63 C84 66, 44 60, 20 50Z" fill="url(#${id})" stroke="${stroke}" stroke-width="2"/>`;
-        details += `<ellipse cx="92" cy="44" rx="44" ry="7" fill="rgba(255,255,255,.16)"/>`;
-        break;
-      case 'sucker':
-        body = `<path d="M24 50 C36 26, 76 19, 111 24 C136 28, 155 38, 160 50 C155 63, 135 72, 105 76 C67 80, 36 70, 24 50Z" fill="url(#${id})" stroke="${stroke}" stroke-width="2"/>`;
-        details += `<ellipse cx="119" cy="50" rx="11" ry="8" fill="rgba(223,245,241,.82)" stroke="rgba(68,92,89,.4)" stroke-width="1.7"/><ellipse cx="119" cy="50" rx="6" ry="4" fill="rgba(92,121,118,.25)"/>`;
-        break;
-      case 'barreleye':
-        body = `<path d="M24 50 C36 27, 69 18, 108 22 C134 25, 152 37, 158 49 C152 62, 132 73, 103 76 C65 80, 34 70, 24 50Z" fill="url(#${id})" stroke="${stroke}" stroke-width="2"/>`;
-        details += `<path d="M73 25 C87 12, 109 10, 127 18 C131 24, 131 33, 127 40 C113 31, 88 31, 73 40 C69 34, 68 28, 73 25Z" fill="rgba(173,255,247,.28)" stroke="rgba(173,255,247,.45)" stroke-width="1.5"/><circle cx="96" cy="28" r="7" fill="rgba(135,255,136,.78)"/><circle cx="111" cy="28" r="7" fill="rgba(135,255,136,.78)"/>`;
-        break;
-      case 'sturgeon':
-        body = `<path d="M14 52 C31 31, 69 20, 112 24 C139 27, 162 37, 170 50 C161 61, 139 71, 111 75 C68 79, 31 70, 14 52Z" fill="url(#${id})" stroke="${stroke}" stroke-width="2"/>`;
-        details += `<path d="M55 38 L72 34 L89 32 L107 32 L126 35" stroke="rgba(68,80,85,.62)" stroke-width="3" stroke-linecap="round"/><circle cx="58" cy="39" r="2.6" fill="rgba(68,80,85,.8)"/><circle cx="78" cy="35" r="2.6" fill="rgba(68,80,85,.8)"/><circle cx="98" cy="33" r="2.6" fill="rgba(68,80,85,.8)"/><circle cx="118" cy="34" r="2.6" fill="rgba(68,80,85,.8)"/>`;
-        break;
-      default:
-        body = `<ellipse cx="92" cy="50" rx="40" ry="22" fill="url(#${id})" stroke="${stroke}" stroke-width="2"/>`;
-    }
-
-    switch(spec.tail){
-      case 'double':
-        tail = `<path d="M46 50 C28 30, 15 24, 10 33 C17 42, 24 48, 39 50 C25 52, 17 58, 10 68 C19 75, 31 70, 47 50Z" fill="${c3}" opacity=".94"/>`;
-        break;
-      case 'fan':
-        tail = `<path d="M47 50 C24 30, 8 33, 9 51 C10 68, 27 70, 49 50Z" fill="${c3}" opacity=".88"/>`;
-        break;
-      case 'veil':
-        tail = `<path d="M58 50 C38 22, 18 18, 11 30 C18 44, 24 49, 45 54 C22 61, 18 74, 21 87 C35 78, 47 67, 61 55 Z" fill="${c3}" opacity=".9"/>`;
-        break;
-      case 'stub':
-        tail = `<path d="M44 50 C30 38, 17 41, 12 50 C18 58, 30 62, 45 53 Z" fill="${c3}" opacity=".84"/>`;
-        break;
-      default:
-        tail = `<path d="M46 50 C27 28, 12 34, 9 50 C12 66, 27 72, 46 50Z" fill="${c3}" opacity=".88"/>`;
-    }
-
-    if(spec.pattern==='stripe') details += `<path d="M66 38 C85 35, 108 37, 124 41" stroke="${spec.accent}" stroke-width="4" stroke-linecap="round" opacity=".9"/><path d="M65 59 C85 56, 109 57, 123 61" stroke="rgba(255,255,255,.42)" stroke-width="3" stroke-linecap="round"/>`;
-    if(spec.pattern==='rainbow') details += `<path d="M64 38 C84 34, 109 35, 124 40" stroke="#ff7eb6" stroke-width="4" stroke-linecap="round" opacity=".9"/><path d="M67 46 C88 43, 109 43, 122 46" stroke="#fff082" stroke-width="4" stroke-linecap="round" opacity=".9"/><path d="M68 55 C89 53, 108 53, 121 56" stroke="#7cf0ff" stroke-width="4" stroke-linecap="round" opacity=".88"/>`;
-    if(spec.pattern==='bars') details += `<path d="M70 33 L66 66 M82 30 L79 69 M94 29 L92 70 M106 31 L105 68" stroke="rgba(79,92,114,.45)" stroke-width="4" stroke-linecap="round"/>`;
-    if(spec.pattern==='koi') details += `<path d="M67 33 C78 22, 95 23, 102 35 C92 41, 78 42, 67 33Z" fill="${spec.accent}" opacity=".95"/><path d="M87 54 C99 45, 114 47, 120 58 C109 65, 96 65, 87 54Z" fill="${c3}" opacity=".92"/><path d="M59 49 C68 43, 76 44, 82 50 C74 57, 66 57, 59 49Z" fill="rgba(34,34,34,.22)"/>`;
-    if(spec.pattern==='scale') details += `<path d="M66 38 q8 5 16 0 q8 5 16 0 q8 5 16 0" stroke="rgba(255,255,255,.32)" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M66 51 q8 5 16 0 q8 5 16 0 q8 5 16 0" stroke="rgba(255,255,255,.22)" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
-    if(spec.pattern==='speckles') details += `<circle cx="82" cy="42" r="2.6" fill="rgba(255,255,255,.56)"/><circle cx="94" cy="34" r="2.1" fill="rgba(255,255,255,.42)"/><circle cx="104" cy="51" r="2.2" fill="rgba(255,255,255,.48)"/>`;
-    if(spec.pattern==='gold') details += `<ellipse cx="83" cy="39" rx="19" ry="8" fill="rgba(255,255,255,.16)"/><path d="M63 56 C82 60, 105 58, 121 54" stroke="rgba(255,255,255,.24)" stroke-width="3" stroke-linecap="round"/>`;
-    if(spec.pattern==='popeye') details += `<circle cx="123" cy="43" r="7.6" fill="rgba(235,242,255,.9)" stroke="rgba(88,98,126,.55)" stroke-width="1.3"/><circle cx="127" cy="42" r="3.1" fill="#171d28"/>`;
-    if(spec.pattern==='tiny') details += `<circle cx="113" cy="45" r="2.4" fill="rgba(255,255,255,.7)"/>`;
-    if(spec.pattern==='cheek') details += `<circle cx="116" cy="54" r="6.4" fill="rgba(245,157,182,.48)"/>`;
-    if(spec.pattern==='shadow') details += `<ellipse cx="89" cy="42" rx="28" ry="9" fill="rgba(255,255,255,.12)"/>`;
-    if(spec.pattern==='mahi') details += `<path d="M67 48 C85 45, 109 44, 126 47" stroke="#ffe96f" stroke-width="4" stroke-linecap="round"/><path d="M65 56 C84 55, 108 55, 124 58" stroke="#2e8b57" stroke-width="4" stroke-linecap="round" opacity=".75"/>`;
-    if(spec.pattern==='shine') details += `<ellipse cx="92" cy="42" rx="31" ry="7" fill="rgba(255,255,255,.2)"/>`;
-    if(spec.pattern==='disc') details += `<path d="M72 44 C86 41, 100 41, 112 44" stroke="rgba(255,255,255,.24)" stroke-width="3" stroke-linecap="round"/>`;
-
-    return `
-      <svg viewBox="0 0 180 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        ${bodyGradient(id,c1,c2,c3)}
-        ${tail}
-        ${body}
-        ${fins}
-        ${details}
-        ${eye}
-      </svg>`;
-  }
-
-  function chooseSpecies(parentA, parentB){
-    if(parentA && parentB){
-      const key = [parentA.spec.name,parentB.spec.name].sort().join('|');
-      return SPECIES_BY_NAME[COMBOS[key]] || SPECIES[(SPECIES.indexOf(parentA.spec)+SPECIES.indexOf(parentB.spec)+Math.floor(Math.random()*5)+1) % SPECIES.length];
-    }
-    return choice(SPECIES);
-  }
-
-  function updateFishVisual(f){
-    const w = f.size;
-    const h = Math.round(f.size * 0.58);
-    const angle = Math.atan2(f.vy, Math.max(Math.abs(f.vx), .001)) * 180 / Math.PI * 0.35;
-    const facing = f.vx >= 0 ? 1 : -1;
-    f.el.style.width = w + 'px';
-    f.el.style.height = h + 'px';
-    f.el.style.setProperty('--tx', `${(f.x - w/2).toFixed(2)}px`);
-    f.el.style.setProperty('--ty', `${(f.y - h/2).toFixed(2)}px`);
-    f.el.style.transform = `translate(${(f.x - w/2).toFixed(2)}px, ${(f.y - h/2).toFixed(2)}px) scaleX(${facing}) rotate(${angle.toFixed(2)}deg)`;
-  }
-
-  function setBadge(msg=''){
-    if(msg){
-      state.lastMergeMsg = msg;
-      badge.textContent = msg;
-      clearTimeout(state.badgeTimer);
-      state.badgeTimer = setTimeout(()=>setBadge(), 2200);
-      return;
-    }
-    badge.textContent = `底部 ${state.fishes.length} 條魚 · 拖兩條魚碰在一起會生出新魚`;
-  }
-
-  function spawnFish(spec, opts={}){
-    const v = viewport();
-    const size = (opts.size || spec.size) * rand(.92,1.08);
-    const el = document.createElement('div');
-    el.className = 'ac-fish';
-    el.innerHTML = `${makeFishSVG(spec)}<div class="fish-name">${spec.name}</div>`;
-    el.title = `${spec.name}｜拖去碰另一條魚會生出新魚`;
-    layer.appendChild(el);
-    const fish = {
-      id: state.nextId++,
-      spec,
-      el,
-      size,
-      x: opts.x ?? rand(60, v.w - 60),
-      y: opts.y ?? rand(Math.max(56, v.h - BOTTOM_STRIP_HEIGHT + 28), v.h - 34),
-      vx: opts.vx ?? (Math.random()<.5?-1:1) * rand(.18,.42),
-      vy: opts.vy ?? rand(-.08,.08),
-      drift: rand(.0006,.002),
-      driftSeed: rand(0,Math.PI*2),
-      drag: false,
-      pointerId: null,
-      bornAt: performance.now(),
-      mergeCooldown: 0,
-      fleeTicks: 0,
-      hueSeed: rand(0,Math.PI*2)
-    };
-    updateFishVisual(fish);
-    bindFishEvents(fish);
-    state.fishes.push(fish);
-    setBadge();
-    if(opts.birth){
-      el.classList.add('birth');
-      setTimeout(()=>el.classList.remove('birth'), 480);
-    }
-    trimFishCount();
-    return fish;
-  }
-
-  function trimFishCount(){
-    while(state.fishes.length > MAX_FISH){
-      const victim = state.fishes.find(f=>!f.drag && f.mergeCooldown<=0) || state.fishes[0];
-      if(!victim) return;
-      victim.el.remove();
-      state.fishes = state.fishes.filter(f=>f!==victim);
-    }
-    setBadge();
-  }
-
-  function fleeFromPoint(f, x, y, boost=1){
-    if(f.drag) return;
-    const dx = f.x - x;
-    const dy = f.y - y;
-    const dist = Math.hypot(dx,dy) || 1;
-    const power = boost * (1.2 + Math.random() * .9);
-    f.vx += dx / dist * power;
-    f.vy += dy / dist * power * .8;
-    f.fleeTicks = 20;
-    f.mergeCooldown = Math.max(f.mergeCooldown, 8);
-  }
-
-  function bindFishEvents(fish){
-    const el = fish.el;
-    el.addEventListener('pointerdown', e=>{
-      e.preventDefault();
-      state.dragFish = fish;
-      fish.drag = true;
-      fish.pointerId = e.pointerId;
-      fish.el.classList.add('dragging');
-      const rect = fish.el.getBoundingClientRect();
-      state.dragOffsetX = e.clientX - rect.left - rect.width / 2;
-      state.dragOffsetY = e.clientY - rect.top - rect.height / 2;
-      fish.el.setPointerCapture?.(e.pointerId);
-      fish.mergeCooldown = 8;
-    });
-  }
-
-  function nearbyFish(source){
-    return state.fishes.find(f=>f!==source && !f.drag && Math.hypot(f.x-source.x, f.y-source.y) < Math.max(60, (f.size+source.size)*.45));
-  }
-
-  function mergeFish(a,b){
-    const newbornSpec = chooseSpecies(a,b);
-    const midX = (a.x + b.x) / 2;
-    const midY = (a.y + b.y) / 2;
-    spawnFish(newbornSpec, {
-      x: midX,
-      y: midY,
-      vx: rand(-1.6,1.6),
-      vy: rand(-.8,.8),
-      birth: true,
-      size: newbornSpec.size * rand(.95,1.08)
-    });
-    a.mergeCooldown = 38;
-    b.mergeCooldown = 38;
-    fleeFromPoint(a, midX, midY, 1.25);
-    fleeFromPoint(b, midX, midY, 1.25);
-    setBadge(`${a.spec.name} ＋ ${b.spec.name} → ${newbornSpec.name}`);
-  }
-
-  function releaseDrag(){
-    const fish = state.dragFish;
-    if(!fish) return;
-    fish.drag = false;
-    fish.el.classList.remove('dragging');
-    const mate = nearbyFish(fish);
-    if(mate && fish.mergeCooldown <= 10 && mate.mergeCooldown <= 10){
-      mergeFish(fish,mate);
-    }else{
-      fish.vx += rand(-.35,.35);
-      fish.vy += rand(-.25,.25);
-      fish.mergeCooldown = 14;
-    }
-    state.dragFish = null;
-  }
-
-  document.addEventListener('pointermove', e=>{
-    state.hoverX = e.clientX;
-    state.hoverY = e.clientY;
-    state.hoverActive = true;
-    const fish = state.dragFish;
-    if(!fish) return;
-    const v = viewport();
-    const bounds = swimBounds(v);
-    fish.x = clamp(e.clientX - state.dragOffsetX, bounds.left, bounds.right);
-    fish.y = clamp(e.clientY - state.dragOffsetY, bounds.top, bounds.bottom);
-    fish.vx = (e.movementX || 0) * .2;
-    fish.vy = (e.movementY || 0) * .2;
-    updateFishVisual(fish);
-  }, {passive:true});
-  document.addEventListener('pointerup', releaseDrag, {passive:true});
-  document.addEventListener('pointercancel', releaseDrag, {passive:true});
-  document.addEventListener('mouseleave', ()=>{ state.hoverActive = false; });
-
-  function tick(ts){
-    if(!state.lastTs) state.lastTs = ts;
-    const dt = Math.min(2.2, (ts - state.lastTs) / 16.6667);
-    state.lastTs = ts;
-    const v = viewport();
-    const bounds = swimBounds(v);
-
-    state.fishes.forEach(f=>{
-      if(f.mergeCooldown > 0) f.mergeCooldown -= dt;
-      if(f.drag){ return; }
-
-      if(state.hoverActive){
-        const dist = Math.hypot(f.x - state.hoverX, f.y - state.hoverY);
-      }
-
-      f.hueSeed += f.drift * dt * 10;
-      f.vx += Math.cos(f.hueSeed) * .0025 * dt;
-      f.vy += Math.sin(f.hueSeed * .7) * .002 * dt;
-
-      if(Math.abs(f.vx) < .18) f.vx += (f.vx >= 0 ? 1 : -1) * .004 * dt;
-      if(Math.abs(f.vy) > .25) f.vy *= .9;
-      if(f.fleeTicks > 0){
-        f.fleeTicks -= dt;
-      }else{
-        f.vx *= Math.pow(.994, dt);
-        f.vy *= Math.pow(.992, dt);
-      }
-
-      f.x += f.vx * dt;
-      f.y += f.vy * dt;
-
-      if(f.x < bounds.left){ f.x = bounds.left; f.vx = Math.abs(f.vx) + .16; }
-      if(f.x > bounds.right){ f.x = bounds.right; f.vx = -(Math.abs(f.vx) + .16); }
-      if(f.y < bounds.top){ f.y = bounds.top; f.vy = Math.abs(f.vy) + .06; }
-      if(f.y > bounds.bottom){ f.y = bounds.bottom; f.vy = -(Math.abs(f.vy) + .06); }
-
-      updateFishVisual(f);
-    });
-
-    requestAnimationFrame(tick);
-  }
-
-  const initV = viewport();
-  const initBounds = swimBounds(initV);
-  for(let i=0;i<INITIAL_COUNT;i++){
-    spawnFish(choice(SPECIES), {x: rand(80, window.innerWidth-80), y: rand(initBounds.top + 6, initBounds.bottom - 4)});
-  }
-  setBadge();
-  requestAnimationFrame(tick);
-})();
-
-// ── Button ripple effect ────────────────────────────────────────────────────
-document.querySelectorAll('.btn').forEach(btn => {
-  btn.addEventListener('click', function(e){
-    const ripple = document.createElement('span');
-    ripple.className = 'btn-ripple';
-    const rect = this.getBoundingClientRect();
-    ripple.style.left = (e.clientX - rect.left) + 'px';
-    ripple.style.top = (e.clientY - rect.top) + 'px';
-    this.appendChild(ripple);
-    setTimeout(() => ripple.remove(), 500);
-  });
+$('#analyzeBtn').addEventListener('click', analyze);
+$('#clearBtn').addEventListener('click', clearAll);
+$('#exportBtn').addEventListener('click', exportCurrentHtml);
+inputEl.addEventListener('keydown', (e) => {
+  if((e.ctrlKey || e.metaKey) && e.key === 'Enter') analyze();
 });
+apiKeyEl.addEventListener('input', saveState);
+inputEl.addEventListener('input', saveState);
+document.addEventListener('click', (e) => {
+  if(!e.target.closest('.sent')) hideTip();
+});
+window.addEventListener('resize', () => {
+  const active = document.querySelector('.sent.active');
+  if(active && tipEl.classList.contains('show')) showTipFor(active);
+});
+
+try{
+  const savedKey = localStorage.getItem(STORAGE_KEY);
+  if(savedKey) loadState();
+  if(window.__EXPORTED_STATE__) hydrateExportedState();
+}catch(e){ console.error(e); }
 </script>
 </body>
 </html>
