@@ -477,129 +477,41 @@ body{
 }
 
 
-
-/* ── Mobile simple layout override ── */
-.side-board-col,
-#excerpt-selection{
-  display:none !important;
+/* ── Simplified layout / translate toggle ─────────────────────────────── */
+.translate-toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:.42rem;
+  padding:.34rem .78rem;
+  border:1px solid var(--border-lt);
+  border-radius:999px;
+  background:rgba(255,255,255,.82);
+  font:.78rem 'Noto Sans TC',sans-serif;
+  color:var(--text-muted);
+  white-space:nowrap;
+  user-select:none;
 }
+.translate-toggle input{
+  width:15px;
+  height:15px;
+  accent-color:var(--green-dark);
+  cursor:pointer;
+}
+.translate-toggle span{
+  line-height:1;
+}
+.side-board-col{display:none !important;}
 .reading-center-wrap{
   margin-left:0 !important;
   margin-right:0 !important;
-  padding:8px 12px 44px !important;
-  overflow-x:visible !important;
+  padding:8px 24px 80px !important;
 }
-.reading-center{
-  max-width:980px !important;
-}
-.page{
-  padding:0 !important;
-  margin-top:.7rem !important;
-}
-.input-card{
-  max-width:980px !important;
-  margin:1rem auto 0 !important;
-}
-.card{
-  max-width:980px;
-  margin-left:auto;
-  margin-right:auto;
-}
-@media (max-width: 900px){
-  .top-bar{padding:.6rem .7rem !important; gap:.5rem !important;}
-  .api-wrap input{max-width:none !important;}
-  .page-header{margin-bottom:1.1rem !important; padding-bottom:1rem !important;}
-  .entry-title{font-size:clamp(2rem,10vw,2.45rem) !important; line-height:1.22 !important;}
-  .entry-desc{font-size:.88rem !important; line-height:1.7 !important;}
-  .hint-bar{gap:.55rem 1rem !important; margin-bottom:1rem !important; font-size:.78rem !important;}
-  .legend{gap:.35rem .7rem !important; margin-bottom:1rem !important; padding:.65rem .8rem !important; font-size:.73rem !important;}
-  .input-card{margin:.7rem .45rem 0 !important; padding:1rem .9rem !important; border-radius:16px !important;}
-  .input-card textarea{min-height:108px !important; font-size:.98rem !important; line-height:1.8 !important;}
-  .reading-center-wrap{padding:6px 8px 36px !important;}
-  .card{padding:1rem .95rem 1.05rem 1rem !important; border-radius:18px !important; margin-bottom:1rem !important;}
-  .card::before{top:16px !important; bottom:16px !important; width:4px !important;}
-  .para{font-size:clamp(1.08rem,5vw,1.24rem) !important; line-height:2.18 !important; margin-bottom:.8rem !important;}
-  .sent{padding:.18rem .22rem !important; margin:0 0 .72rem 0 !important; line-height:2.18 !important;}
-  #jp-tip{max-width:min(92vw,520px) !important; min-width:0 !important; font-size:.98rem !important; padding:.85rem 1rem !important; line-height:1.95 !important;}
-  #kj-tip{max-width:min(86vw,300px) !important;}
-  #selection-menu{min-width:0 !important; max-width:92vw !important; padding:.5rem .55rem !important; gap:.36rem !important;}
-}
-
-
-@media (max-width: 900px){
-  .top-bar{
-    display:grid !important;
-    grid-template-columns:1fr 1fr 1fr;
-    grid-template-areas:
-      "logo logo logo"
-      "api api api"
-      "analyze clear export"
-      "status status status";
-    align-items:center !important;
-    padding:.65rem .7rem !important;
-    gap:.55rem !important;
-  }
-  .logo{
-    grid-area:logo;
-    font-size:clamp(1.55rem,6.5vw,2.2rem) !important;
-    line-height:1 !important;
-  }
-  .logo::after{
-    font-size:inherit !important;
-    letter-spacing:inherit !important;
-  }
-  .api-wrap{
-    grid-area:api;
-    width:100%;
-    min-width:0;
-    display:grid !important;
-    grid-template-columns:auto 1fr;
-    gap:.45rem;
-    align-items:center;
-  }
-  .api-wrap label{
-    font-size:.8rem !important;
-  }
-  .api-wrap input{
-    width:100%;
-    max-width:none !important;
-    min-width:0;
-  }
-  #analyzeBtn{grid-area:analyze;}
-  .top-bar > button:nth-of-type(2){grid-area:clear;}
-  #exportBtn{grid-area:export;}
-  .top-bar > .btn{
-    width:100%;
-    min-width:0;
-    padding:.62rem .55rem !important;
-    font-size:.78rem !important;
-  }
-  .spinner{grid-area:status1; justify-self:start;}
-  .status-txt{grid-area:status; font-size:.72rem !important;}
-}
-
-@media (max-width: 560px){
-  .top-bar{
-    grid-template-columns:1fr 1fr;
-    grid-template-areas:
-      "logo logo"
-      "api api"
-      "analyze analyze"
-      "clear export"
-      "status status";
-  }
-  .top-bar > .btn{
-    font-size:.88rem !important;
-    padding:.72rem .7rem !important;
-  }
-  .api-wrap{
-    grid-template-columns:1fr;
-    gap:.28rem;
-  }
-  .api-wrap label{
-    white-space:normal;
-    line-height:1.2;
-  }
+.reading-center{max-width:1600px !important;}
+.sent-note{display:none !important;}
+#excerpt-selection{display:none !important;}
+#selection-menu{min-width:auto !important;}
+@media(max-width:700px){
+  .reading-center-wrap{padding:6px 10px 48px !important;}
 }
 
 </style>
@@ -616,6 +528,7 @@ body{
   <button class="btn" id="analyzeBtn" onclick="analyze()">切句 &amp; 分析</button>
   <button class="btn btn-ghost" onclick="clearAll()">清除</button>
   <button class="btn btn-ghost" id="exportBtn" onclick="exportCurrentHtml()">匯出 HTML</button>
+  <label class="translate-toggle" for="translateToggle"><input type="checkbox" id="translateToggle"><span>翻譯</span></label>
   <div class="spinner" id="spinner"></div>
   <span class="status-txt" id="statusText"></span>
 </div>
@@ -623,7 +536,7 @@ body{
   <label>貼入文言文原文</label>
   <textarea id="jpInput" placeholder="請貼入文言文原文。&#10;建議：題目獨立成行、段落之間空一行。&#10;點「切句 &amp; 分析」送出；若想重新翻譯請先按「清除」再貼入原文。"></textarea>
   <div class="input-actions">
-    <span class="hint-small">金鑰僅存瀏覽器，不外傳 ｜ 會以模型逐句切分並逐句翻譯 ｜ Ctrl / Cmd + Enter 送出</span>
+    <span class="hint-small">金鑰僅存瀏覽器，不外傳 ｜ 預設只切句與上色，勾選「翻譯」後才逐句翻譯 ｜ Ctrl / Cmd + Enter 送出</span>
   </div>
   <div class="error-msg" id="errMsg"></div>
 </div>
@@ -631,13 +544,12 @@ body{
   <div class="page-header">
     <div class="entry-meta" id="entryMeta"></div>
     <div class="entry-title" id="entryTitle"></div>
-    <div class="entry-desc">懸停句子 → 現代漢語翻譯 ・ 原本彩色詞僅作標示 ・ 選取文字 → 高亮注釋；點手動高亮可跳轉辭典</div>
+    <div class="entry-desc">勾選翻譯後，懸停句子 → 現代漢語翻譯 ・ 原本彩色詞僅作標示 ・ 選取文字 → 高亮注釋；點手動高亮可跳轉辭典</div>
   </div>
   <div class="hint-bar">
-    <div class="hint-item"><div class="hint-swatch"></div>懸停句子 → 現代漢語翻譯</div>
+    <div class="hint-item"><div class="hint-swatch"></div>勾選翻譯後，懸停句子 → 現代漢語翻譯</div>
     <div class="hint-item"><div class="hint-dot-kj"></div>原本彩色詞不再彈出注解</div>
     <div class="hint-item"><div class="hint-swatch" style="background:#fde2e4;border-color:#f0a0b0"></div>選取文字 → 高亮 &amp; 注釋</div>
-    <div class="hint-item"><div class="hint-swatch" style="background:#ffffff;border-color:#9ac39a"></div>選取文字 → 高亮＆注釋</div>
   </div>
 </div>
 <!-- reading-scroll: flex row. Side boards are sticky to viewport edges; center scrolls independently -->
@@ -707,7 +619,7 @@ const WORD_COLORS=[
   {cls:'kw-c4',hex:'#b7770d',name:'金黃'},{cls:'kw-c5',hex:'#117a65',name:'青碧'},{cls:'kw-c6',hex:'#a04000',name:'赤褐'},{cls:'kw-c7',hex:'#1f618d',name:'碧藍'},
   {cls:'kw-c8',hex:'#884ea0',name:'堇紫'},{cls:'kw-c9',hex:'#196f3d',name:'深綠'},{cls:'kw-c10',hex:'#922b21',name:'深緋'},{cls:'kw-c11',hex:'#5d6d7e',name:'石青'}
 ];
-const STORAGE_KEY='shindoku_wenyan_mobile_simple_v1_20260412';
+const STORAGE_KEY='shindoku_wenyan_no_boards_translate_toggle_v1_20260415';
 let translationJobSeq=0;
 let analyzedDoc={title:'',sections:[]};
 let sentences=[];
@@ -1167,7 +1079,7 @@ async function translateSingleSentence(jp){
 function updateSentenceTranslation(idx, zh){
   if(!sentences[idx]) return;
   sentences[idx].zh = zh || '（翻譯失敗）';
-  const el=document.querySelector(`.sent[data-idx="${idx}"]`);
+  const el=document.querySelector(`#cardsContainer .sent[data-idx="${idx}"]`);
   if(el) el.dataset.cn = sentences[idx].zh;
 }
 function normalizeCompareText(s){
@@ -1201,43 +1113,62 @@ async function startBackgroundTranslation(cacheKey){
   const pending=sentences.map((s,i)=>({s,i})).filter(x=>!x.s.zh || x.s.zh==='（翻譯中…）' || x.s.zh==='（翻譯暫不可用）');
   if(!pending.length){ setStatus(`完成，共 ${sentences.length} 句`); return; }
   setStatus(`已完成切句與標色，背景翻譯中 0/${pending.length} 句…`);
-  const groups=[];
-  const batchSize=10;
-  for(let i=0;i<pending.length;i+=batchSize) groups.push(pending.slice(i,i+batchSize));
   let done=0;
-  for(const group of groups){
-    if(jobId!==translationJobSeq) return;
-    try{
-      const result=await translateBatch(group.map(x=>x.s));
-      const used=new Set();
-      result.forEach(item=>{
-        const pair=group[item.i];
-        if(!pair) return;
-        used.add(item.i);
-        updateSentenceTranslation(pair.i, item.z || '（翻譯失敗）');
-      });
-      for(let k=0;k<group.length;k++){
-        if(used.has(k)) continue;
-        try{ updateSentenceTranslation(group[k].i, await translateSingleSentence(group[k].s.jp)); }
-        catch(_){ updateSentenceTranslation(group[k].i, '（翻譯失敗）'); }
-      }
-    }catch(e){
-      for(const pair of group){
+  const concurrency=3;
+  let nextIndex=0;
+  async function worker(){
+    while(true){
+      if(jobId!==translationJobSeq) return;
+      const current=nextIndex++;
+      if(current>=pending.length) return;
+      const pair=pending[current];
+      try{
+        const zh=await translateSingleSentence(pair.s.jp);
         if(jobId!==translationJobSeq) return;
-        try{ updateSentenceTranslation(pair.i, await translateSingleSentence(pair.s.jp)); }
-        catch(_){ updateSentenceTranslation(pair.i, '（翻譯失敗）'); }
+        updateSentenceTranslation(pair.i, zh);
+      }catch(_){
+        if(jobId!==translationJobSeq) return;
+        updateSentenceTranslation(pair.i, '（翻譯失敗）');
       }
+      done += 1;
+      if(done===1 || done===pending.length || done%2===0){
+        setAnalysisCache(cacheKey, {sentences, wordColorMap, wordColorInfo, wordReadingMap});
+        scheduleSaveState(80);
+      }
+      setStatus(`已完成切句與標色，背景翻譯中 ${done}/${pending.length} 句…`);
+      await new Promise(r=>setTimeout(r, 10));
     }
-    done += group.length;
-    setAnalysisCache(cacheKey, {sentences, wordColorMap, wordColorInfo, wordReadingMap});
-    scheduleSaveState(80);
-    setStatus(`已完成切句與標色，背景翻譯中 ${Math.min(done,pending.length)}/${pending.length} 句…`);
-    await new Promise(r=>setTimeout(r, 20));
   }
+  const jobs=[];
+  for(let i=0;i<Math.min(concurrency,pending.length);i++) jobs.push(worker());
+  await Promise.all(jobs);
   if(jobId!==translationJobSeq) return;
   setAnalysisCache(cacheKey, {sentences, wordColorMap, wordColorInfo, wordReadingMap});
   scheduleSaveState(80);
   setStatus(`完成，共 ${sentences.length} 句`);
+}
+
+
+function isTranslateEnabled(){
+  return !!document.getElementById('translateToggle')?.checked;
+}
+function getCurrentRawText(){
+  return analyzedDoc?.sections?.[0]?.paragraphs?.[0]?.raw || document.getElementById('jpInput')?.value?.trim() || '';
+}
+function getCurrentCacheKey(){
+  const rawText=getCurrentRawText();
+  return rawText ? hashText('punctcut_v2_quoteprio_singletranslate::'+rawText) : '';
+}
+async function maybeStartTranslationFromToggle(){
+  if(!isTranslateEnabled() || !sentences.length) return;
+  const cacheKey=getCurrentCacheKey();
+  if(!cacheKey) return;
+  if(sentences.some(s=>!s.zh || s.zh==='（翻譯中…）' || s.zh==='（翻譯暫不可用）')){
+    setStatus('開始逐句翻譯…');
+    await startBackgroundTranslation(cacheKey);
+  }else{
+    setStatus(`完成，共 ${sentences.length} 句`);
+  }
 }
 
 function buildMaps(){
@@ -1264,11 +1195,12 @@ async function analyze(){
   const jp=document.getElementById('jpInput').value.trim();
   if(!jp) return;
   const jobId=++translationJobSeq;
+  const translateEnabled=isTranslateEnabled();
   setLoading(true);showError('');
   try{
     const doc=preprocessInput(jp);
     const rawText=doc.sections?.[0]?.paragraphs?.[0]?.raw || '';
-    const cacheKey=hashText('punctcut_v1_quoteprio::'+rawText);
+    const cacheKey=hashText('punctcut_v2_quoteprio_singletranslate::'+rawText);
     const cached=getAnalysisCache(cacheKey);
 
     if(cached?.sentences?.length){
@@ -1278,13 +1210,23 @@ async function analyze(){
       renderPage();
       scheduleSaveState(80);
       setLoading(false);
-      if(jobId===translationJobSeq && sentences.some(s=>!s.zh || s.zh==='（翻譯中…）' || s.zh==='（翻譯暫不可用）')) startBackgroundTranslation(cacheKey);
+      if(jobId!==translationJobSeq) return;
+      if(translateEnabled && sentences.some(s=>!s.zh || s.zh==='（翻譯中…）' || s.zh==='（翻譯暫不可用）')){
+        startBackgroundTranslation(cacheKey);
+      }else{
+        setStatus(`完成，共 ${sentences.length} 句`);
+      }
       return;
     }
 
     setStatus('正在依標點切句與標色…');
 
     const analyzedSentences=fastPrepareSentences(rawText);
+    if(!translateEnabled){
+      analyzedSentences.forEach(s=>{
+        if(!s.zh || s.zh==='（翻譯中…）' || s.zh==='（翻譯暫不可用）') s.zh='';
+      });
+    }
 
     if(jobId!==translationJobSeq) return;
 
@@ -1296,8 +1238,9 @@ async function analyze(){
     scheduleSaveState(80);
     setLoading(false);
 
-    if(jobId===translationJobSeq && sentences.some(s=>!s.zh || s.zh==='（翻譯中…）' || s.zh==='（翻譯暫不可用）')) {
-      setStatus(`已完成切句，背景翻譯中…`);
+    if(jobId!==translationJobSeq) return;
+    if(translateEnabled && sentences.some(s=>!s.zh || s.zh==='（翻譯中…）' || s.zh==='（翻譯暫不可用）')) {
+      setStatus('已完成切句，開始逐句翻譯…');
       startBackgroundTranslation(cacheKey);
     } else {
       setStatus(`完成，共 ${sentences.length} 句`);
@@ -1368,7 +1311,7 @@ function renderPage(){
     const note=document.createElement('div');
     note.className='sent-note';
     note.dataset.noteFor=String(idx);
-    note.dataset.placeholder='';
+    note.dataset.placeholder='在這句下方輸入你的文字；選取後也可以拖到左右摘錄板';
     note.setAttribute('contenteditable','plaintext-only');
     note.setAttribute('spellcheck','false');
     row.appendChild(note);
@@ -1384,7 +1327,6 @@ function renderPage(){
   document.getElementById('entryTitle').textContent='文言文篇章';
   document.getElementById('entryMeta').textContent=`共 ${sentences.length} 句`;
   showReadingArea();
-  disableBoardsForMobileSimple();
   bindSentenceTips();
   bindUserNotes();
   bindSnippetBoards();
@@ -1406,26 +1348,42 @@ function placeJp(e){
   jpTip.style.left=x+'px'; jpTip.style.top=y+'px';
 }
 function bindSentenceTips(){
-  document.querySelectorAll('.sent').forEach(el=>{
+  document.querySelectorAll('#cardsContainer .sent').forEach(el=>{
     if(el.dataset.tipBound==='1' && el.__tipBoundInternal===true) return;
     delete el.dataset.tipBound;
     el.dataset.tipBound='1';
     el.__tipBoundInternal=true;
-    el.addEventListener('mouseenter',e=>{if(activeS) activeS.classList.remove('hi'); activeS=el; el.classList.add('hi'); jpBody.textContent=el.dataset.cn||''; jpTip.classList.add('show'); placeJp(e);});
-    el.addEventListener('mousemove',placeJp);
-    el.addEventListener('mouseleave',()=>{el.classList.remove('hi'); activeS=null; jpTip.classList.remove('show');});
+    el.addEventListener('mouseenter',e=>{
+      if(activeS) activeS.classList.remove('hi');
+      activeS=el;
+      el.classList.add('hi');
+      const text=(el.dataset.cn||'').trim();
+      if(!isTranslateEnabled() || !text){
+        jpTip.classList.remove('show');
+        return;
+      }
+      jpBody.textContent=text;
+      jpTip.classList.add('show');
+      placeJp(e);
+    });
+    el.addEventListener('mousemove',e=>{
+      if(jpTip.classList.contains('show')) placeJp(e);
+    });
+    el.addEventListener('mouseleave',()=>{
+      el.classList.remove('hi');
+      activeS=null;
+      jpTip.classList.remove('show');
+    });
   });
 }
 function bindUserNotes(){
   document.querySelectorAll('.sent-note').forEach(el=>{
-    stripLegacyNotePlaceholder(el);
     if(el.dataset.noteBound==='1') return;
     el.dataset.noteBound='1';
     el.setAttribute('contenteditable','plaintext-only');
     el.setAttribute('spellcheck','false');
-    if(!el.dataset.placeholder) el.dataset.placeholder='';
+    if(!el.dataset.placeholder) el.dataset.placeholder='在這句下方輸入你的文字；選取後也可以拖到左右摘錄板';
     const sync=()=>{
-      stripLegacyNotePlaceholder(el);
       if((el.textContent||'').trim()) el.classList.add('has-text');
       else el.classList.remove('has-text');
       scheduleSaveState(120);
@@ -1440,24 +1398,6 @@ function bindUserNotes(){
     sync();
   });
 }
-
-function stripLegacyNotePlaceholder(el){
-  if(!el) return;
-  const txt=String(el.textContent||'').replace(/​/g,'').trim();
-  if(!txt) return;
-  if(/在[這这]句(?:話)?下方輸入你的文字/.test(txt) || /選取後也可以拖到左右(?:兩側)?[摘录摘錄]板/.test(txt)){
-    el.textContent='';
-  }
-}
-
-
-function disableBoardsForMobileSimple(){
-  document.querySelectorAll('.side-board-col').forEach(el=>el.remove());
-  const excerptBtn=document.getElementById('excerpt-selection');
-  if(excerptBtn) excerptBtn.style.display='none';
-  document.querySelectorAll('.snippet-board').forEach(board=>{ board.innerHTML=''; });
-}
-
 const kjTip=document.getElementById('kj-tip');
 const kjBody=document.getElementById('kj-tip-body');
 function showKjTip(hira,word,x,y){
@@ -1474,7 +1414,7 @@ function showKjTip(hira,word,x,y){
 function rangeToHTML(range){
   const wrapper=document.createElement('div');
   wrapper.appendChild(range.cloneContents());
-  wrapper.querySelectorAll('.sent').forEach(el=>{el.removeAttribute('data-tip-bound');el.classList.remove('hi');});
+  wrapper.querySelectorAll('.sent').forEach(el=>{el.removeAttribute('data-tip-bound');el.removeAttribute('data-idx');el.removeAttribute('data-cn');el.classList.remove('hi');});
   wrapper.querySelectorAll('.snippet-del').forEach(el=>el.remove());
   return wrapper.innerHTML.trim();
 }
@@ -1530,9 +1470,67 @@ function bindSnippetItem(item){
     });
   }
 }
-function bindSnippetBoards(){ return; }
-function createSnippetItem(innerHTML,x=26,y=26,boardId='snippetBoardRight'){ return null; }
-function createSnippetFromRange(range,boardId='snippetBoardRight'){ clearSel(); return; }
+function bindSnippetBoards(){
+  getSnippetBoards().forEach(board=>{
+    if(board.dataset.boardBound==='1'){
+      board.querySelectorAll('.snippet-item').forEach(bindSnippetItem);
+      updateBoardEmpty(board);
+      return;
+    }
+    board.dataset.boardBound='1';
+    board.addEventListener('dragover',e=>{
+      const types=[...(e.dataTransfer?.types||[])];
+      if(types.includes('text/x-shindoku-snippet-html') || types.includes('text/html') || types.includes('text/plain')){
+        e.preventDefault();
+        board.classList.add('dragover');
+        e.dataTransfer.dropEffect='copy';
+      }
+    });
+    board.addEventListener('dragleave',()=>board.classList.remove('dragover'));
+    board.addEventListener('drop',e=>{
+      const types=[...(e.dataTransfer?.types||[])];
+      if(!(types.includes('text/x-shindoku-snippet-html') || types.includes('text/plain'))) return;
+      e.preventDefault();
+      board.classList.remove('dragover');
+      const html=e.dataTransfer.getData('text/x-shindoku-snippet-html') || e.dataTransfer.getData('text/html') || lastDraggedSnippetHTML;
+      const text=e.dataTransfer.getData('text/plain');
+      if(!html && !text.trim()) return;
+      const rect=board.getBoundingClientRect();
+      const x=e.clientX-rect.left+board.scrollLeft;
+      const y=e.clientY-rect.top+board.scrollTop;
+      createSnippetItem(html||escH(text), x, y, board.id);
+      clearSel();
+    });
+    board.querySelectorAll('.snippet-item').forEach(bindSnippetItem);
+    updateBoardEmpty(board);
+  });
+}
+function createSnippetItem(innerHTML,x=26,y=26,boardId='snippetBoardRight'){
+  const board=getSnippetBoardById(boardId) || getSnippetBoardById('snippetBoardRight') || getSnippetBoards()[0];
+  if(!board) return null;
+  const item=document.createElement('div');
+  item.className='snippet-item';
+  item.style.left='0px'; item.style.top='0px';
+  item.innerHTML=`<button class="snippet-del" type="button" title="刪除摘錄">×</button><div class="snippet-content">${innerHTML}</div>`;
+  board.appendChild(item);
+  bindSnippetItem(item);
+  snippetZ+=1; item.style.zIndex=snippetZ;
+  const pos=clampSnippetPosition(board,item, x, y);
+  item.style.left=pos.left+'px'; item.style.top=pos.top+'px';
+  normalizeBoardHeight(board,pos.top+item.offsetHeight);
+  updateBoardEmpty(board);
+  saveState();
+  return item;
+}
+function createSnippetFromRange(range,boardId='snippetBoardRight'){
+  if(!range) return;
+  const html=rangeToHTML(range);
+  if(!html) return;
+  const board=getSnippetBoardById(boardId) || getSnippetBoardById('snippetBoardRight') || getSnippetBoards()[0];
+  const count=board ? board.querySelectorAll('.snippet-item').length : 0;
+  createSnippetItem(html, 24 + (count%3)*32, 24 + Math.floor(count/3)*42, board?.id||'snippetBoardRight');
+  clearSel();
+}
 document.addEventListener('dragstart',e=>{
   const sel=window.getSelection();
   if(!sel || sel.rangeCount===0 || sel.isCollapsed) return;
@@ -1580,7 +1578,7 @@ function clearSel(){selMenu.classList.remove('show'); storedRange=null; window.g
 function wrapHL(range,colorClass){const span=document.createElement('span'); span.className=`manual-hl ${colorClass}`; span.appendChild(range.extractContents()); range.insertNode(span); bindSentenceTips(); saveState();}
 document.addEventListener('mouseup',()=>{setTimeout(()=>{const sel=window.getSelection(); if(!sel||sel.rangeCount===0||sel.isCollapsed){selMenu.classList.remove('show'); return;} const range=normRange(sel.getRangeAt(0).cloneRange()); if(!range||!isInPage(range)||!sel.toString().trim()){selMenu.classList.remove('show'); return;} storedRange=range; showSelMenu(range.getBoundingClientRect());},10);});
 document.querySelectorAll('.color-btn').forEach(btn=>btn.addEventListener('click',()=>{if(!storedRange) return; wrapHL(storedRange,btn.dataset.color); clearSel();}));
-document.getElementById('excerpt-selection').addEventListener('click',()=>{if(!storedRange) return; createSnippetFromRange(storedRange);});
+document.getElementById('excerpt-selection')?.addEventListener('click',()=>{if(!storedRange) return; createSnippetFromRange(storedRange);});
 document.getElementById('cancel-selection').addEventListener('click',clearSel);
 const noteTip=document.getElementById('note-tip'); const noteTarget=document.getElementById('note-target'); const noteBody=document.getElementById('note-body'); let activeHL=null;
 const NOTE_THEMES={
@@ -1669,8 +1667,21 @@ function sanitizeHydrationHTML(html){
   tpl.content.querySelectorAll('.snippet-item').forEach(el=>el.removeAttribute('data-snippet-bound'));
   return tpl.innerHTML;
 }
-function getBoardsHTML(){ return {}; }
-function restoreBoardsHTML(boards){ return; }
+function getBoardsHTML(){
+  const result={};
+  ['snippetBoardLeft','snippetBoardRight'].forEach(id=>{
+    const b=document.getElementById(id);
+    if(b) result[id]=sanitizeHydrationHTML(b.innerHTML);
+  });
+  return result;
+}
+function restoreBoardsHTML(boards){
+  if(!boards) return;
+  ['snippetBoardLeft','snippetBoardRight'].forEach(id=>{
+    const b=document.getElementById(id);
+    if(b && boards[id]!==undefined) b.innerHTML=sanitizeHydrationHTML(boards[id]);
+  });
+}
 function saveState(){
   try{
     if(document.getElementById('inputCard').style.display!=='none') return;
@@ -1714,7 +1725,6 @@ function applyExportedState(state){
       if(bR) document.getElementById('snippetBoardRight').innerHTML=sanitizeHydrationHTML(bR.innerHTML);
     }
     showReadingArea();
-    disableBoardsForMobileSimple();
     bindSentenceTips();
     bindUserNotes();
     bindSnippetBoards();
@@ -1791,7 +1801,6 @@ function loadState(){
     const boardsRaw=localStorage.getItem(STORAGE_KEY+'_boards');
     if(boardsRaw) restoreBoardsHTML(JSON.parse(boardsRaw));
     showReadingArea();
-    disableBoardsForMobileSimple();
     bindSentenceTips();
     bindUserNotes();
     bindSnippetBoards();
@@ -1806,6 +1815,7 @@ function clearAll(){
   translationJobSeq++;
   analyzedDoc={title:'',sections:[]}; sentences=[]; wordColorMap={}; wordColorInfo={}; wordReadingMap={};
   document.getElementById('jpInput').value='';
+  const translateToggle=document.getElementById('translateToggle'); if(translateToggle) translateToggle.checked=false;
   document.getElementById('cardsContainer').innerHTML='';
   ['snippetBoardLeft','snippetBoardRight'].forEach(id=>{
     const b=document.getElementById(id);
@@ -1816,9 +1826,21 @@ function clearAll(){
   showError('');
   try{['_html','_hdr','_boards','_doc','_wc','_wi','_wr'].forEach(k=>localStorage.removeItem(STORAGE_KEY+k)); Object.keys(localStorage).forEach(k=>{ if(k.startsWith(STORAGE_KEY+'_ac_')) localStorage.removeItem(k); }); window.__analysisCache=new Map();}catch(e){}
 }
+
 document.getElementById('jpInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)) analyze();});
+document.getElementById('translateToggle')?.addEventListener('change',async e=>{
+  jpTip.classList.remove('show');
+  if(!e.target.checked){
+    translationJobSeq++;
+    if(sentences.length) setStatus(`完成，共 ${sentences.length} 句`);
+    return;
+  }
+  if(!sentences.length) return;
+  await maybeStartTranslationFromToggle();
+});
 
 // ── Text size control ──────────────────────────────────────────────────────
+
 (function(){
   const MIN=80,MAX=160,STEP=5;
   let Z=100;
