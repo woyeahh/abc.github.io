@@ -484,6 +484,8 @@ body{
 /* ── Two-column reader override ───────────────────────────────────────── */
 .toggle-wrap{display:inline-flex;align-items:center;gap:.45rem;padding:.3rem .72rem;border:1px solid var(--border-lt);border-radius:999px;background:rgba(255,255,255,.72);font:600 .78rem 'Noto Sans JP',sans-serif;color:var(--text-muted);white-space:nowrap;user-select:none}
 .toggle-wrap input{accent-color:var(--green-dark)}
+.kw-click-disabled .kw-term{cursor:default;pointer-events:auto}
+.kw-click-disabled .kw-term:hover{opacity:1}
 #jp-tip,#excerpt-selection,#term-add-excerpt,.sent-note{display:none!important}
 .reading-scroll{display:none;max-width:1560px;margin:1.4rem auto 0;padding:0 .65rem 3rem}
 .reading-scroll.visible{display:block}
@@ -521,6 +523,7 @@ body{
   </div>
   <button class="btn" id="analyzeBtn" onclick="analyze()">切句 &amp; 分析</button>
   <label class="toggle-wrap" for="translateToggle"><input type="checkbox" id="translateToggle" checked> <span>翻譯</span></label>
+  <label class="toggle-wrap" for="colorTermDictToggle"><input type="checkbox" id="colorTermDictToggle" checked> <span>彩字查詞</span></label>
   <button class="btn btn-ghost" onclick="clearAll()">清除</button>
   <button class="btn btn-ghost" id="exportBtn" onclick="exportCurrentHtml()">匯出 HTML</button>
   <div class="spinner" id="spinner"></div>
@@ -538,11 +541,11 @@ body{
   <div class="page-header">
     <div class="entry-meta" id="entryMeta"></div>
     <div class="entry-title" id="entryTitle"></div>
-    <div class="entry-desc">左側原文、右側逐句翻譯 ・ 左側彩色詞可查字典 ・ 左側每句可直接複製 ・ 左右都可手動修改</div>
+    <div class="entry-desc">左側原文、右側逐句翻譯 ・ 彩色詞可切換是否點擊查字典 ・ 左側每句可直接複製 ・ 左右都可手動修改</div>
   </div>
   <div class="hint-bar">
     <div class="hint-item"><div class="hint-swatch"></div>左側原文 ／ 右側逐句翻譯</div>
-    <div class="hint-item"><div class="hint-dot-kj"></div>點擊彩色詞或手動高亮 → 單字直跳漢字ペディア；多字查 Kotobank／蒼語辭典（Aoilang）／古文辭典（Weblio）</div>
+    <div class="hint-item"><div class="hint-dot-kj"></div>勾選「彩字查詞」時，點擊彩色詞或手動高亮 → 單字直跳漢字ペディア；多字查 Kotobank／蒼語辭典（Aoilang）／古文辭典（Weblio）</div>
     <div class="hint-item"><div class="hint-swatch" style="background:#fde2e4;border-color:#f0a0b0"></div>選取文字 → 高亮</div>
     <div class="hint-item"><div class="hint-swatch" style="background:#ffffff;border-color:#9ac39a"></div>左側每句後有複製按鈕，左右都可手動修改</div>
   </div>
@@ -1717,6 +1720,10 @@ document.addEventListener('click',e=>{
   }
   const kw=e.target.closest('.kw-term');
   if(kw){
+    if(!wantsColorTermDict()){
+      hideManualDictMenu();
+      return;
+    }
     e.stopPropagation();
     hideNoteTip();
     hideTermActionMenu();
@@ -1964,10 +1971,22 @@ function setTranslateToggle(v){
   const el=document.getElementById('translateToggle');
   if(el) el.checked=!!v;
 }
+function wantsColorTermDict(){
+  const el=document.getElementById('colorTermDictToggle');
+  return !!(el && el.checked);
+}
+function setColorTermDictToggle(v){
+  const el=document.getElementById('colorTermDictToggle');
+  if(el) el.checked=!!v;
+}
+function applyKeywordClickMode(){
+  document.body.classList.toggle('kw-click-disabled', !wantsColorTermDict());
+}
 function updateReaderMode(){
   const wrap=document.getElementById('readingScroll');
   if(!wrap) return;
   wrap.classList.toggle('translation-on', wantsTranslation());
+  applyKeywordClickMode();
 }
 function syncAnalyzedDocFromSentences(){
   if(!analyzedDoc?.sections?.length) return;
@@ -2249,7 +2268,7 @@ function saveState(){
     localStorage.setItem(STORAGE_KEY+'_wc',JSON.stringify(wordColorMap));
     localStorage.setItem(STORAGE_KEY+'_wi',JSON.stringify(wordColorInfo));
     localStorage.setItem(STORAGE_KEY+'_wr',JSON.stringify(wordReadingMap));
-    localStorage.setItem(STORAGE_KEY+'_opts',JSON.stringify({translate:wantsTranslation()}));
+    localStorage.setItem(STORAGE_KEY+'_opts',JSON.stringify({translate:wantsTranslation(), colorTermDict:wantsColorTermDict()}));
   }catch(e){}
 }
 function applyExportedState(state){
@@ -2261,6 +2280,7 @@ function applyExportedState(state){
     wordColorInfo=state.wi||{};
     wordReadingMap=state.wr||{};
     setTranslateToggle(!!state?.opts?.translate);
+    setColorTermDictToggle(state?.opts?.colorTermDict!==false);
     renderPage();
     return true;
   }catch(e){
@@ -2275,7 +2295,7 @@ function exportCurrentHtml(){
   }
   try{
     syncSentencesFromDOM();
-    const state={doc: analyzedDoc, wc: wordColorMap, wi: wordColorInfo, wr: wordReadingMap, opts:{translate:wantsTranslation()}};
+    const state={doc: analyzedDoc, wc: wordColorMap, wi: wordColorInfo, wr: wordReadingMap, opts:{translate:wantsTranslation(), colorTermDict:wantsColorTermDict()}};
     const exportStateTag = `<script id="exported-state-script">window.__EXPORTED_STATE__=${JSON.stringify(state).replace(/<\/script/gi,'<\\/script')};<\/script>`;
     let html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
     html=html.replace(/<input([^>]*id="apiKey"[^>]*)value="[^"]*"([^>]*)>/i, '<input$1value=""$2>');
@@ -2310,6 +2330,7 @@ function loadState(){
     wordReadingMap=JSON.parse(localStorage.getItem(STORAGE_KEY+'_wr')||'{}');
     const opts=JSON.parse(localStorage.getItem(STORAGE_KEY+'_opts')||'{}');
     setTranslateToggle(!!opts.translate);
+    setColorTermDictToggle(opts.colorTermDict!==false);
     renderPage();
     return true;
   }catch(e){
@@ -2332,12 +2353,17 @@ document.getElementById('translateToggle')?.addEventListener('change',()=>{
     scheduleSaveState(60);
   }
 });
+document.getElementById('colorTermDictToggle')?.addEventListener('change',()=>{
+  applyKeywordClickMode();
+  if(document.getElementById('inputCard').style.display==='none') scheduleSaveState(60);
+});
 
 if(window.__EXPORTED_STATE__){
   applyExportedState(window.__EXPORTED_STATE__);
 }else if(!loadState()){
   hideReadingArea();
 }
+applyKeywordClickMode();
 </script>
 
 <script>
