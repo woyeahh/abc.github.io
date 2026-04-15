@@ -481,22 +481,32 @@ body{
 
 
 
-/* ── Excerpt boards removed; all other features unchanged ── */
-.side-board-col{display:none !important;}
-.reading-center-wrap{
-  margin-left:0 !important;
-  margin-right:0 !important;
-  padding:8px 32px 80px !important;
-}
-#excerpt-selection,
-#term-add-excerpt,
-.hint-bar .hint-item:last-child{display:none !important;}
-@media(max-width:1000px){
-  .reading-center-wrap{padding:8px 18px 60px !important;}
-}
-@media(max-width:700px){
-  .reading-center-wrap{padding:6px 10px 48px !important;}
-}
+/* ── Two-column reader override ───────────────────────────────────────── */
+.toggle-wrap{display:inline-flex;align-items:center;gap:.45rem;padding:.3rem .72rem;border:1px solid var(--border-lt);border-radius:999px;background:rgba(255,255,255,.72);font:600 .78rem 'Noto Sans JP',sans-serif;color:var(--text-muted);white-space:nowrap;user-select:none}
+.toggle-wrap input{accent-color:var(--green-dark)}
+#jp-tip,#excerpt-selection,#term-add-excerpt,.sent-note{display:none!important}
+.reading-scroll{display:none;max-width:1560px;margin:1.4rem auto 0;padding:0 .65rem 3rem}
+.reading-scroll.visible{display:block}
+#cardsContainer.reader-grid{display:flex;flex-direction:column;gap:1rem}
+.grid-head,.sentence-pair{display:grid;grid-template-columns:minmax(0,1fr);gap:1rem;align-items:start}
+.reading-scroll.translation-on .grid-head,.reading-scroll.translation-on .sentence-pair{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.grid-head{position:sticky;top:64px;z-index:40}
+.grid-head-label{padding:.72rem 1rem;border:1px solid var(--border-lt);border-radius:16px;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 2px 10px rgba(46,125,50,.08);font:700 .82rem 'Noto Sans JP',sans-serif;letter-spacing:.08em;color:var(--green-dark)}
+.pane-card{background:rgba(255,255,255,.96);border:1px solid var(--border-lt);border-radius:18px;box-shadow:0 4px 18px rgba(46,125,50,.08),0 1px 4px rgba(46,125,50,.04);overflow:hidden;min-width:0}
+.pane-toolbar{display:flex;justify-content:space-between;align-items:center;gap:.75rem;padding:.65rem .9rem;border-bottom:1px solid rgba(170,203,170,.45);background:linear-gradient(180deg,rgba(242,249,242,.95),rgba(255,255,255,.92))}
+.pane-index{font:600 .74rem 'DM Mono',monospace;color:var(--text-light);letter-spacing:.05em}
+.copy-sent-btn{border:1px solid var(--border-lt);background:#fff;border-radius:999px;padding:.28rem .72rem;font:600 .76rem 'Noto Sans JP',sans-serif;color:var(--green-dark);cursor:pointer;transition:background .15s,border-color .15s,transform .15s}
+.copy-sent-btn:hover{background:var(--bg-card2);border-color:var(--green-soft)}
+.copy-sent-btn:active{transform:translateY(1px)}
+.editable-sent{min-height:5.8rem;padding:1rem 1.05rem 1.1rem;outline:none;white-space:pre-wrap;word-break:break-word;background:transparent;caret-color:var(--green-dark)}
+.editable-sent:focus{background:rgba(255,255,255,.92);box-shadow:inset 0 0 0 2px rgba(46,125,50,.08)}
+.source-sent{font:400 1.26rem/2.3 'Noto Serif JP',serif;color:var(--text)}
+.trans-sent{font:400 1.22rem/2.22 'Noto Serif TC',serif;color:var(--text)}
+.trans-placeholder{color:var(--text-light);font-family:'Noto Sans JP',sans-serif;font-size:.88rem}
+.kw-zh{cursor:text;user-select:text;-webkit-user-select:text}
+.pane-card.translation-card .pane-toolbar{background:linear-gradient(180deg,rgba(248,251,255,.95),rgba(255,255,255,.92))}
+.pane-card.translation-card .pane-index{color:#60738b}
+@media(max-width:980px){.reading-scroll{padding:0 .4rem 2rem}.grid-head,.sentence-pair,.reading-scroll.translation-on .grid-head,.reading-scroll.translation-on .sentence-pair{grid-template-columns:minmax(0,1fr)}.grid-head{position:static}.source-sent{font-size:1.12rem;line-height:2.12}.trans-sent{font-size:1.1rem;line-height:2.02}}
 
 </style>
 </head>
@@ -510,6 +520,7 @@ body{
     <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
   </div>
   <button class="btn" id="analyzeBtn" onclick="analyze()">切句 &amp; 分析</button>
+  <label class="toggle-wrap" for="translateToggle"><input type="checkbox" id="translateToggle" checked> <span>翻譯</span></label>
   <button class="btn btn-ghost" onclick="clearAll()">清除</button>
   <button class="btn btn-ghost" id="exportBtn" onclick="exportCurrentHtml()">匯出 HTML</button>
   <div class="spinner" id="spinner"></div>
@@ -517,9 +528,9 @@ body{
 </div>
 <div class="input-card" id="inputCard">
   <label>貼入日文文章</label>
-  <textarea id="jpInput" placeholder="請貼入日文文章。&#10;建議：標題獨立成行、段落之間空一行。&#10;會先本地切句與彩色高亮，再逐句翻譯成繁體中文。"></textarea>
+  <textarea id="jpInput" placeholder="請貼入日文文章。&#10;建議：標題獨立成行、段落之間空一行。&#10;可只切句＋上色；勾選翻譯後才會逐句翻成繁體中文。"></textarea>
   <div class="input-actions">
-    <span class="hint-small">金鑰僅存瀏覽器，不外傳 ｜ 先切句＋彩色高亮，立刻顯示，再背景翻譯 ｜ 依。！？切句，括號不切句 ｜ Ctrl / Cmd + Enter 送出</span>
+    <span class="hint-small">金鑰僅存瀏覽器，不外傳 ｜ 不勾選翻譯時只做切句＋上色 ｜ 勾選翻譯後才生成右側逐句翻譯框 ｜ Ctrl / Cmd + Enter 送出</span>
   </div>
   <div class="error-msg" id="errMsg"></div>
 </div>
@@ -527,42 +538,17 @@ body{
   <div class="page-header">
     <div class="entry-meta" id="entryMeta"></div>
     <div class="entry-title" id="entryTitle"></div>
-    <div class="entry-desc">先切句與彩色高亮，再逐句翻譯 ・ 手動高亮 → 詞目網站 ・ 選取文字 → 高亮</div>
+    <div class="entry-desc">左側原文、右側逐句翻譯 ・ 左側彩色詞可查字典 ・ 左側每句可直接複製 ・ 左右都可手動修改</div>
   </div>
   <div class="hint-bar">
-    <div class="hint-item"><div class="hint-swatch"></div>懸停句子 → 中文翻譯</div>
+    <div class="hint-item"><div class="hint-swatch"></div>左側原文 ／ 右側逐句翻譯</div>
     <div class="hint-item"><div class="hint-dot-kj"></div>點擊彩色詞或手動高亮 → 單字直跳漢字ペディア；多字查 Kotobank／蒼語辭典（Aoilang）／古文辭典（Weblio）</div>
     <div class="hint-item"><div class="hint-swatch" style="background:#fde2e4;border-color:#f0a0b0"></div>選取文字 → 高亮</div>
-    <div class="hint-item"><div class="hint-swatch" style="background:#ffffff;border-color:#9ac39a"></div>選取文字後可直接拖到左右兩側摘錄板</div>
+    <div class="hint-item"><div class="hint-swatch" style="background:#ffffff;border-color:#9ac39a"></div>左側每句後有複製按鈕，左右都可手動修改</div>
   </div>
 </div>
-<!-- reading-scroll: flex row. Side boards are sticky to viewport edges; center scrolls independently -->
 <div class="reading-scroll" id="readingScroll">
-  <aside class="side-board-col" id="leftBoardCol">
-    <div class="board-head">
-      <div class="board-title">左側摘錄板</div>
-      <div class="board-note">把選中的文字拖到左邊，或用「摘錄」按鈕加入。</div>
-    </div>
-    <div class="snippet-board" id="snippetBoardLeft">
-      <div class="board-empty" id="boardEmptyLeft">把選中的文字拖到左側。會保留原本的彩色、高亮與字體。</div>
-    </div>
-  </aside>
-  <div class="reading-center-wrap" id="readingCenterWrap">
-    <div class="reading-zoom-wrap" id="readingZoomWrap">
-      <div class="reading-center">
-        <div id="cardsContainer"></div>
-      </div>
-    </div>
-  </div>
-  <aside class="side-board-col" id="rightBoardCol">
-    <div class="board-head">
-      <div class="board-title">右側摘錄板</div>
-      <div class="board-note">中間正文可橫向捲動，兩側板固定於螢幕兩側。</div>
-    </div>
-    <div class="snippet-board" id="snippetBoardRight">
-      <div class="board-empty" id="boardEmptyRight">把選中的文字拖到右側。會保留原本的彩色、高亮與字體。</div>
-    </div>
-  </aside>
+  <div id="cardsContainer"></div>
 </div>
 <div id="jp-tip"><div class="tip-label">中文翻譯</div><div id="jp-tip-body"></div></div>
 <div id="kj-tip"><div id="kj-tip-body"></div></div>
@@ -574,7 +560,7 @@ body{
   <a class="manual-dict-link" id="dict-link-kanjipedia" href="#" target="_blank" rel="noopener noreferrer">漢字ペディア</a>
 </div>
 <div id="term-action-menu">
-  <button class="term-action-btn" id="term-add-excerpt" type="button">摘錄到右側</button>
+  <button class="term-action-btn" id="term-add-excerpt" type="button" style="display:none">摘錄到右側</button>
   <button class="term-action-btn" id="term-remove-bg" type="button">移除這個底色</button>
   <button class="term-action-btn" id="term-restore-bg" type="button">恢復這個底色</button>
 </div>
@@ -588,7 +574,7 @@ body{
   <button class="color-btn" data-color="manual-c6"></button>
   <button class="color-btn" data-color="manual-c7"></button>
   <button class="color-btn" data-color="manual-c8"></button>
-  <button class="menu-btn" id="excerpt-selection">摘錄</button>
+  <button class="menu-btn" id="excerpt-selection" style="display:none">摘錄</button>
   <button class="menu-btn" id="cancel-selection">取消</button>
 </div>
 <div id="note-tip">
@@ -1687,7 +1673,7 @@ function showSelMenu(rect){
   selMenu.style.left=left+'px'; selMenu.style.top=top+'px';
 }
 function clearSel(){selMenu.classList.remove('show'); storedRange=null; window.getSelection().removeAllRanges();}
-function wrapHL(range,colorClass){const span=document.createElement('span'); span.className=`manual-hl ${colorClass}`; span.appendChild(range.extractContents()); range.insertNode(span); const q=(span.textContent||'').trim(); if(isSingleCharQuery(q) && pickFirstKanji(q)) warmupSingleCharDirect(q); hideManualDictMenu(); saveState();}
+function wrapHL(range,colorClass){const span=document.createElement('span'); span.className=`manual-hl ${colorClass}`; span.appendChild(range.extractContents()); range.insertNode(span); const q=(span.textContent||'').trim(); const host=span.closest('.source-sent,.trans-sent'); if(host) captureSentenceStateFromElement(host); if(isSingleCharQuery(q) && pickFirstKanji(q)) warmupSingleCharDirect(q); hideManualDictMenu(); saveState();}
 document.addEventListener('mouseup',()=>{setTimeout(()=>{const sel=window.getSelection(); if(!sel||sel.rangeCount===0||sel.isCollapsed){selMenu.classList.remove('show'); return;} const range=normRange(sel.getRangeAt(0).cloneRange()); if(!range||!isInPage(range)||!sel.toString().trim()){selMenu.classList.remove('show'); return;} storedRange=range; showSelMenu(range.getBoundingClientRect());},10);});
 document.querySelectorAll('.color-btn').forEach(btn=>btn.addEventListener('click',()=>{if(!storedRange) return; wrapHL(storedRange,btn.dataset.color); clearSel();}));
 document.getElementById('excerpt-selection').addEventListener('click',()=>{if(!storedRange) return; createSnippetFromRange(storedRange);});
@@ -1715,7 +1701,7 @@ function showNoteTip(el){activeHL=el; applyNoteTheme(el); noteTarget.textContent
 function hideNoteTip(){noteTip.classList.remove('show'); activeHL=null;}
 function unwrap(node){const p=node.parentNode; while(node.firstChild) p.insertBefore(node.firstChild,node); p.removeChild(node);}
 document.getElementById('note-edit').addEventListener('click',()=>{if(!activeHL) return; const txt=window.prompt('輸入注釋（會追加，不覆蓋舊注釋）：',''); if(txt===null||!txt.trim()) return; const notes=getNotes(activeHL); notes.push(txt.trim()); setNotes(activeHL,notes); renderNotes(activeHL); saveState();});
-document.getElementById('note-remove').addEventListener('click',()=>{if(!activeHL) return; const t=activeHL; hideNoteTip(); unwrap(t); saveState(); bindSentenceTips();});
+document.getElementById('note-remove').addEventListener('click',()=>{if(!activeHL) return; const t=activeHL; const host=t.closest('.source-sent,.trans-sent'); hideNoteTip(); unwrap(t); if(host) captureSentenceStateFromElement(host); saveState(); bindSentenceTips();});
 document.getElementById('note-close').addEventListener('click',hideNoteTip);
 noteTip.addEventListener('wheel',e=>e.stopPropagation(),{passive:true}); noteTip.addEventListener('touchmove',e=>e.stopPropagation(),{passive:true});
 document.addEventListener('click',e=>{
@@ -1966,6 +1952,386 @@ document.getElementById('jpInput').addEventListener('keydown',e=>{if(e.key==='En
   window._getZoom=()=>Z;
 })();
 // ── end text size ──────────────────────────────────────────────────────────
+
+
+
+/* ── Two-column reader overrides ───────────────────────────────────────── */
+function wantsTranslation(){
+  const el=document.getElementById('translateToggle');
+  return !!(el && el.checked);
+}
+function setTranslateToggle(v){
+  const el=document.getElementById('translateToggle');
+  if(el) el.checked=!!v;
+}
+function updateReaderMode(){
+  const wrap=document.getElementById('readingScroll');
+  if(!wrap) return;
+  wrap.classList.toggle('translation-on', wantsTranslation());
+}
+function syncAnalyzedDocFromSentences(){
+  if(!analyzedDoc?.sections?.length) return;
+  const p=analyzedDoc.sections?.[0]?.paragraphs?.[0];
+  if(p) p.sentences=sentences;
+}
+function normalizeWordEntry(v){
+  if(Array.isArray(v)) return {text:String(v[0]||'').trim(), reading:String(v[1]||'').trim(), zh:String(v[2]||'').trim()};
+  if(v && typeof v==='object') return {text:String(v.text||v.word||'').trim(), reading:String(v.reading||v.ruby||'').trim(), zh:String(v.zh||v.cn||v.gloss||'').trim()};
+  return {text:'',reading:'',zh:''};
+}
+function cleanHighlightWords(arr){
+  const out=[];
+  const seen=new Set();
+  for(const raw of Array.isArray(arr)?arr:[]){
+    const item=normalizeWordEntry(raw);
+    const key=item.text;
+    if(!key) continue;
+    if(key.length<2) continue;
+    if(/^[ぁ-ゖァ-ヺー]+$/.test(key)) continue;
+    if(seen.has(key)) continue;
+    seen.add(key);
+    out.push(item);
+    if(out.length>=8) break;
+  }
+  return out;
+}
+async function translateSentenceBatch(batch){
+  const payload=batch.map((s,i)=>({i:i+1,j:String(s.jp||'')}));
+  const joined=batch.map(v=>v.jp).join('\n');
+  const sys=`你是日語句子處理器。使用者已經先完成切句，你不得重新切句、不得合併句子、不得遺漏句子。請依輸入順序逐句回傳繁體中文翻譯，並為每一句挑出適合彩色高亮的日文關鍵詞，另外給出那些關鍵詞在該句繁體中文翻譯裡最對應的中文詞語或短語。只回傳純 JSON。
+格式：{"s":[{"z":"繁體中文翻譯","w":[["日文關鍵詞","讀音","中文對應詞"],["日文關鍵詞","讀音","中文對應詞"]]}]}
+規則：
+1. s 的數量必須和輸入句子數完全一致，順序完全一致。
+2. w 只列日文原句中實際出現、適合高亮的詞，最多 8 個。
+3. 第 3 欄必須盡量填入該詞在中文翻譯中最對應的中文詞或短語；若真的無法對應，可留空字串。
+4. 優先保留漢字詞、專有名詞、反覆出現的關鍵表現；沒有讀音可留空字串。
+5. 不要附加說明，不要輸出 markdown。`;
+  const res=await callDeepSeek(sys, JSON.stringify(payload), Math.min(5200, Math.max(1600, pickMaxTokensByLength(joined)+1600)));
+  const data=extractJSON(res.text);
+  const arr=Array.isArray(data)?data:(data?.s||data?.sentences||[]);
+  if(!Array.isArray(arr) || arr.length!==batch.length) throw new Error('batch-mismatch');
+  return arr.map((item,idx)=>({
+    jp:batch[idx].jp,
+    zh:String(item?.z||item?.zh||'').trim(),
+    words:cleanHighlightWords(item?.w||item?.words||[])
+  }));
+}
+function renderTranslationText(text, words=[]){
+  const src=String(text||'');
+  if(!src) return '<span class="trans-placeholder">尚未翻譯</span>';
+  const pairs=[];
+  const seen=new Set();
+  for(const item of Array.isArray(words)?words:[]){
+    const phrase=String(item?.zh||'').trim();
+    const term=String(item?.text||'').trim();
+    if(!phrase || !term) continue;
+    if(phrase.length<1) continue;
+    const key=phrase+'__'+term;
+    if(seen.has(key)) continue;
+    seen.add(key);
+    pairs.push({phrase, cls:colorClassForTerm(term)});
+  }
+  pairs.sort((a,b)=>b.phrase.length-a.phrase.length);
+  let out='';
+  for(let i=0;i<src.length;){
+    let matched=null;
+    for(const pair of pairs){
+      if(src.startsWith(pair.phrase,i)){ matched=pair; break; }
+    }
+    if(matched){
+      out += `<span class="${matched.cls} kw-zh">${escH(matched.phrase)}</span>`;
+      i += matched.phrase.length;
+    }else{
+      out += escH(src[i]);
+      i += 1;
+    }
+  }
+  return out;
+}
+
+function normalizeEditablePlainText(v){
+  return String(v||'')
+    .replace(/\u00A0/g,' ')
+    .replace(/\r/g,'')
+    .replace(/[ \t]+\n/g,'\n')
+    .replace(/\n{3,}/g,'\n\n')
+    .trim();
+}
+function captureSentenceStateFromElement(el){
+  const idx=Number(el?.dataset?.idx||-1);
+  if(idx<0 || !sentences[idx]) return;
+  const raw=normalizeEditablePlainText(el.textContent||'');
+  if(el.classList.contains('source-sent')){
+    sentences[idx].jp=raw;
+    sentences[idx].sourceHtml=el.innerHTML;
+  }else if(el.classList.contains('trans-sent')){
+    sentences[idx].zh=raw;
+    sentences[idx].transHtml=el.innerHTML;
+  }
+}
+function syncSentencesFromDOM(){
+  document.querySelectorAll('.source-sent[data-idx], .trans-sent[data-idx]').forEach(captureSentenceStateFromElement);
+  syncAnalyzedDocFromSentences();
+}
+function bindEditablePairs(){
+  document.querySelectorAll('.editable-sent').forEach(el=>{
+    if(el.dataset.editBound==='1') return;
+    el.dataset.editBound='1';
+    el.setAttribute('contenteditable','plaintext-only');
+    el.setAttribute('spellcheck','false');
+    el.addEventListener('paste',e=>{
+      e.preventDefault();
+      const txt=(e.clipboardData||window.clipboardData)?.getData('text/plain')||'';
+      document.execCommand('insertText', false, txt);
+    });
+    el.addEventListener('blur',()=>{
+      captureSentenceStateFromElement(el);
+      scheduleSaveState(60);
+    });
+    el.addEventListener('input',()=>{
+      captureSentenceStateFromElement(el);
+      scheduleSaveState(120);
+    });
+  });
+  document.querySelectorAll('.copy-sent-btn').forEach(btn=>{
+    if(btn.dataset.copyBound==='1') return;
+    btn.dataset.copyBound='1';
+    btn.addEventListener('click',async()=>{
+      const idx=Number(btn.dataset.idx||-1);
+      const txt=idx>=0 && sentences[idx] ? normalizeEditablePlainText(sentences[idx].jp||'') : '';
+      if(!txt) return;
+      try{
+        await navigator.clipboard.writeText(txt);
+        setStatus('已複製第 '+(idx+1)+' 句');
+      }catch(e){
+        const ta=document.createElement('textarea');
+        ta.value=txt; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); setStatus('已複製第 '+(idx+1)+' 句'); }catch(_e){}
+        ta.remove();
+      }
+      setTimeout(()=>{ if((document.getElementById('statusText')?.textContent||'').startsWith('已複製第 ')) setStatus(''); }, 1200);
+    });
+  });
+}
+function bindSentenceTips(){}
+function bindUserNotes(){}
+function updateSentenceTranslation(idx, zh){
+  if(!sentences[idx]) return;
+  sentences[idx].zh = zh || '（翻譯失敗）';
+  const el=document.querySelector(`.trans-sent[data-idx="${idx}"]`);
+  const html=renderTranslationText(sentences[idx].zh, sentences[idx].words||[]);
+  sentences[idx].transHtml=html;
+  if(el) el.innerHTML=html;
+}
+function renderPage(){
+  updateReaderMode();
+  const container=document.getElementById('cardsContainer');
+  if(!container) return;
+  container.className='reader-grid';
+  container.innerHTML='';
+  const showTrans=wantsTranslation();
+
+  const head=document.createElement('div');
+  head.className='grid-head';
+  const h1=document.createElement('div');
+  h1.className='grid-head-label';
+  h1.textContent='原文';
+  head.appendChild(h1);
+  if(showTrans){
+    const h2=document.createElement('div');
+    h2.className='grid-head-label';
+    h2.textContent='逐句翻譯';
+    head.appendChild(h2);
+  }
+  container.appendChild(head);
+
+  sentences.forEach((s,idx)=>{
+    const pair=document.createElement('div');
+    pair.className='sentence-pair';
+
+    const left=document.createElement('div');
+    left.className='pane-card source-card';
+    left.innerHTML=`<div class="pane-toolbar"><span class="pane-index">${String(idx+1).padStart(3,'0')}</span><button class="copy-sent-btn" type="button" data-idx="${idx}">複製</button></div><div class="editable-sent source-sent" data-idx="${idx}">${s.sourceHtml||renderText(s.jp||'', buildTextRegex())}</div>`;
+    pair.appendChild(left);
+
+    if(showTrans){
+      const right=document.createElement('div');
+      right.className='pane-card translation-card';
+      right.innerHTML=`<div class="pane-toolbar"><span class="pane-index">${String(idx+1).padStart(3,'0')}</span><span></span></div><div class="editable-sent trans-sent" data-idx="${idx}">${s.transHtml||renderTranslationText(s.zh||'', s.words||[])}</div>`;
+      pair.appendChild(right);
+    }
+
+    container.appendChild(pair);
+  });
+
+  showReadingArea();
+  bindHighlightedTerms();
+  bindEditablePairs();
+  centerReadingScroll();
+}
+async function analyze(){
+  const jp=document.getElementById('jpInput').value.trim();
+  if(!jp) return;
+  setLoading(true); showError('');
+  try{
+    const doc=preprocessInput(jp);
+    const rawText=doc.sections?.[0]?.paragraphs?.[0]?.raw || '';
+    const doTrans=wantsTranslation();
+    const cacheKey=hashText(rawText+'::two-col-reader::'+(doTrans?'translate':'source-only'));
+    const cached=getAnalysisCache(cacheKey);
+    if(cached?.sentences?.length){
+      analyzedDoc={title:'日語文章',sections:[{heading:'',paragraphs:[{raw:rawText,sentences:cached.sentences}]}]};
+      sentences=cached.sentences;
+      wordColorMap=cached.wordColorMap||{};
+      wordColorInfo=cached.wordColorInfo||{};
+      wordReadingMap=cached.wordReadingMap||{};
+      renderPage();
+      scheduleSaveState(60);
+      setStatus(`已載入快取，共 ${sentences.length} 句`);
+      return;
+    }
+    const baseSentences=localSplit(rawText).map(item=>({jp:item.jp, zh:doTrans?'（翻譯中…）':'', words:Array.isArray(item.words)?item.words:[]}));
+    if(!baseSentences.length) throw new Error('未能切出任何句子');
+    doc.sections[0].paragraphs[0].sentences=baseSentences;
+    analyzedDoc=doc;
+    sentences=baseSentences;
+    buildMaps();
+    renderPage();
+    scheduleSaveState(60);
+    if(!doTrans){
+      setAnalysisCache(cacheKey,{sentences, wordColorMap, wordColorInfo, wordReadingMap});
+      setStatus(`完成，共 ${sentences.length} 句`);
+      return;
+    }
+    setStatus(`已切句並標色，共 ${sentences.length} 句；正在翻譯…`);
+    const groupsRaw=splitForAnalysis(rawText, rawText.length>2400?900:1200);
+    const groupEntries=[];
+    let offset=0;
+    for(const group of groupsRaw){
+      groupEntries.push({start:offset, items:group.map(jp=>({jp,zh:'',words:[]}))});
+      offset += group.length;
+    }
+    let finished=0;
+    const concurrency = groupEntries.length>=4 ? 3 : groupEntries.length>=2 ? 2 : 1;
+    const translatedGroups = await runChunkQueue(groupEntries, async (entry)=>{
+      const part = await analyzeTextUnit(entry.items);
+      for(let i=0;i<part.length;i++){
+        const idx=entry.start+i;
+        if(!sentences[idx]) continue;
+        sentences[idx].zh = part[i].zh || '（翻譯暫不可用）';
+        if(Array.isArray(part[i].words) && part[i].words.length) sentences[idx].words = part[i].words;
+        updateSentenceTranslation(idx, sentences[idx].zh);
+      }
+      finished += 1;
+      setStatus(groupEntries.length>1 ? `已切句並標色，共 ${sentences.length} 句；翻譯中 ${finished}/${groupEntries.length} 組…` : `已切句並標色，共 ${sentences.length} 句；翻譯中…`);
+      scheduleSaveState(80);
+      return part;
+    }, concurrency);
+    sentences = translatedGroups.flat();
+    analyzedDoc.sections[0].paragraphs[0].sentences = sentences;
+    buildMaps();
+    renderPage();
+    setAnalysisCache(cacheKey, {sentences, wordColorMap, wordColorInfo, wordReadingMap});
+    scheduleSaveState(100);
+    setStatus(`完成，共 ${sentences.length} 句`);
+  }catch(e){
+    showError('分析失敗：'+e.message);
+    console.error(e);
+  }finally{
+    setLoading(false);
+  }
+}
+function saveState(){
+  try{
+    if(document.getElementById('inputCard').style.display!=='none') return;
+    syncSentencesFromDOM();
+    localStorage.setItem(STORAGE_KEY+'_doc',JSON.stringify(analyzedDoc));
+    localStorage.setItem(STORAGE_KEY+'_wc',JSON.stringify(wordColorMap));
+    localStorage.setItem(STORAGE_KEY+'_wi',JSON.stringify(wordColorInfo));
+    localStorage.setItem(STORAGE_KEY+'_wr',JSON.stringify(wordReadingMap));
+    localStorage.setItem(STORAGE_KEY+'_opts',JSON.stringify({translate:wantsTranslation()}));
+  }catch(e){}
+}
+function applyExportedState(state){
+  try{
+    if(!state || !state.doc) return false;
+    analyzedDoc=state.doc;
+    sentences=analyzedDoc.sections.flatMap(sec=>sec.paragraphs.flatMap(p=>p.sentences||[]));
+    wordColorMap=state.wc||{};
+    wordColorInfo=state.wi||{};
+    wordReadingMap=state.wr||{};
+    setTranslateToggle(!!state?.opts?.translate);
+    renderPage();
+    return true;
+  }catch(e){
+    console.error(e);
+    return false;
+  }
+}
+function exportCurrentHtml(){
+  if(!analyzedDoc.sections || !analyzedDoc.sections.length){
+    showError('還沒有可匯出的內容。請先生成頁面。');
+    return;
+  }
+  try{
+    syncSentencesFromDOM();
+    const state={doc: analyzedDoc, wc: wordColorMap, wi: wordColorInfo, wr: wordReadingMap, opts:{translate:wantsTranslation()}};
+    const exportStateTag = `<script id="exported-state-script">window.__EXPORTED_STATE__=${JSON.stringify(state).replace(/<\/script/gi,'<\\/script')};<\/script>`;
+    let html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+    html=html.replace(/<input([^>]*id="apiKey"[^>]*)value="[^"]*"([^>]*)>/i, '<input$1value=""$2>');
+    if(html.includes('<script>')) html=html.replace('<script>', `${exportStateTag}\n<script>`);
+    else html=html.replace('</body>', `${exportStateTag}\n</body>`);
+    const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    const a=document.createElement('a');
+    const url=URL.createObjectURL(blob);
+    const base=(analyzedDoc.title||document.getElementById('entryTitle').textContent||'japanese_reader').trim().replace(/[\/:*?"<>|]+/g,'_').slice(0,50)||'japanese_reader';
+    const ts=new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+    a.href=url;
+    a.download=`${base}_${ts}.html`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+    setStatus('已匯出新的獨立 HTML');
+    showError('');
+  }catch(e){
+    console.error(e);
+    showError('匯出失敗：'+e.message);
+  }
+}
+function loadState(){
+  try{
+    const doc=localStorage.getItem(STORAGE_KEY+'_doc');
+    if(!doc) return false;
+    analyzedDoc=JSON.parse(doc);
+    sentences=analyzedDoc.sections.flatMap(sec=>sec.paragraphs.flatMap(p=>p.sentences||[]));
+    wordColorMap=JSON.parse(localStorage.getItem(STORAGE_KEY+'_wc')||'{}');
+    wordColorInfo=JSON.parse(localStorage.getItem(STORAGE_KEY+'_wi')||'{}');
+    wordReadingMap=JSON.parse(localStorage.getItem(STORAGE_KEY+'_wr')||'{}');
+    const opts=JSON.parse(localStorage.getItem(STORAGE_KEY+'_opts')||'{}');
+    setTranslateToggle(!!opts.translate);
+    renderPage();
+    return true;
+  }catch(e){
+    console.error(e);
+    return false;
+  }
+}
+function clearAll(){
+  analyzedDoc={title:'',sections:[]}; sentences=[]; wordColorMap={}; wordColorInfo={}; wordReadingMap={};
+  document.getElementById('jpInput').value='';
+  document.getElementById('cardsContainer').innerHTML='';
+  hideReadingArea();
+  showError('');
+  try{['_doc','_wc','_wi','_wr','_opts'].forEach(k=>localStorage.removeItem(STORAGE_KEY+k)); Object.keys(localStorage).forEach(k=>{ if(k.startsWith(STORAGE_KEY+'_ac_')) localStorage.removeItem(k); }); window.__analysisCache=new Map();}catch(e){}
+}
+document.getElementById('translateToggle')?.addEventListener('change',()=>{
+  updateReaderMode();
+  if(document.getElementById('inputCard').style.display==='none' && sentences.length){
+    renderPage();
+    scheduleSaveState(60);
+  }
+});
 
 if(window.__EXPORTED_STATE__){
   applyExportedState(window.__EXPORTED_STATE__);
