@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>文字花園・隨機美化網站</title>
+  <style>
+    :root{
+      --app-bg-1:#f5f0ff;
+      --app-bg-2:#eef8ff;
+      --panel-bg:rgba(255,255,255,.72);
+      --panel-border:rgba(255,255,255,.65);
+      --panel-shadow:0 22px 60px rgba(69,56,111,.12);
+      --ink:#2d2740;
+      --muted:#6e6786;
+      --accent:#8867ff;
+      --stage-bg:linear-gradient(135deg,#fff7fb 0%,#f4f9ff 50%,#fffef7 100%);
+      --stage-overlay:radial-gradient(circle at 20% 20%, rgba(255,255,255,.86), transparent 26%), radial-gradient(circle at 82% 18%, rgba(255,255,255,.6), transparent 24%), radial-gradient(circle at 50% 80%, rgba(255,255,255,.55), transparent 28%);
+      --stage-ink:#2d2740;
+      --stage-soft:#5a5173;
+      --stage-accent:#8c68ff;
+      --stage-accent-2:#ff8ab2;
+      --stage-outline:rgba(255,255,255,.55);
+      --stage-card-bg:rgba(255,255,255,.5);
+      --stage-card-shadow:0 18px 40px rgba(57,44,92,.14);
+      --stage-glow:rgba(140,104,255,.18);
+      --stage-grid:rgba(117,111,162,.08);
+      --stage-pattern-opacity:.9;
+      --radius-xl:32px;
+      --radius-lg:24px;
+      --radius-md:18px;
+      --ui-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", "PingFang TC", "Microsoft JhengHei", "Noto Sans CJK TC", sans-serif;
+      --serif-font: "Iowan Old Style", "Georgia", "Times New Roman", "Songti TC", "PMingLiU", serif;
+      --stage-font: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "PingFang TC", "Microsoft JhengHei", "Noto Sans CJK TC", sans-serif;
+      --stage-font-alt: "Georgia", "Times New Roman", "Songti TC", "PMingLiU", serif;
+      --stage-font-mono: "SFMono-Regular", "Consolas", "Courier New", monospace;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--ui-font);
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,.95), transparent 24%),
+        radial-gradient(circle at bottom right, rgba(255,255,255,.65), transparent 18%),
+        linear-gradient(135deg,var(--app-bg-1),var(--app-bg-2));
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 15% 25%, rgba(255,255,255,.66), transparent 12%),
+        radial-gradient(circle at 75% 15%, rgba(255,255,255,.34), transparent 18%),
+        radial-gradient(circle at 80% 75%, rgba(255,255,255,.3), transparent 17%);
+      filter:blur(22px);
+      opacity:.9;
+    }
+    .app{
+      min-height:100%;
+      display:grid;
+      grid-template-columns:minmax(300px, 360px) 1fr;
+      gap:22px;
+      padding:22px;
+    }
+    .panel{
+      position:sticky;
+      top:22px;
+      height:calc(100vh - 44px);
+      background:var(--panel-bg);
+      border:1px solid var(--panel-border);
+      backdrop-filter: blur(20px);
+      border-radius:30px;
+      box-shadow:var(--panel-shadow);
+      padding:24px;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      z-index:2;
+    }
+    .panel h1{
+      margin:0;
+      font-size:1.55rem;
+      letter-spacing:.04em;
+    }
+    .sub{
+      color:var(--muted);
+      font-size:.96rem;
+      line-height:1.7;
+    }
+    .toolbar{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    button{
+      border:none;
+      border-radius:999px;
+      padding:12px 18px;
+      font-size:.95rem;
+      font-weight:700;
+      cursor:pointer;
+      transition:transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      font-family:inherit;
+    }
+    button:hover{transform:translateY(-1px)}
+    button:active{transform:translateY(1px) scale(.99)}
+    .primary{
+      color:white;
+      background:linear-gradient(135deg,#8d69ff,#ff8ab2);
+      box-shadow:0 16px 32px rgba(141,105,255,.25);
+    }
+    .ghost{
+      color:var(--ink);
+      background:rgba(255,255,255,.78);
+      box-shadow:0 10px 22px rgba(70,60,105,.09);
+    }
+    .tiny{
+      padding:7px 12px;
+      font-size:.82rem;
+    }
+    textarea{
+      width:100%;
+      min-height:250px;
+      resize:vertical;
+      border:none;
+      outline:none;
+      border-radius:24px;
+      padding:18px 18px 20px;
+      background:rgba(255,255,255,.78);
+      box-shadow: inset 0 0 0 1px rgba(158,149,194,.15);
+      color:var(--ink);
+      font:500 1rem/1.85 var(--ui-font);
+    }
+    textarea::placeholder{color:#978faf}
+    .meta{
+      display:grid;
+      gap:10px;
+      grid-template-columns:1fr 1fr;
+    }
+    .chip-box{
+      background:rgba(255,255,255,.68);
+      border:1px solid rgba(255,255,255,.7);
+      border-radius:20px;
+      padding:12px 14px;
+    }
+    .chip-title{
+      font-size:.78rem;
+      color:var(--muted);
+      margin-bottom:6px;
+      letter-spacing:.08em;
+    }
+    .chip-value{
+      font-size:1rem;
+      font-weight:700;
+    }
+    .tips{
+      background:linear-gradient(145deg, rgba(255,255,255,.86), rgba(255,255,255,.56));
+      border:1px solid rgba(255,255,255,.72);
+      border-radius:24px;
+      padding:16px 18px;
+      color:var(--muted);
+      line-height:1.8;
+      font-size:.92rem;
+    }
+    .tips strong{color:var(--ink)}
+    .workspace{
+      min-width:0;
+      display:flex;
+      align-items:stretch;
+    }
+    .stage-shell{
+      position:relative;
+      width:100%;
+      min-height:calc(100vh - 44px);
+      background:rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.42);
+      border-radius:34px;
+      overflow:hidden;
+      box-shadow:0 20px 54px rgba(66,53,102,.12);
+      backdrop-filter:blur(8px);
+    }
+    .stage{
+      position:relative;
+      min-height:calc(100vh - 44px);
+      isolation:isolate;
+      overflow:hidden;
+      background:var(--stage-bg);
+      color:var(--stage-ink);
+    }
+    .stage::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:var(--stage-overlay);
+      pointer-events:none;
+      z-index:0;
+    }
+    .stage::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+      opacity:var(--stage-pattern-opacity);
+      background-image:
+        linear-gradient(to right, transparent 0, transparent calc(100% - 1px), var(--stage-grid) calc(100% - 1px)),
+        linear-gradient(to bottom, transparent 0, transparent calc(100% - 1px), var(--stage-grid) calc(100% - 1px));
+      background-size:64px 64px;
+      mask-image:linear-gradient(to bottom, transparent, rgba(0,0,0,.9) 12%, rgba(0,0,0,.9) 88%, transparent);
+    }
+    .stage.empty{
+      display:grid;
+      place-items:center;
+      padding:36px;
+    }
+    .empty-card{
+      position:relative;
+      z-index:1;
+      width:min(760px, 100%);
+      padding:32px;
+      border-radius:32px;
+      background:rgba(255,255,255,.65);
+      border:1px solid rgba(255,255,255,.7);
+      text-align:center;
+      color:var(--stage-soft);
+      box-shadow:var(--stage-card-shadow);
+      backdrop-filter:blur(18px);
+    }
+    .empty-card h2{
+      margin:.2rem 0 .65rem;
+      font-size:1.75rem;
+      color:var(--stage-ink);
+    }
+    .empty-card p{
+      margin:0;
+      font-size:1.04rem;
+      line-height:1.85;
+    }
+
+    .badge{
+      position:absolute;
+      top:18px;
+      left:18px;
+      z-index:4;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      max-width:calc(100% - 36px);
+    }
+    .pill{
+      background:rgba(255,255,255,.7);
+      border:1px solid rgba(255,255,255,.75);
+      backdrop-filter:blur(12px);
+      border-radius:999px;
+      padding:10px 14px;
+      box-shadow:0 10px 24px rgba(75,61,115,.11);
+      font-size:.88rem;
+      color:var(--stage-soft);
+      white-space:nowrap;
+    }
+    .pill strong{color:var(--stage-ink)}
+    .decor-layer, .content-layer{
+      position:relative;
+      z-index:1;
+    }
+    .decor-layer{
+      position:absolute;
+      inset:0;
+      overflow:hidden;
+      z-index:1;
+      pointer-events:none;
+    }
+    .deco{
+      position:absolute;
+      filter:blur(.2px);
+      opacity:.9;
+    }
+    .deco.blob{
+      border-radius:40% 60% 58% 42% / 43% 43% 57% 57%;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.72), transparent 34%),
+        linear-gradient(135deg, color-mix(in srgb, var(--stage-accent) 55%, white), color-mix(in srgb, var(--stage-accent-2) 52%, white));
+      box-shadow:0 20px 50px color-mix(in srgb, var(--stage-accent) 20%, transparent);
+      animation:floatBlob 18s ease-in-out infinite;
+    }
+    .deco.ring{
+      border-radius:50%;
+      border:1.5px solid color-mix(in srgb, var(--stage-accent) 45%, white);
+      box-shadow:0 0 0 10px rgba(255,255,255,.08), inset 0 0 0 6px rgba(255,255,255,.06);
+      animation:spinSlow 26s linear infinite;
+    }
+    .deco.spark{
+      width:14px;
+      height:14px;
+      background:linear-gradient(135deg, rgba(255,255,255,.95), color-mix(in srgb, var(--stage-accent-2) 55%, white));
+      clip-path:polygon(50% 0%, 63% 37%, 100% 50%, 63% 63%, 50% 100%, 37% 63%, 0 50%, 37% 37%);
+      filter:drop-shadow(0 0 10px rgba(255,255,255,.55));
+      animation:twinkle 4s ease-in-out infinite;
+    }
+    .deco.line{
+      height:1px;
+      background:linear-gradient(90deg, transparent, color-mix(in srgb, var(--stage-accent) 35%, white), transparent);
+      transform-origin:left center;
+      animation:glide 12s ease-in-out infinite;
+    }
+    .deco.wave{
+      border-radius:999px;
+      border:1px solid color-mix(in srgb, var(--stage-accent-2) 28%, white);
+      transform:rotate(-14deg);
+      animation:floatBlob 14s ease-in-out infinite reverse;
+      background:rgba(255,255,255,.12);
+    }
+
+    .content-layer{
+      position:relative;
+      z-index:2;
+      padding:82px 24px 24px;
+      min-height:calc(100vh - 44px);
+    }
+
+    .layout-grid{
+      display:grid;
+      grid-template-columns:repeat(12, minmax(0,1fr));
+      gap:18px;
+      align-content:start;
+    }
+
+    .layout-columns{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:20px;
+      align-items:start;
+    }
+    .column-stack{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      min-width:0;
+    }
+
+    .layout-floating{
+      position:relative;
+      min-height:980px;
+    }
+
+    .layout-ribbons{
+      display:flex;
+      flex-wrap:wrap;
+      align-content:flex-start;
+      gap:18px;
+      padding-bottom:24px;
+    }
+
+    .layout-constellation{
+      position:relative;
+      min-height:1080px;
+    }
+    .constellation-svg{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:0;
+      pointer-events:none;
+      opacity:.58;
+    }
+
+    .card{
+      position:relative;
+      border-radius:var(--radius-lg);
+      padding:18px 18px 16px;
+      color:var(--stage-ink);
+      background:var(--stage-card-bg);
+      border:1px solid var(--stage-outline);
+      box-shadow:var(--stage-card-shadow);
+      backdrop-filter:blur(16px);
+      overflow:hidden;
+      transition:transform .25s ease, box-shadow .25s ease;
+      word-break:break-word;
+      min-width:0;
+    }
+    .card:hover{
+      transform:translateY(-4px) rotate(.1deg);
+      box-shadow:0 28px 52px rgba(57,44,92,.18);
+    }
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:auto -20% 62% auto;
+      width:130px;
+      height:130px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(255,255,255,.65), transparent 68%);
+      opacity:.8;
+      pointer-events:none;
+      mix-blend-mode:screen;
+    }
+    .card::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(125deg, rgba(255,255,255,.22), transparent 34%, transparent 58%, rgba(255,255,255,.18));
+      pointer-events:none;
+      opacity:.65;
+    }
+    .card.hero{
+      padding:26px 26px 24px;
+      border-radius:32px;
+    }
+    .card.paper{
+      background:linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.58));
+      transform:rotate(var(--tilt, -.5deg));
+    }
+    .card.outline{
+      background:rgba(255,255,255,.18);
+      border:1.5px dashed color-mix(in srgb, var(--stage-accent) 40%, white);
+      backdrop-filter:blur(12px);
+    }
+    .card.glow{
+      box-shadow:0 0 0 1px rgba(255,255,255,.25), 0 24px 52px var(--stage-glow);
+    }
+    .card.solid{
+      background:linear-gradient(135deg,
+        color-mix(in srgb, var(--stage-accent) 20%, white),
+        color-mix(in srgb, var(--stage-accent-2) 16%, white));
+    }
+    .card.mono{
+      font-family:var(--stage-font-mono);
+      letter-spacing:.01em;
+    }
+    .card.serif{
+      font-family:var(--stage-font-alt);
+    }
+    .card.vertical{
+      writing-mode:vertical-rl;
+      text-orientation:mixed;
+      min-height:240px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:flex-start;
+      letter-spacing:.08em;
+    }
+    .card.ribbon{
+      border-radius:999px;
+      padding:16px 22px;
+      min-height:auto;
+      backdrop-filter:blur(14px);
+    }
+    .card.ribbon.vertical{
+      border-radius:32px;
+      padding:20px 14px;
+      min-height:280px;
+    }
+
+    .card-index{
+      position:relative;
+      z-index:1;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:10px;
+      font-size:.74rem;
+      color:var(--stage-soft);
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .card-index::before{
+      content:"";
+      width:18px;
+      height:1px;
+      background:linear-gradient(90deg, color-mix(in srgb, var(--stage-accent) 52%, white), transparent);
+      display:inline-block;
+    }
+    .card-text{
+      position:relative;
+      z-index:1;
+      margin:0;
+      font-size:clamp(1rem, 1.1vw + .7rem, 1.22rem);
+      line-height:1.9;
+      white-space:pre-wrap;
+    }
+    .card.hero .card-text{
+      font-size:clamp(1.35rem, 2vw + .9rem, 2.25rem);
+      line-height:1.55;
+      font-weight:700;
+    }
+    .card.large .card-text{
+      font-size:clamp(1.18rem, 1.35vw + .8rem, 1.55rem);
+      line-height:1.72;
+    }
+    .card.small .card-text{
+      font-size:clamp(.94rem, .6vw + .82rem, 1.06rem);
+      line-height:1.8;
+    }
+    .card.tiny .card-text{
+      font-size:.9rem;
+      line-height:1.75;
+    }
+    .card .accent{
+      display:inline;
+      padding:.02em .28em;
+      border-radius:.45em;
+      background:color-mix(in srgb, var(--stage-accent) 17%, white);
+      box-decoration-break:clone;
+      -webkit-box-decoration-break:clone;
+    }
+    .card .soft{
+      color:var(--stage-soft);
+    }
+
+    .shadow-title{
+      position:absolute;
+      inset:auto 22px 18px auto;
+      font-size:clamp(2.4rem, 4vw, 5rem);
+      font-weight:900;
+      line-height:1;
+      letter-spacing:.08em;
+      color:rgba(255,255,255,.18);
+      pointer-events:none;
+      z-index:0;
+      user-select:none;
+    }
+
+    .floating-wrap{
+      position:absolute;
+      inset:0;
+    }
+    .floating-card{
+      position:absolute;
+      max-width:min(520px, 74%);
+      animation:floatCard var(--dur, 14s) ease-in-out infinite;
+    }
+    .floating-card.hero{
+      max-width:min(680px, 85%);
+    }
+
+    .node{
+      position:absolute;
+      transform:translate(-50%, -50%);
+      z-index:1;
+      width:min(360px, 34vw);
+    }
+    .node.hero{
+      width:min(520px, 46vw);
+    }
+
+    .footer-note{
+      position:absolute;
+      right:18px;
+      bottom:16px;
+      z-index:4;
+      padding:9px 13px;
+      border-radius:999px;
+      font-size:.8rem;
+      color:var(--stage-soft);
+      background:rgba(255,255,255,.58);
+      border:1px solid rgba(255,255,255,.72);
+      backdrop-filter:blur(10px);
+    }
+
+    @keyframes floatBlob{
+      0%,100%{transform:translate3d(0,0,0) rotate(0deg)}
+      25%{transform:translate3d(14px,-18px,0) rotate(5deg)}
+      50%{transform:translate3d(-8px,14px,0) rotate(-4deg)}
+      75%{transform:translate3d(9px,8px,0) rotate(3deg)}
+    }
+    @keyframes spinSlow{
+      from{transform:rotate(0deg)}
+      to{transform:rotate(360deg)}
+    }
+    @keyframes twinkle{
+      0%,100%{transform:scale(.75);opacity:.45}
+      50%{transform:scale(1.25);opacity:1}
+    }
+    @keyframes glide{
+      0%,100%{transform:translateX(-20px) scaleX(.85);opacity:.55}
+      50%{transform:translateX(20px) scaleX(1.12);opacity:.92}
+    }
+    @keyframes floatCard{
+      0%,100%{transform:translateY(0px) rotate(var(--tilt,0deg))}
+      50%{transform:translateY(-10px) rotate(calc(var(--tilt,0deg) + .6deg))}
+    }
+
+    .stage[data-theme="glass-garden"]{
+      --stage-bg:linear-gradient(135deg,#fef4fb 0%, #eff7ff 46%, #fcfff8 100%);
+      --stage-overlay:radial-gradient(circle at 10% 15%, rgba(255,255,255,.95), transparent 24%), radial-gradient(circle at 85% 12%, rgba(255,255,255,.62), transparent 22%), radial-gradient(circle at 42% 78%, rgba(255,255,255,.58), transparent 24%);
+      --stage-ink:#30284a;
+      --stage-soft:#6f6788;
+      --stage-accent:#8c69ff;
+      --stage-accent-2:#ff97b8;
+      --stage-card-bg:rgba(255,255,255,.42);
+      --stage-outline:rgba(255,255,255,.6);
+      --stage-glow:rgba(140,105,255,.18);
+      --stage-grid:rgba(131,126,170,.075);
+      --stage-pattern-opacity:1;
+      --stage-font:-apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      --stage-font-alt:"Georgia", "Times New Roman", "Songti TC", serif;
+    }
+    .stage[data-theme="editorial-bloom"]{
+      --stage-bg:linear-gradient(135deg,#fffdf6 0%, #fff6ef 35%, #f3f5ff 100%);
+      --stage-overlay:radial-gradient(circle at 14% 18%, rgba(255,245,233,.82), transparent 24%), radial-gradient(circle at 84% 14%, rgba(255,255,255,.55), transparent 26%), radial-gradient(circle at 80% 80%, rgba(255,251,240,.42), transparent 24%);
+      --stage-ink:#352b28;
+      --stage-soft:#7c6a63;
+      --stage-accent:#ff8a52;
+      --stage-accent-2:#c48cff;
+      --stage-card-bg:rgba(255,252,247,.66);
+      --stage-outline:rgba(255,247,240,.7);
+      --stage-glow:rgba(255,138,82,.16);
+      --stage-grid:rgba(146,116,98,.07);
+      --stage-pattern-opacity:.7;
+      --stage-font:var(--serif-font);
+      --stage-font-alt:-apple-system, BlinkMacSystemFont, "Hiragino Sans", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    }
+    .stage[data-theme="night-nebula"]{
+      --stage-bg:linear-gradient(145deg,#19182c 0%, #262345 44%, #10263d 100%);
+      --stage-overlay:radial-gradient(circle at 20% 18%, rgba(255,255,255,.14), transparent 18%), radial-gradient(circle at 78% 10%, rgba(166,194,255,.16), transparent 22%), radial-gradient(circle at 70% 74%, rgba(255,143,201,.12), transparent 24%);
+      --stage-ink:#f5f2ff;
+      --stage-soft:#c8c1ea;
+      --stage-accent:#8ad6ff;
+      --stage-accent-2:#ff92c7;
+      --stage-card-bg:rgba(255,255,255,.08);
+      --stage-outline:rgba(255,255,255,.14);
+      --stage-glow:rgba(138,214,255,.12);
+      --stage-grid:rgba(255,255,255,.06);
+      --stage-pattern-opacity:.55;
+      --stage-font:-apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      --stage-font-alt:"Georgia", "Times New Roman", serif;
+    }
+    .stage[data-theme="ink-river"]{
+      --stage-bg:linear-gradient(135deg,#f8f5ef 0%, #fbfaf7 54%, #eef6f8 100%);
+      --stage-overlay:radial-gradient(circle at 14% 22%, rgba(255,255,255,.86), transparent 20%), radial-gradient(circle at 80% 15%, rgba(255,255,255,.72), transparent 24%), radial-gradient(circle at 48% 78%, rgba(230,244,248,.55), transparent 28%);
+      --stage-ink:#28353d;
+      --stage-soft:#667980;
+      --stage-accent:#5ea6c7;
+      --stage-accent-2:#76b78d;
+      --stage-card-bg:rgba(255,255,255,.65);
+      --stage-outline:rgba(255,255,255,.72);
+      --stage-glow:rgba(94,166,199,.12);
+      --stage-grid:rgba(113,128,133,.06);
+      --stage-pattern-opacity:.52;
+      --stage-font:"Georgia", "Times New Roman", "Songti TC", serif;
+      --stage-font-alt:-apple-system, BlinkMacSystemFont, "Hiragino Sans", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    }
+    .stage[data-theme="candy-paper"]{
+      --stage-bg:linear-gradient(135deg,#fff5f7 0%, #fffef6 50%, #eef7ff 100%);
+      --stage-overlay:radial-gradient(circle at 14% 16%, rgba(255,255,255,.88), transparent 24%), radial-gradient(circle at 84% 14%, rgba(255,249,211,.42), transparent 20%), radial-gradient(circle at 70% 78%, rgba(243,243,255,.45), transparent 26%);
+      --stage-ink:#3b2b39;
+      --stage-soft:#816b7e;
+      --stage-accent:#ff7fb2;
+      --stage-accent-2:#8bb8ff;
+      --stage-card-bg:rgba(255,255,255,.64);
+      --stage-outline:rgba(255,255,255,.8);
+      --stage-glow:rgba(255,127,178,.12);
+      --stage-grid:rgba(149,122,149,.06);
+      --stage-pattern-opacity:.82;
+      --stage-font:-apple-system, BlinkMacSystemFont, "Hiragino Sans", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      --stage-font-alt:"Georgia", "Times New Roman", serif;
+    }
+    .stage[data-theme="forest-mist"]{
+      --stage-bg:linear-gradient(135deg,#f4fbf4 0%, #f9fff7 44%, #eef8f2 100%);
+      --stage-overlay:radial-gradient(circle at 16% 14%, rgba(255,255,255,.72), transparent 24%), radial-gradient(circle at 82% 16%, rgba(255,255,255,.54), transparent 24%), radial-gradient(circle at 60% 78%, rgba(219,242,228,.46), transparent 24%);
+      --stage-ink:#274136;
+      --stage-soft:#5f786a;
+      --stage-accent:#6fb489;
+      --stage-accent-2:#9cc9ff;
+      --stage-card-bg:rgba(255,255,255,.56);
+      --stage-outline:rgba(255,255,255,.76);
+      --stage-glow:rgba(111,180,137,.12);
+      --stage-grid:rgba(93,132,111,.06);
+      --stage-pattern-opacity:.62;
+      --stage-font:-apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      --stage-font-alt:"Georgia", "Songti TC", serif;
+    }
+
+    @media (max-width: 1080px){
+      .app{
+        grid-template-columns:1fr;
+      }
+      .panel{
+        position:relative;
+        top:auto;
+        height:auto;
+      }
+      .stage-shell, .stage, .content-layer{
+        min-height:72vh;
+      }
+      .layout-columns{
+        grid-template-columns:1fr 1fr;
+      }
+    }
+    @media (max-width: 760px){
+      .app{padding:14px; gap:14px}
+      .panel{padding:18px; border-radius:24px}
+      .stage-shell{border-radius:26px}
+      .content-layer{padding:86px 14px 18px}
+      .layout-grid{grid-template-columns:repeat(6,minmax(0,1fr)); gap:14px}
+      .layout-columns{grid-template-columns:1fr}
+      .floating-card{max-width:82%}
+      .node, .node.hero{width:min(78vw, 420px)}
+      .card.hero .card-text{font-size:clamp(1.18rem, 3vw + .45rem, 1.7rem)}
+      .meta{grid-template-columns:1fr}
+      .toolbar{display:grid; grid-template-columns:1fr 1fr}
+      .toolbar button{width:100%}
+      textarea{min-height:210px}
+      .footer-note{display:none}
+      .badge{gap:8px}
+      .pill{padding:8px 12px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="panel">
+      <div>
+        <h1>文字花園 ✨</h1>
+        <div class="sub">
+          把英文、簡體中文、繁體中文、日語貼進來，按一下就會變成一個視覺很豐富的漂亮頁面。<br>
+          每次重新生成，都會隨機換主題、版式、大小、懸浮效果與裝飾。
+        </div>
+      </div>
+
+      <textarea id="textInput" placeholder="把文字貼在這裡……
+
+例如：
+雨在窗邊慢慢落下。
+Tonight the city feels softer than usual.
+私はまだ名前のない光を探している。"></textarea>
+
+      <div class="toolbar">
+        <button class="primary" id="generateBtn">生成美化版</button>
+        <button class="ghost" id="rerollBtn">再變一次</button>
+        <button class="ghost tiny" id="sampleBtn">放入示例</button>
+        <button class="ghost tiny" id="clearBtn">清空</button>
+      </div>
+
+      <div class="meta">
+        <div class="chip-box">
+          <div class="chip-title">目前主題</div>
+          <div class="chip-value" id="themeLabel">尚未生成</div>
+        </div>
+        <div class="chip-box">
+          <div class="chip-title">目前版式</div>
+          <div class="chip-value" id="layoutLabel">尚未生成</div>
+        </div>
+      </div>
+
+      <div class="tips">
+        <strong>效果特色：</strong><br>
+        1. 每次生成都不一樣。<br>
+        2. 有些句子會變成大標題，有些會像漂浮卡片，有些會變成絲帶或直排文字。<br>
+        3. 完全支援中、日、英混排。<br>
+        4. 同一段文字也能反覆玩出不同視覺。
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <div class="stage-shell">
+        <div class="stage empty" id="stage">
+          <div class="empty-card">
+            <h2>把文字變漂亮吧</h2>
+            <p>
+              左邊貼上文字後，按「生成美化版」。<br>
+              右側會自動用隨機的視覺主題與排版，把文字做成像海報、拼貼、懸浮裝置、雜誌頁那樣的效果。
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const stage = document.getElementById("stage");
+    const textInput = document.getElementById("textInput");
+    const themeLabel = document.getElementById("themeLabel");
+    const layoutLabel = document.getElementById("layoutLabel");
+    const generateBtn = document.getElementById("generateBtn");
+    const rerollBtn = document.getElementById("rerollBtn");
+    const sampleBtn = document.getElementById("sampleBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    const themes = [
+      { id:"glass-garden", name:"琉璃花園" },
+      { id:"editorial-bloom", name:"花影雜誌" },
+      { id:"night-nebula", name:"夜色星雲" },
+      { id:"ink-river", name:"墨色流光" },
+      { id:"candy-paper", name:"糖紙拼貼" },
+      { id:"forest-mist", name:"森林薄霧" }
+    ];
+
+    const layouts = [
+      { id:"grid", name:"雜誌拼版" },
+      { id:"columns", name:"堆疊畫廊" },
+      { id:"floating", name:"懸浮裝置" },
+      { id:"ribbons", name:"絲帶散落" },
+      { id:"constellation", name:"星點連線" }
+    ];
+
+    const sampleText = `夜色像一層很薄的玻璃，輕輕覆在窗外。
+The room keeps a small warmth, as if someone just left.
+我把今天的句子慢慢攤開，像把紙船放進光裡。
+言葉はときどき、形より先に空気になる。
+有些段落適合懸浮，有些適合沉下去，有些應該忽然變得很大。`;
+
+    let lastSegments = [];
+    let lastText = "";
+
+    function rand(min, max){
+      return Math.random() * (max - min) + min;
+    }
+
+    function pick(arr){
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function splitText(text){
+      const normalized = text.replace(/\r\n/g, "\n").trim();
+      if(!normalized) return [];
+      const paragraphs = normalized.split(/\n{2,}/).map(v => v.trim()).filter(Boolean);
+      const segments = [];
+      paragraphs.forEach(p => {
+        const lines = p.split(/\n+/).map(v => v.trim()).filter(Boolean);
+        lines.forEach(line => {
+          segments.push(...splitLine(line));
+        });
+      });
+      return mergeTinySegments(segments).slice(0, 48);
+    }
+
+    function splitLine(line){
+      const result = [];
+      let current = "";
+      const hardStops = new Set(["。","！","？","!","?","；",";","：",":","…"]);
+      const closers = new Set(["」","』","”","’","】","》"]);
+      for(const ch of line){
+        current += ch;
+        if(closers.has(ch)){
+          if(current.trim()) result.push(current.trim());
+          current = "";
+          continue;
+        }
+        if(hardStops.has(ch)){
+          if(current.trim()) result.push(current.trim());
+          current = "";
+        }
+      }
+      if(current.trim()) result.push(current.trim());
+
+      if(result.length === 0) return [line];
+      return result;
+    }
+
+    function mergeTinySegments(parts){
+      const merged = [];
+      for(const part of parts){
+        const clean = part.trim();
+        if(!clean) continue;
+        if(merged.length && clean.length <= 3){
+          merged[merged.length - 1] += clean;
+        }else{
+          merged.push(clean);
+        }
+      }
+      return merged;
+    }
+
+    function isMostlyLatin(text){
+      const latin = (text.match(/[A-Za-z]/g) || []).length;
+      return latin > Math.max(3, text.length * 0.28);
+    }
+
+    function hasCJK(text){
+      return /[\u3040-\u30ff\u3400-\u9fff]/.test(text);
+    }
+
+    function shouldVertical(text){
+      if(!hasCJK(text)) return false;
+      if(isMostlyLatin(text)) return false;
+      const len = text.replace(/\s/g, "").length;
+      return len >= 5 && len <= 18 && Math.random() < 0.24;
+    }
+
+    function decorateText(text){
+      if(text.length <= 4) return `<span class="accent">${escapeHtml(text)}</span>`;
+      if(isMostlyLatin(text)){
+        const words = text.split(/(\s+)/);
+        let count = 0;
+        return words.map(w => {
+          if(/\s+/.test(w)) return w;
+          count++;
+          if(count === 1 || Math.random() < 0.22){
+            return `<span class="accent">${escapeHtml(w)}</span>`;
+          }
+          return escapeHtml(w);
+        }).join("");
+      }
+      const chars = [...text];
+      const pivot = Math.floor(rand(0, Math.max(1, chars.length - 2)));
+      return chars.map((ch, idx) => {
+        const esc = escapeHtml(ch);
+        if(idx >= pivot && idx < pivot + Math.min(3, chars.length) && /[\u3040-\u30ff\u3400-\u9fffA-Za-z]/.test(ch)){
+          return `<span class="accent">${esc}</span>`;
+        }
+        return esc;
+      }).join("");
+    }
+
+    function escapeHtml(str){
+      return str
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    function makeCard(text, idx, total, options = {}){
+      const card = document.createElement("article");
+      const len = text.length;
+      const classes = ["card"];
+
+      const stylePool = ["paper", "outline", "glow", "solid", ""];
+      const fontPool = ["", "serif", "mono"];
+      const isHero = !!options.hero;
+      if(isHero) classes.push("hero");
+
+      if(len > 48 || (idx === 0 && len > 18)) classes.push("large");
+      else if(len < 12) classes.push("tiny");
+      else if(len < 22) classes.push("small");
+
+      const chosenStyle = options.forceStyle || pick(stylePool);
+      if(chosenStyle) classes.push(chosenStyle);
+
+      if(!options.forceFont || options.forceFont !== "default"){
+        const chosenFont = options.forceFont || pick(fontPool);
+        if(chosenFont) classes.push(chosenFont);
+      }
+
+      const vertical = options.vertical ?? shouldVertical(text);
+      if(vertical) classes.push("vertical");
+      if(options.ribbon) classes.push("ribbon");
+
+      card.className = classes.join(" ");
+      card.style.setProperty("--tilt", `${rand(-2.4, 2.4).toFixed(2)}deg`);
+
+      const index = String(idx + 1).padStart(2, "0");
+      const label = isHero ? "FOCUS" : (Math.random() < 0.32 ? "NOTE" : "TEXT");
+
+      const shadowWord = text.replace(/\s+/g, " ").slice(0, Math.min(12, text.length)).trim();
+      const indexHtml = vertical ? "" : `<div class="card-index">${index} · ${label}</div>`;
+      card.innerHTML = `
+        ${indexHtml}
+        <p class="card-text">${decorateText(text)}</p>
+        ${(!vertical && shadowWord.length >= 4 && Math.random() < 0.18) ? `<div class="shadow-title">${escapeHtml(shadowWord)}</div>` : ""}
+      `;
+      return card;
+    }
+
+    function makeDecorations(container, count = 16){
+      const layer = document.createElement("div");
+      layer.className = "decor-layer";
+
+      for(let i = 0; i < count; i++){
+        const kind = pick(["blob","ring","spark","line","wave"]);
+        const deco = document.createElement("div");
+        deco.className = `deco ${kind}`;
+        const top = rand(-6, 92);
+        const left = rand(-4, 94);
+        deco.style.top = `${top}%`;
+        deco.style.left = `${left}%`;
+
+        if(kind === "blob"){
+          const size = rand(70, 220);
+          deco.style.width = `${size}px`;
+          deco.style.height = `${size * rand(.68, 1.18)}px`;
+          deco.style.opacity = rand(.16, .4).toFixed(2);
+          deco.style.animationDuration = `${rand(14, 22).toFixed(1)}s`;
+        }
+        if(kind === "ring"){
+          const size = rand(56, 180);
+          deco.style.width = `${size}px`;
+          deco.style.height = `${size}px`;
+          deco.style.opacity = rand(.18, .45).toFixed(2);
+        }
+        if(kind === "spark"){
+          const size = rand(8, 20);
+          deco.style.width = `${size}px`;
+          deco.style.height = `${size}px`;
+          deco.style.opacity = rand(.35, .85).toFixed(2);
+          deco.style.animationDuration = `${rand(2.8, 5.8).toFixed(1)}s`;
+        }
+        if(kind === "line"){
+          deco.style.width = `${rand(120, 320)}px`;
+          deco.style.opacity = rand(.18, .42).toFixed(2);
+          deco.style.transform = `rotate(${rand(-35, 35)}deg)`;
+        }
+        if(kind === "wave"){
+          deco.style.width = `${rand(120, 260)}px`;
+          deco.style.height = `${rand(26, 54)}px`;
+          deco.style.opacity = rand(.18, .38).toFixed(2);
+          deco.style.transform = `rotate(${rand(-32, 20)}deg)`;
+        }
+        layer.appendChild(deco);
+      }
+
+      container.appendChild(layer);
+    }
+
+    function createBadge(theme, layout, segCount){
+      const badge = document.createElement("div");
+      badge.className = "badge";
+      badge.innerHTML = `
+        <div class="pill"><strong>${theme.name}</strong></div>
+        <div class="pill">${layout.name}</div>
+        <div class="pill">${segCount} 個文字片段</div>
+      `;
+      return badge;
+    }
+
+    function createFooter(){
+      const foot = document.createElement("div");
+      foot.className = "footer-note";
+      foot.textContent = "每次點擊都會重組";
+      return foot;
+    }
+
+    function renderGrid(contentLayer, segments){
+      const grid = document.createElement("div");
+      grid.className = "layout-grid";
+      segments.forEach((seg, idx) => {
+        const card = makeCard(seg, idx, segments.length, { hero: idx === 0 && seg.length > 10 });
+        const span = idx === 0
+          ? (window.innerWidth < 760 ? 6 : 8)
+          : pick(window.innerWidth < 760 ? [3,3,6] : [3,4,4,5,6]);
+        card.style.gridColumn = `span ${span}`;
+        if(Math.random() < 0.22) card.style.transform = `translateY(${rand(-12, 22).toFixed(1)}px) rotate(${rand(-1.5, 1.5).toFixed(2)}deg)`;
+        grid.appendChild(card);
+      });
+      contentLayer.appendChild(grid);
+    }
+
+    function renderColumns(contentLayer, segments){
+      const wrap = document.createElement("div");
+      wrap.className = "layout-columns";
+      const colCount = window.innerWidth < 760 ? 1 : (window.innerWidth < 1080 ? 2 : 3);
+      const columns = [];
+      for(let i = 0; i < colCount; i++){
+        const col = document.createElement("div");
+        col.className = "column-stack";
+        columns.push(col);
+        wrap.appendChild(col);
+      }
+
+      segments.forEach((seg, idx) => {
+        const hero = idx === 0 && seg.length > 14;
+        const card = makeCard(seg, idx, segments.length, { hero });
+        columns[idx % colCount].appendChild(card);
+      });
+      contentLayer.appendChild(wrap);
+    }
+
+    function renderFloating(contentLayer, segments){
+      const wrap = document.createElement("div");
+      wrap.className = "layout-floating";
+      const floating = document.createElement("div");
+      floating.className = "floating-wrap";
+      const rowCount = Math.max(3, Math.ceil(segments.length / 3));
+      const height = Math.max(820, rowCount * 190);
+      wrap.style.minHeight = `${height}px`;
+
+      segments.forEach((seg, idx) => {
+        const hero = idx === 0 || (idx === 1 && seg.length > 24 && Math.random() < 0.55);
+        const card = makeCard(seg, idx, segments.length, { hero });
+        card.classList.add("floating-card");
+        const band = idx % 3;
+        const x = band === 0 ? rand(3, 26) : band === 1 ? rand(28, 60) : rand(60, 82);
+        const y = Math.floor(idx / 3) * 175 + rand(20, 92);
+        card.style.left = `${x}%`;
+        card.style.top = `${y}px`;
+        card.style.setProperty("--tilt", `${rand(-2.8, 2.8).toFixed(2)}deg`);
+        card.style.setProperty("--dur", `${rand(10, 18).toFixed(1)}s`);
+        floating.appendChild(card);
+      });
+
+      wrap.appendChild(floating);
+      contentLayer.appendChild(wrap);
+    }
+
+    function renderRibbons(contentLayer, segments){
+      const wrap = document.createElement("div");
+      wrap.className = "layout-ribbons";
+      segments.forEach((seg, idx) => {
+        const vertical = shouldVertical(seg) || (Math.random() < 0.14 && hasCJK(seg) && seg.length < 18);
+        const card = makeCard(seg, idx, segments.length, {
+          ribbon:true,
+          vertical,
+          forceStyle: pick(["outline","paper","solid",""])
+        });
+        if(!vertical){
+          card.style.maxWidth = `${rand(220, 520)}px`;
+        }
+        wrap.appendChild(card);
+      });
+      contentLayer.appendChild(wrap);
+    }
+
+    function renderConstellation(contentLayer, segments){
+      const wrap = document.createElement("div");
+      wrap.className = "layout-constellation";
+      const nodePositions = [];
+      const height = Math.max(900, Math.ceil(segments.length / 4) * 210);
+      wrap.style.minHeight = `${height}px`;
+
+      const svgNS = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(svgNS, "svg");
+      svg.setAttribute("class", "constellation-svg");
+      svg.setAttribute("viewBox", `0 0 1000 ${Math.max(1000, height)}`);
+
+      segments.forEach((seg, idx) => {
+        const hero = idx === 0;
+        const node = document.createElement("div");
+        node.className = `node${hero ? " hero" : ""}`;
+        const x = idx === 0 ? 50 : rand(14, 86);
+        const y = idx === 0 ? 14 : rand(18, 92);
+        node.style.left = `${x}%`;
+        node.style.top = `${y}%`;
+
+        const card = makeCard(seg, idx, segments.length, {
+          hero,
+          forceStyle: pick(["glow","outline","paper","solid",""]),
+          forceFont: pick(["default","serif","mono"])
+        });
+        node.appendChild(card);
+        wrap.appendChild(node);
+        nodePositions.push({x, y});
+      });
+
+      for(let i = 1; i < nodePositions.length; i++){
+        if(Math.random() < 0.7){
+          const from = nodePositions[i - 1];
+          const to = nodePositions[i];
+          const line = document.createElementNS(svgNS, "line");
+          line.setAttribute("x1", from.x * 10);
+          line.setAttribute("y1", from.y * (height / 100));
+          line.setAttribute("x2", to.x * 10);
+          line.setAttribute("y2", to.y * (height / 100));
+          line.setAttribute("stroke", "rgba(255,255,255,.35)");
+          line.setAttribute("stroke-width", Math.random() < 0.3 ? "1.6" : "1");
+          line.setAttribute("stroke-dasharray", Math.random() < 0.4 ? "6 8" : "0");
+          svg.appendChild(line);
+        }
+      }
+
+      wrap.appendChild(svg);
+      contentLayer.appendChild(wrap);
+    }
+
+    function renderLayout(contentLayer, layout, segments){
+      switch(layout.id){
+        case "grid": renderGrid(contentLayer, segments); break;
+        case "columns": renderColumns(contentLayer, segments); break;
+        case "floating": renderFloating(contentLayer, segments); break;
+        case "ribbons": renderRibbons(contentLayer, segments); break;
+        case "constellation": renderConstellation(contentLayer, segments); break;
+        default: renderGrid(contentLayer, segments);
+      }
+    }
+
+    function render(text, reroll = false){
+      const segments = splitText(text);
+      if(!segments.length){
+        stage.className = "stage empty";
+        stage.innerHTML = `
+          <div class="empty-card">
+            <h2>還沒有文字</h2>
+            <p>先在左邊貼上一點內容，再來生成漂亮頁面。</p>
+          </div>
+        `;
+        themeLabel.textContent = "尚未生成";
+        layoutLabel.textContent = "尚未生成";
+        return;
+      }
+
+      lastSegments = segments;
+      lastText = text;
+
+      let theme = pick(themes);
+      let layout = pick(layouts);
+
+      if(reroll && stage.dataset.theme && themes.length > 1){
+        while(theme.id === stage.dataset.theme){
+          theme = pick(themes);
+        }
+      }
+      if(reroll && stage.dataset.layout && layouts.length > 1){
+        while(layout.id === stage.dataset.layout){
+          layout = pick(layouts);
+        }
+      }
+
+      stage.className = "stage";
+      stage.dataset.theme = theme.id;
+      stage.dataset.layout = layout.id;
+      stage.innerHTML = "";
+
+      stage.appendChild(createBadge(theme, layout, segments.length));
+      makeDecorations(stage, 18);
+
+      const contentLayer = document.createElement("div");
+      contentLayer.className = "content-layer";
+      renderLayout(contentLayer, layout, segments);
+      stage.appendChild(contentLayer);
+      stage.appendChild(createFooter());
+
+      themeLabel.textContent = theme.name;
+      layoutLabel.textContent = layout.name;
+    }
+
+    generateBtn.addEventListener("click", () => {
+      render(textInput.value, false);
+    });
+
+    rerollBtn.addEventListener("click", () => {
+      const currentText = textInput.value.trim() || lastText;
+      render(currentText, true);
+    });
+
+    sampleBtn.addEventListener("click", () => {
+      textInput.value = sampleText;
+      render(textInput.value, true);
+    });
+
+    clearBtn.addEventListener("click", () => {
+      textInput.value = "";
+      lastSegments = [];
+      lastText = "";
+      stage.className = "stage empty";
+      stage.innerHTML = `
+        <div class="empty-card">
+          <h2>把文字變漂亮吧</h2>
+          <p>
+            左邊貼上文字後，按「生成美化版」。<br>
+            右側會自動用隨機的視覺主題與排版，把文字做成像海報、拼貼、懸浮裝置、雜誌頁那樣的效果。
+          </p>
+        </div>
+      `;
+      themeLabel.textContent = "尚未生成";
+      layoutLabel.textContent = "尚未生成";
+    });
+
+    textInput.addEventListener("keydown", (e) => {
+      if((e.metaKey || e.ctrlKey) && e.key === "Enter"){
+        render(textInput.value, false);
+      }
+    });
+  </script>
+</body>
+</html>
