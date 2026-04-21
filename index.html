@@ -2780,5 +2780,213 @@ document.querySelectorAll('.btn').forEach(btn => {
   });
 });
 </script>
+
+<style id="single-translation-override-style">
+label[for="translateToggle"]{display:none!important}
+.single-reader-wrap{max-width:1560px;margin:1.4rem auto 0;padding:0 .65rem 3rem}
+#cardsContainer.single-reader-grid{display:flex;flex-direction:column;gap:1.15rem}
+.single-sentence-card{background:rgba(255,255,255,.96);border:1px solid var(--border-lt);border-radius:26px;box-shadow:0 6px 22px rgba(46,125,50,.08),0 1px 4px rgba(46,125,50,.04);overflow:hidden}
+.single-sentence-toolbar{display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:1rem 1.25rem;border-bottom:1px solid rgba(170,203,170,.55);background:linear-gradient(180deg,rgba(242,249,242,.95),rgba(255,255,255,.92))}
+.single-index{font:700 .76rem 'DM Mono',monospace;color:var(--text-light);letter-spacing:.08em}
+.single-toolbar-actions{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+.single-btn{border:1px solid var(--border-lt);background:#fff;border-radius:999px;padding:.45rem .92rem;font:700 .9rem 'Noto Sans JP',sans-serif;color:var(--green-dark);cursor:pointer;transition:background .15s,border-color .15s,transform .15s,opacity .15s}
+.single-btn:hover{background:var(--bg-card2);border-color:var(--green-soft)}
+.single-btn:active{transform:translateY(1px)}
+.single-btn[disabled]{opacity:.55;cursor:not-allowed}
+.single-source{padding:1.5rem 1.45rem 1.6rem;font:400 1.6rem/2.25 'Noto Serif JP',serif;color:var(--text);white-space:pre-wrap;word-break:break-word;outline:none}
+.single-source:focus{box-shadow:inset 0 0 0 2px rgba(46,125,50,.08);background:rgba(255,255,255,.9)}
+.single-translation-wrap{display:none;border-top:1px dashed rgba(170,203,170,.75);padding:1rem 1.45rem 1.25rem;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.72))}
+.single-sentence-card.trans-open .single-translation-wrap{display:block}
+.single-trans-label{display:flex;align-items:center;gap:.45rem;font:700 .95rem 'Noto Sans JP',sans-serif;color:#6c8fbd;margin-bottom:.8rem}
+.single-trans-label::before{content:'';display:inline-block;width:10px;height:10px;border-radius:50%;background:#8fb0dd}
+.single-trans-body{min-height:2.4em;font:400 1.55rem/2.05 'Noto Serif TC',serif;color:var(--text);white-space:pre-wrap;word-break:break-word;outline:none}
+.single-trans-body:focus{box-shadow:inset 0 0 0 2px rgba(46,125,50,.08);background:rgba(255,255,255,.88)}
+.single-trans-body.is-loading,.single-trans-body.is-empty{font-family:'Noto Sans JP',sans-serif;font-size:1.28rem;line-height:1.95;color:var(--text-light)}
+.single-trans-body.is-error{font-family:'Noto Sans JP',sans-serif;font-size:1.18rem;line-height:1.88;color:#8a4f2b}
+@media(max-width:980px){.single-reader-wrap{padding:0 .4rem 2rem}.single-source{font-size:1.22rem;line-height:2.0;padding:1.2rem 1rem 1.25rem}.single-trans-body{font-size:1.18rem;line-height:1.9}.single-sentence-toolbar{padding:.85rem 1rem}.single-btn{font-size:.84rem;padding:.4rem .8rem}}
+</style>
+<script id="single-translation-override-script">
+(function(){
+  const SINGLE_STATE_KEY = STORAGE_KEY + '_single_v7';
+  const PLACEHOLDER_TRANSLATIONS = new Set(['','尚未翻譯','翻譯中…','翻譯失敗，請再試一次','（翻譯失敗）']);
+  function isRealTranslationText(v){
+    const s=String(v||'').trim();
+    if(!s) return false;
+    if(PLACEHOLDER_TRANSLATIONS.has(s)) return false;
+    if(/^翻譯失敗/.test(s)) return false;
+    if(/^（翻譯失敗/.test(s)) return false;
+    return true;
+  }
+  function ensureSentenceState(s){
+    if(!s || typeof s!=='object') return;
+    if(typeof s._transOpen!=='boolean') s._transOpen=false;
+    if(typeof s._transLoading!=='boolean') s._transLoading=false;
+    if(typeof s._transError!=='string') s._transError='';
+  }
+  function syncAnalyzedDocFromSentences(){
+    if(!analyzedDoc?.sections?.length) return;
+    const p = analyzedDoc.sections?.[0]?.paragraphs?.[0];
+    if(p) p.sentences = sentences;
+  }
+  function sanitizeSentenceForPrompt(v){
+    return String(v||'').replace(/\s+/g,' ').trim();
+  }
+  async function callDeepSeekCompat(sys,user,maxTok=900){
+    const key=(document.getElementById('apiKey')?.value||'').trim();
+    if(!key) throw new Error('請先輸入 DeepSeek API Key');
+    const urls=['https://api.deepseek.com/chat/completions','https://api.deepseek.com/v1/chat/completions'];
+    let lastErr='';
+    for(const url of urls){
+      try{
+        const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'deepseek-chat',temperature:0,max_tokens:maxTok,messages:[{role:'system',content:sys},{role:'user',content:user}]})});
+        if(!res.ok){
+          let msg='HTTP '+res.status;
+          try{ const data=await res.json(); msg=data?.error?.message||data?.message||msg; }
+          catch(_e){ try{ msg=(await res.text()).slice(0,180)||msg; }catch(__e){} }
+          lastErr=msg; continue;
+        }
+        const data=await res.json();
+        const txt=data?.choices?.[0]?.message?.content;
+        if(typeof txt==='string' && txt.trim()) return txt.trim();
+        lastErr='API 沒有回傳可用內容';
+      }catch(e){ lastErr=e?.message || String(e); }
+    }
+    throw new Error(lastErr || 'API 請求失敗');
+  }
+  async function translateSingleSentence(idx, forceRetry=false){
+    const s=sentences[idx];
+    if(!s) return;
+    ensureSentenceState(s);
+    if(s._transLoading) return;
+    if(!forceRetry && isRealTranslationText(s.zh)) return;
+    s._transOpen=true; s._transLoading=true; s._transError=''; renderSentenceCardState(idx);
+    try{
+      const sys='你是日文翻譯器。請把使用者提供的單句日文翻成自然、準確的繁體中文。只回傳翻譯本身，不要加序號、不要解釋、不要加引號。';
+      const user=sanitizeSentenceForPrompt(s.jp);
+      const zh=await callDeepSeekCompat(sys,user,700);
+      s.zh=String(zh||'').trim();
+      s._transError='';
+    }catch(e){
+      s.zh=''; s._transError=e?.message || '未知錯誤';
+    }finally{
+      s._transLoading=false; syncAnalyzedDocFromSentences(); renderSentenceCardState(idx); scheduleSaveState(50);
+    }
+  }
+  function buttonLabelForSentence(s){
+    ensureSentenceState(s);
+    if(s._transLoading) return '翻譯中…';
+    if(s._transOpen && isRealTranslationText(s.zh)) return '收起翻譯';
+    if(s._transError) return '重試翻譯';
+    if(!s._transOpen && isRealTranslationText(s.zh)) return '展開翻譯';
+    return '翻譯';
+  }
+  function translationHTMLForSentence(idx,s){
+    ensureSentenceState(s);
+    if(s._transLoading) return '<div class="single-trans-body is-loading">翻譯中…</div>';
+    if(s._transError) return '<div class="single-trans-body is-error">翻譯失敗：'+escH(s._transError)+'</div>';
+    if(isRealTranslationText(s.zh)) return '<div class="single-trans-body trans-sent" data-idx="'+idx+'" contenteditable="plaintext-only" spellcheck="false">'+escH(s.zh)+'</div>';
+    return '<div class="single-trans-body is-empty">尚未翻譯</div>';
+  }
+  function createSentenceCard(idx,s,rx){
+    ensureSentenceState(s);
+    const card=document.createElement('div');
+    card.className='single-sentence-card'+(s._transOpen?' trans-open':'');
+    card.dataset.idx=String(idx);
+    const sourceHTML = s.sourceHtml || renderText(s.jp||'', rx);
+    card.innerHTML=''
+      +'<div class="single-sentence-toolbar">'
+      +  '<span class="single-index">'+String(idx+1).padStart(3,'0')+'</span>'
+      +  '<div class="single-toolbar-actions">'
+      +    '<button class="single-btn copy-sent-btn" type="button" data-idx="'+idx+'">複製</button>'
+      +    '<button class="single-btn toggle-translate-btn" type="button" data-idx="'+idx+'">'+buttonLabelForSentence(s)+'</button>'
+      +  '</div>'
+      +'</div>'
+      +'<div class="single-source editable-sent source-sent" data-idx="'+idx+'" contenteditable="plaintext-only" spellcheck="false">'+sourceHTML+'</div>'
+      +'<div class="single-translation-wrap">'
+      +  '<div class="single-trans-label">翻譯</div>'
+      +  translationHTMLForSentence(idx,s)
+      +'</div>';
+    return card;
+  }
+  function renderSentenceCardState(idx){
+    const s=sentences[idx];
+    const card=document.querySelector('.single-sentence-card[data-idx="'+idx+'"]');
+    if(!s || !card) return;
+    ensureSentenceState(s);
+    card.classList.toggle('trans-open', !!s._transOpen);
+    const btn=card.querySelector('.toggle-translate-btn');
+    if(btn){ btn.textContent=buttonLabelForSentence(s); btn.disabled=!!s._transLoading; }
+    const wrap=card.querySelector('.single-translation-wrap');
+    if(wrap){ wrap.innerHTML='<div class="single-trans-label">翻譯</div>'+translationHTMLForSentence(idx,s); bindEditablePairs(); }
+  }
+  function bindSingleReaderActions(){
+    document.querySelectorAll('.toggle-translate-btn').forEach(btn=>{
+      if(btn.dataset.bindSingle==='1') return;
+      btn.dataset.bindSingle='1';
+      btn.addEventListener('click',async()=>{
+        const idx=Number(btn.dataset.idx||-1); const s=sentences[idx]; if(!s) return; ensureSentenceState(s); if(s._transLoading) return;
+        if(s._transOpen && isRealTranslationText(s.zh)){ s._transOpen=false; renderSentenceCardState(idx); scheduleSaveState(40); return; }
+        s._transOpen=true; renderSentenceCardState(idx); await translateSingleSentence(idx, !!s._transError || !isRealTranslationText(s.zh));
+      });
+    });
+    bindEditablePairs(); bindHighlightedTerms();
+  }
+  function renderPage(){
+    const container=document.getElementById('cardsContainer'); const wrap=document.getElementById('readingScroll');
+    if(!container || !wrap) return;
+    wrap.classList.add('visible','single-reader-wrap');
+    container.className='single-reader-grid'; container.innerHTML='';
+    const rx=buildTextRegex();
+    sentences.forEach((s,idx)=>container.appendChild(createSentenceCard(idx,s,rx)));
+    document.getElementById('entryTitle').textContent='日語文章';
+    document.getElementById('entryMeta').textContent='共 '+sentences.length+' 句';
+    const desc=document.querySelector('#mainPage .entry-desc'); if(desc) desc.textContent='每句旁可直接複製或展開翻譯 ・ 彩色詞可切換是否點擊查字典 ・ 句下翻譯可手動修改';
+    const hintItems=document.querySelectorAll('#mainPage .hint-item'); if(hintItems[0]) hintItems[0].innerHTML='<div class="hint-swatch"></div>單欄閱讀 ／ 每句可展開翻譯';
+    showReadingArea(); bindSingleReaderActions(); centerReadingScroll();
+  }
+  async function analyze(){
+    const jp=(document.getElementById('jpInput')?.value||'').trim(); if(!jp) return;
+    setLoading(true); showError(''); setStatus('正在切句…');
+    try{
+      const doc=preprocessInput(jp); const rawText=doc.sections?.[0]?.paragraphs?.[0]?.raw || ''; const cacheKey=hashText(rawText+'::single-button-v7');
+      const cached=getAnalysisCache(cacheKey);
+      if(cached?.sentences?.length){
+        analyzedDoc={title:'日語文章',sections:[{heading:'',paragraphs:[{raw:rawText,sentences:cached.sentences}]}]};
+        sentences=cached.sentences; sentences.forEach(ensureSentenceState);
+        wordColorMap=cached.wordColorMap||{}; wordColorInfo=cached.wordColorInfo||{}; wordReadingMap=cached.wordReadingMap||{};
+        renderPage(); scheduleSaveState(60); setStatus('已載入快取，共 '+sentences.length+' 句'); return;
+      }
+      const base=localSplit(rawText).map(item=>({jp:item.jp, zh:'', words:Array.isArray(item.words)?item.words:[], _transOpen:false, _transLoading:false, _transError:''}));
+      if(!base.length) throw new Error('未能切出任何句子');
+      doc.sections[0].paragraphs[0].sentences=base; analyzedDoc=doc; sentences=base; buildMaps(); renderPage();
+      setAnalysisCache(cacheKey,{sentences,wordColorMap,wordColorInfo,wordReadingMap}); scheduleSaveState(60); setStatus('已切句，共 '+sentences.length+' 句');
+    }catch(e){ console.error(e); showError('分析失敗：'+(e?.message||e)); }
+    finally{ setLoading(false); }
+  }
+  function saveState(){
+    try{ syncSentencesFromDOM(); syncAnalyzedDocFromSentences(); localStorage.setItem(SINGLE_STATE_KEY, JSON.stringify({doc:analyzedDoc,wc:wordColorMap,wi:wordColorInfo,wr:wordReadingMap})); }catch(e){}
+  }
+  function loadState(){
+    try{
+      const raw=localStorage.getItem(SINGLE_STATE_KEY); if(!raw) return false; const payload=JSON.parse(raw); if(!payload?.doc?.sections?.length) return false;
+      analyzedDoc=payload.doc; sentences=analyzedDoc.sections.flatMap(sec=>sec.paragraphs.flatMap(p=>p.sentences||[])); sentences.forEach(ensureSentenceState);
+      wordColorMap=payload.wc||{}; wordColorInfo=payload.wi||{}; wordReadingMap=payload.wr||{}; renderPage(); return true;
+    }catch(e){ console.error(e); return false; }
+  }
+  function clearAll(){
+    analyzedDoc={title:'',sections:[]}; sentences=[]; wordColorMap={}; wordColorInfo={}; wordReadingMap={};
+    const input=document.getElementById('jpInput'); if(input) input.value=''; const container=document.getElementById('cardsContainer'); if(container) container.innerHTML='';
+    hideReadingArea(); showError(''); setStatus(''); try{ localStorage.removeItem(SINGLE_STATE_KEY); }catch(e){}
+  }
+  function normalizeTopBar(){
+    const label=document.querySelector('label[for="translateToggle"]'); if(label) label.remove();
+    const inputHint=document.querySelector('#inputCard .hint-small'); if(inputHint) inputHint.textContent='金鑰僅存瀏覽器，不外傳 ｜「切句＆分析」只做切句＋上色 ｜ 點每句右側「翻譯」才會生成單句翻譯';
+    const desc=document.querySelector('#mainPage .entry-desc'); if(desc) desc.textContent='每句旁可直接複製或展開翻譯 ・ 彩色詞可切換是否點擊查字典 ・ 句下翻譯可手動修改';
+  }
+  window.analyze=analyze; window.renderPage=renderPage; window.clearAll=clearAll; window.saveState=saveState; window.loadState=loadState; window.translateSingleSentence=translateSingleSentence;
+  normalizeTopBar(); if(!loadState()) hideReadingArea();
+})();
+</script>
+
 </body>
 </html>
