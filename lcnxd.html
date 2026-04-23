@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>日文斷行整理工具</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic", sans-serif;
+      background: #f6f7fb;
+      color: #1f2937;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 32px auto;
+      padding: 0 16px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 28px;
+    }
+    .desc {
+      margin: 0;
+      color: #4b5563;
+      line-height: 1.7;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    .panel-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0 0 10px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 420px;
+      resize: vertical;
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 16px;
+      line-height: 1.8;
+      background: #fcfcff;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 15px;
+      cursor: pointer;
+      background: #111827;
+      color: #fff;
+    }
+    button.secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+    button:hover { opacity: 0.92; }
+    .hint {
+      margin-top: 10px;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .status {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #065f46;
+      min-height: 22px;
+    }
+    .checkbox-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 12px 0 0;
+      color: #374151;
+      font-size: 14px;
+    }
+    label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .footer-note {
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.7;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>日文斷行整理工具</h1>
+      <p class="desc">
+        把 PDF、掃描文字、複製下來的日文段落中被強制換行打斷的內容重新整理成完整句子。<br>
+        處理後會變成「每句一行」，方便你一次全部複製。
+      </p>
+      <div class="checkbox-row">
+        <label><input type="checkbox" id="removeHalfSpace" checked> 移除多餘半形空格</label>
+        <label><input type="checkbox" id="removeFullSpace" checked> 移除多餘全形空格</label>
+        <label><input type="checkbox" id="oneSentencePerLine" checked> 每句分成一行</label>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="panel-title">原文</div>
+        <textarea id="input" placeholder="請貼上原文。例如：&#10;日本人は独自の文字表記をもたなかったので、歌謡や神話は、当初&#10;&#10;は口頭による伝承（口承）をそのたてまえとしていた。..."></textarea>
+        <div class="actions">
+          <button id="processBtn">整理斷行</button>
+          <button id="clearBtn" class="secondary">清空</button>
+          <button id="sampleBtn" class="secondary">載入示例</button>
+        </div>
+        <div class="hint">
+          適合處理：書籍、論文、PDF 複製文字、OCR 後被切碎的日文段落。
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="panel-title">處理結果</div>
+        <textarea id="output" placeholder="處理後的完整句子會顯示在這裡" readonly></textarea>
+        <div class="actions">
+          <button id="copyBtn">複製全部結果</button>
+          <button id="selectBtn" class="secondary">全選結果</button>
+        </div>
+        <div id="status" class="status"></div>
+        <div class="footer-note">
+          規則：先把不自然的換行拼回去，再依據「。！？」「……」等日文句末符號切成完整句子。<br>
+          若原文是詩歌、表格、古文訓讀或刻意斷行的文本，仍可能需要手動微調。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const statusEl = document.getElementById('status');
+
+    const processBtn = document.getElementById('processBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const sampleBtn = document.getElementById('sampleBtn');
+    const selectBtn = document.getElementById('selectBtn');
+
+    const removeHalfSpace = document.getElementById('removeHalfSpace');
+    const removeFullSpace = document.getElementById('removeFullSpace');
+    const oneSentencePerLine = document.getElementById('oneSentencePerLine');
+
+    const sampleText = `日本人は独自の文字表記をもたなかったので、歌謡や神話は、当初
+
+は口頭による伝承（口承）をそのたてまえとしていた。しかし、統一
+
+国家が形成され、大陸から漢字が伝来し、人々がその使用に背熟すると、そうした歌謡
+
+や神話も、文字によって書きとどめられるようになっていく。この口承から記載への過
+
+程の中で、流動的な表現のあり方は固定され、歌謡は定型化への、神話は散文化への道
+
+をたどるのである。`;
+
+    function setStatus(message, isError = false) {
+      statusEl.textContent = message;
+      statusEl.style.color = isError ? '#b91c1c' : '#065f46';
+    }
+
+    function cleanText(text) {
+      let t = text || '';
+
+      // 統一換行
+      t = t.replace(/\r\n?/g, '\n');
+
+      // 去除行首行尾空白
+      t = t.split('\n').map(line => line.trim()).join('\n');
+
+      // 把連續空行也視為普通斷行，先合併為單一換行
+      t = t.replace(/\n{2,}/g, '\n');
+
+      // 移除斷行，把被切碎的句子接回去
+      // 這裡直接去掉換行，最適合書籍/PDF 那種「視覺換行」
+      t = t.replace(/\n/g, '');
+
+      // 處理多餘空格
+      if (removeHalfSpace.checked) {
+        // 移除日文常見的誤插入半形空格
+        t = t.replace(/[ \t]{2,}/g, ' ');
+        t = t.replace(/\s*([、。！？〕）」』】〉》])\s*/g, '$1');
+        t = t.replace(/\s*([（「『【〈《])\s*/g, '$1');
+        // 大部分日文正文不需要單字間空格
+        t = t.replace(/ /g, '');
+      }
+
+      if (removeFullSpace.checked) {
+        t = t.replace(/　+/g, '');
+      }
+
+      // 常見 OCR/複製導致的標點前後異常
+      t = t.replace(/，/g, '、').replace(/．/g, '。');
+
+      return t.trim();
+    }
+
+    function splitJapaneseSentences(text) {
+      const sentences = [];
+      let current = '';
+
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        const next = text[i + 1] || '';
+        current += ch;
+
+        // 句末判定：。！？
+        if (/[。！？]/.test(ch)) {
+          // 若後面緊跟引號，暫不切，讓引號一起帶走
+          if (/[」』）】]/.test(next)) continue;
+          sentences.push(current.trim());
+          current = '';
+          continue;
+        }
+
+        // 處理引號結尾：例如「……。」後面的 」
+        if (/[」』）】]/.test(ch)) {
+          const prev = text[i - 1] || '';
+          if (/[。！？]/.test(prev)) {
+            sentences.push(current.trim());
+            current = '';
+            continue;
+          }
+        }
+      }
+
+      if (current.trim()) {
+        sentences.push(current.trim());
+      }
+
+      return sentences.filter(Boolean);
+    }
+
+    function processText() {
+      const raw = input.value;
+      if (!raw.trim()) {
+        output.value = '';
+        setStatus('請先貼上文字。', true);
+        return;
+      }
+
+      const cleaned = cleanText(raw);
+      const sentences = splitJapaneseSentences(cleaned);
+
+      let result = cleaned;
+      if (oneSentencePerLine.checked) {
+        result = sentences.join('\n');
+      }
+
+      output.value = result;
+      setStatus(`完成：共整理出 ${sentences.length} 句。`);
+    }
+
+    processBtn.addEventListener('click', processText);
+
+    copyBtn.addEventListener('click', async () => {
+      if (!output.value.trim()) {
+        setStatus('沒有可複製的內容。', true);
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(output.value);
+        setStatus('已複製全部結果。');
+      } catch (err) {
+        output.select();
+        document.execCommand('copy');
+        setStatus('已複製全部結果。');
+      }
+    });
+
+    selectBtn.addEventListener('click', () => {
+      output.focus();
+      output.select();
+      setStatus('已全選結果。');
+    });
+
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      output.value = '';
+      setStatus('已清空。');
+    });
+
+    sampleBtn.addEventListener('click', () => {
+      input.value = sampleText;
+      processText();
+    });
+  </script>
+</body>
+</html>
